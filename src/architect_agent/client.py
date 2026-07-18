@@ -14,7 +14,9 @@ import re
 import httpx
 
 AGENT_SERVER_URL = os.environ.get("AGENT_SERVER_URL", "http://localhost:7701")
-DEFAULT_TIMEOUT = 300.0
+#: Generous by default: a queued request behind a busy slot legitimately takes
+#: minutes, and a short timeout turns contention into a failed run.
+DEFAULT_TIMEOUT = float(os.environ.get("ARCHITECT_LLM_TIMEOUT", "900"))
 
 _FENCE = re.compile(r"^```[a-zA-Z]*\n|\n```$")
 

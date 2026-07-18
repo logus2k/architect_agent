@@ -27,8 +27,11 @@ def emit_model(package: str, reg: SymbolRegistry, *, logical: StageOutput,
 
     if functions.records:
         lines.append("    // Functional decomposition")
-        for rec in functions.records:
-            lines.append(f"    action def {rec['name']};")
+        # Deduplicate by name: the registry deliberately converges two requirements
+        # onto one symbol, but each requirement still contributes a record, so
+        # emitting per-record would declare the same element twice.
+        for name in _unique_names(functions.records, "name"):
+            lines.append(f"    action def {name};")
         lines.append("")
         # Emit a usage for every action definition that has one. Allocation ends
         # must resolve to *features*; a definition alone is not a feature, so
@@ -42,7 +45,11 @@ def emit_model(package: str, reg: SymbolRegistry, *, logical: StageOutput,
 
     if logical.records:
         lines.append("    // Logical architecture")
+        seen_defs: set[str] = set()
         for rec in logical.records:
+            if rec["def"] in seen_defs:
+                continue
+            seen_defs.add(rec["def"])
             attrs = rec.get("attributes") or []
             if attrs:
                 lines.append(f"    part def {rec['def']} {{")
@@ -52,7 +59,11 @@ def emit_model(package: str, reg: SymbolRegistry, *, logical: StageOutput,
             else:
                 lines.append(f"    part def {rec['def']};")
         lines.append("")
+        seen_usages: set[str] = set()
         for rec in logical.records:
+            if rec["usage"] in seen_usages:
+                continue
+            seen_usages.add(rec["usage"])
             lines.append(f"    part {rec['usage']} : {rec['def']};")
         lines.append("")
 
@@ -88,7 +99,11 @@ def emit_model(package: str, reg: SymbolRegistry, *, logical: StageOutput,
 
     if constraint_defs.records:
         lines.append("    // Constraints")
+        seen_cons: set[str] = set()
         for rec in constraint_defs.records:
+            if rec["name"] in seen_cons:
+                continue
+            seen_cons.add(rec["name"])
             lines.append(f"    constraint def {rec['name']} {{")
             for p in rec.get("parameters") or []:
                 lines.append(f"        in {p['name']} : {p['type']};")
@@ -98,7 +113,12 @@ def emit_model(package: str, reg: SymbolRegistry, *, logical: StageOutput,
 
     if allocs.records:
         lines.append("    // Allocations")
+        seen_allocs: set[tuple] = set()
         for rec in allocs.records:
+            pair = (rec["function"], rec["component"])
+            if pair in seen_allocs:
+                continue
+            seen_allocs.add(pair)
             fn, comp = reg.get(rec["function"]), reg.get(rec["component"])
             if not fn or not comp:
                 continue
@@ -112,6 +132,17 @@ def emit_model(package: str, reg: SymbolRegistry, *, logical: StageOutput,
 
     lines.append("}")
     return "\n".join(lines) + "\n"
+
+
+def _unique_names(records: list[dict], key: str) -> list[str]:
+    """Names in first-appearance order, without duplicates."""
+    out, seen = [], set()
+    for rec in records:
+        name = rec.get(key)
+        if name and name not in seen:
+            seen.add(name)
+            out.append(name)
+    return out
 
 
 _IDENT = __import__("re").compile(r"[A-Za-z_][A-Za-z_0-9]*")

@@ -15,8 +15,10 @@ from pathlib import Path
 
 from . import emit, sysml
 from .client import AgentClient
-from .generate import (Requirement, StageOutput, allocations, classify, constraints,
-                       decompose, load_scorecard, logical, verification)
+from . import judge as judge_mod
+from .generate import (Requirement, StageOutput, allocations, behavior, classify,
+                       constraints, decompose, interfaces, load_package, logical,
+                       verification)
 from .symbols import SymbolRegistry
 
 #: Borrowed from the requirements lab's refine gate (`max_iters=3`); never tuned
@@ -38,22 +40,43 @@ class ArchitectureResult:
     validation: sysml.ValidationResult
     open_issues: list[str] = field(default_factory=list)
     diagram_review: dict | None = None
+    judge_verdicts: list = field(default_factory=list)
 
 
 def run(scorecard: str | Path | dict, out_dir: str | Path, *,
         package_name: str = "Architecture",
         client: AgentClient | None = None,
-        review_diagrams: bool = False) -> ArchitectureResult:
-    """Execute the full pipeline. Returns only on success."""
+        review_diagrams: bool = False,
+        require_ready: bool = False,
+        limit: int | None = None) -> ArchitectureResult:
+    """Execute the full pipeline. Returns only on success.
+
+    `require_ready` enforces the Analyst's `manifest.architect_ready` flag. It
+    defaults to False because no package sets it today (the release gate is not
+    built upstream), so demanding it would block every run. Turn it on once the
+    Analyst's sign-off state machine exists.
+    """
     client = client or AgentClient()
     out_dir = Path(out_dir)
     reg = SymbolRegistry()
     open_issues: list[str] = []
 
     # Step 1-2 — load and classify.
-    reqs = load_scorecard(scorecard)
+    reqs, manifest = load_package(scorecard)
     if not reqs:
-        raise GateFailure("scorecard contained no requirements")
+        raise GateFailure("package contained no requirements")
+    if manifest:
+        ready = manifest.get("architect_ready")
+        blockers = manifest.get("blockers") or []
+        if require_ready and not ready:
+            raise GateFailure("package is not architect_ready: " + "; ".join(blockers))
+        if not ready:
+            open_issues.append(
+                "Analyst package is not architect_ready ("
+                + (manifest.get("release_status") or "unknown") + "): "
+                + "; ".join(blockers[:3]))
+    if limit:
+        reqs = reqs[:limit]
     reqs = classify(reqs, client)
     for r in reqs:
         if r.confidence is not None and r.confidence < 0.5:
@@ -64,16 +87,19 @@ def run(scorecard: str | Path | dict, out_dir: str | Path, *,
     # names that allocation later binds to, so it must run first.
     logical_out = logical(reqs, reg, client)
     functions_out = decompose(reqs, reg, client)
+    interfaces_out = interfaces(reqs, reg, client)
+    behavior_out = behavior(reqs, reg, client)
     constraints_out = constraints(reqs, reg, client)
     allocs_out = allocations(reqs, reg, client)
     verify_out = verification(reqs, reg, client)
-    for stage in (constraints_out, allocs_out):
+    for stage in (interfaces_out, behavior_out, constraints_out, allocs_out):
         open_issues += stage.unresolved
 
     # Step 4 — assemble.
     model = emit.emit_model(package_name, reg, logical=logical_out,
                             functions=functions_out, constraint_defs=constraints_out,
-                            allocs=allocs_out)
+                            allocs=allocs_out, interfaces_out=interfaces_out,
+                            behavior_out=behavior_out)
 
     # Step 5 — validate (blocking).
     result = sysml.validate(model)
@@ -93,6 +119,13 @@ def run(scorecard: str | Path | dict, out_dir: str | Path, *,
     render = sysml.validate(model, render_png=png_path)
     if render.render_error:
         open_issues.append(f"diagram render failed: {render.render_error}")
+
+    # Semantic review: the validator proved the model resolves, not that it means
+    # the right thing. Judge first; anything wrong or undecided goes to a human.
+    verdicts = judge_mod.review(reqs, constraints_out=constraints_out,
+                                allocs_out=allocs_out, behavior_out=behavior_out,
+                                client=client)
+    open_issues += judge_mod.escalations(verdicts)
 
     review = None
     if review_diagrams and png_path.exists():
@@ -114,8 +147,8 @@ def run(scorecard: str | Path | dict, out_dir: str | Path, *,
         "allocations.md": emit.allocations_md(allocs_out),
         "verification_plan.md": emit.verification_plan_md(verify_out),
         "traceability.md": emit.traceability_md(reg),
-        "interfaces.md": "# Interfaces\n\n_Interface modelling is not yet implemented._\n",
-        "behavior.md": "# Behavior\n\n_Behaviour modelling is not yet implemented._\n",
+        "interfaces.md": emit.interfaces_md(interfaces_out),
+        "behavior.md": emit.behavior_md(behavior_out),
     }
     artifacts["ADD.md"] = _add(package_name, reqs, reg, open_issues, artifacts)
 
@@ -124,7 +157,8 @@ def run(scorecard: str | Path | dict, out_dir: str | Path, *,
 
     return ArchitectureResult(package_dir=out_dir, model=model, registry=reg,
                               requirements=reqs, validation=result,
-                              open_issues=open_issues, diagram_review=review)
+                              open_issues=open_issues, diagram_review=review,
+                              judge_verdicts=verdicts)
 
 
 def _add(package: str, reqs: list[Requirement], reg: SymbolRegistry,
@@ -160,8 +194,10 @@ def _add(package: str, reqs: list[Requirement], reg: SymbolRegistry,
               artifacts["functional_decomposition.md"].split("\n", 2)[2].strip() or "_None._",
               "", "## 4. Logical Architecture", "",
               artifacts["logical_architecture.md"].split("\n", 2)[2].strip() or "_None._",
-              "", "## 5. Interfaces", "", "_Not yet implemented._",
-              "", "## 6. Behavior", "", "_Not yet implemented._",
+              "", "## 5. Interfaces", "",
+              artifacts["interfaces.md"].split("\n", 2)[2].strip() or "_None._",
+              "", "## 6. Behavior", "",
+              artifacts["behavior.md"].split("\n", 2)[2].strip() or "_None._",
               "", "## 7. Constraints", "",
               artifacts["constraints.md"].split("\n", 2)[2].strip() or "_None._",
               "", "## 8. Allocation", "",
@@ -176,8 +212,9 @@ def _add(package: str, reqs: list[Requirement], reg: SymbolRegistry,
     else:
         lines.append("_No open issues recorded._")
     lines += ["", "### Known limitations of this generator", "",
-              "- Interface and behaviour modelling are not implemented; those "
-              "sections are empty regardless of the requirements.",
+              "- Semantic review is performed by a judge agent; anything it marks "
+              "wrong or cannot decide is listed above for human sign-off. An empty "
+              "list means the judge approved, not that a human did.",
               "- Diagram review, where present, is advisory: it does not gate the build.",
               "- Element names are assigned by the symbol registry, not by the model, "
               "so they are stable across regeneration.", ""]
@@ -198,8 +235,13 @@ def main() -> int:
     except GateFailure as e:
         print(f"FAILED: {e}")
         return 1
+    from . import judge as _j
+    counts = _j.summary(res.judge_verdicts)
     print(f"wrote {res.package_dir} — {len(res.registry)} elements, "
           f"{len(res.requirements)} requirements, {len(res.open_issues)} open issues")
+    print(f"judge: {counts['ok']} ok, {counts['wrong']} wrong, "
+          f"{counts['uncertain']} uncertain"
+          + (" -> HUMAN REVIEW REQUIRED" if counts['wrong'] or counts['uncertain'] else ""))
     return 0
 
 

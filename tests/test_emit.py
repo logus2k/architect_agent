@@ -90,3 +90,22 @@ def test_write_package_creates_canonical_tree(tmp_path):
     assert (root / "model.sysml").exists()
     assert (root / "artifacts" / "ADD.md").exists()
     assert (root / "diagrams" / "x.png").exists()
+
+
+@needs_toolchain
+def test_no_duplicate_declarations_when_two_requirements_share_an_element():
+    """Regression: the registry converges two requirements onto one symbol, but
+    each still contributes a record. Emitting per-record declared
+    `action def EnforcePerUserGPUQuota;` twice in a real run."""
+    reg, logical, functions, cons, allocs = _fixture()
+    # Same element, second requirement — exactly what convergence produces.
+    functions.records.append({"req_id": "R9", "name": functions.records[0]["name"],
+                              "description": "same function, other requirement",
+                              "parent": None})
+    logical.records.append(dict(logical.records[0], req_id="R9"))
+    model = emit.emit_model("Demo", reg, logical=logical, functions=functions,
+                            constraint_defs=cons, allocs=allocs)
+    decls = [l.strip() for l in model.splitlines()
+             if l.strip().startswith(("action def", "part def", "part ", "constraint def"))]
+    assert len(decls) == len(set(decls)), f"duplicate declarations: {decls}"
+    assert sysml.validate(model).valid
