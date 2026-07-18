@@ -265,17 +265,31 @@ def verification_plan_md(stage: StageOutput) -> str:
             + _table(["Requirement", "Method", "Success criterion", "Elements"], rows))
 
 
-def traceability_md(reg: SymbolRegistry) -> str:
-    """Requirement → element coverage. The reason `req_ids` accumulate on symbols."""
+def traceability_md(reg: SymbolRegistry, reqs: list | None = None) -> str:
+    """Requirement → element coverage. The reason `req_ids` accumulate on symbols.
+
+    Refined requirements are flagged: when the Analyst's refinement loop rewrites a
+    requirement, the architecture is derived from the rewritten text, so anyone
+    tracing an element back to the source document will find different wording
+    there. Recording it here keeps that discoverable instead of surprising.
+    """
+    by_status = {r.req_id: r for r in (reqs or [])}
     by_req: dict[str, list[str]] = {}
     for name in reg.names():
         sym = reg.get(name)
         for rid in sym.req_ids:
             by_req.setdefault(rid, []).append(f"{sym.kind.value} {sym.name}")
-    rows = [[rid, str(len(elems)), ", ".join(sorted(elems))]
-            for rid, elems in sorted(by_req.items())]
+    rows = []
+    for rid, elems in sorted(by_req.items()):
+        req = by_status.get(rid)
+        source = "original"
+        if req is not None and req.text_changed:
+            source = "**refined** — source document wording differs"
+        rows.append([rid, req.status if req is not None else "—", source,
+                     str(len(elems)), ", ".join(sorted(elems))])
     return ("# Traceability\n\n"
-            + _table(["Requirement", "Elements", "Architecture elements"], rows))
+            + _table(["Requirement", "Status", "Text", "Elements",
+                      "Architecture elements"], rows))
 
 
 def write_package(root: str | Path, *, model: str, artifacts: dict[str, str],

@@ -10,10 +10,11 @@ published — a failed gate raises and writes no package.
 from __future__ import annotations
 
 import json
+import os
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from . import emit, sysml
+from . import emit, handover, sysml
 from .client import AgentClient
 from . import judge as judge_mod
 from .generate import (Requirement, StageOutput, allocations, behavior, classify,
@@ -43,7 +44,18 @@ class ArchitectureResult:
     judge_verdicts: list = field(default_factory=list)
 
 
-def run(scorecard: str | Path | dict, out_dir: str | Path, *,
+#: Where architecture packages are published. A bind-mounted directory, so the
+#: Planner can read a package without the Architect exposing a service. Keyed by
+#: the Analyst project id, which is also the Planner's project key.
+PUBLISH_ROOT = Path(os.environ.get("ARCHITECT_DATA_DIR", "data")) / "architecture"
+
+
+def publish_path(project_id: str) -> Path:
+    """Stable location for a project's architecture package."""
+    return PUBLISH_ROOT / project_id
+
+
+def run(scorecard: str | Path | dict, out_dir: str | Path | None = None, *,
         package_name: str = "Architecture",
         client: AgentClient | None = None,
         review_diagrams: bool = False,
@@ -57,7 +69,6 @@ def run(scorecard: str | Path | dict, out_dir: str | Path, *,
     Analyst's sign-off state machine exists.
     """
     client = client or AgentClient()
-    out_dir = Path(out_dir)
     reg = SymbolRegistry()
     open_issues: list[str] = []
 
@@ -65,6 +76,10 @@ def run(scorecard: str | Path | dict, out_dir: str | Path, *,
     reqs, manifest = load_package(scorecard)
     if not reqs:
         raise GateFailure("package contained no requirements")
+    # Default to the published location keyed by project id, so consumers have a
+    # path they can predict rather than one that has to be communicated.
+    out_dir = Path(out_dir) if out_dir else publish_path(
+        manifest.get("project_id") or "unknown")
     if manifest:
         ready = manifest.get("architect_ready")
         blockers = manifest.get("blockers") or []
@@ -77,6 +92,23 @@ def run(scorecard: str | Path | dict, out_dir: str | Path, *,
                 + "; ".join(blockers[:3]))
     if limit:
         reqs = reqs[:limit]
+
+    # Requirements the Analyst has flagged for a human, or rewritten, are still
+    # modelled — but never silently. Consuming an unapproved or reworded
+    # requirement without saying so is how an architecture ends up traceable to
+    # text nobody signed off.
+    pending = [r.req_id for r in reqs if r.status == "needs_human"]
+    if pending:
+        open_issues.append(
+            f"{len(pending)} requirement(s) awaiting human approval were modelled "
+            f"anyway: {', '.join(pending[:8])}"
+            + (" ..." if len(pending) > 8 else ""))
+    refined = [r.req_id for r in reqs if r.text_changed]
+    if refined:
+        open_issues.append(
+            f"{len(refined)} requirement(s) were refined upstream; the architecture "
+            f"derives from the rewritten text, not the source document wording: "
+            + ", ".join(refined[:8]) + (" ..." if len(refined) > 8 else ""))
     reqs = classify(reqs, client)
     for r in reqs:
         if r.confidence is not None and r.confidence < 0.5:
@@ -146,7 +178,7 @@ def run(scorecard: str | Path | dict, out_dir: str | Path, *,
         "constraints.md": emit.constraints_md(constraints_out),
         "allocations.md": emit.allocations_md(allocs_out),
         "verification_plan.md": emit.verification_plan_md(verify_out),
-        "traceability.md": emit.traceability_md(reg),
+        "traceability.md": emit.traceability_md(reg, reqs),
         "interfaces.md": emit.interfaces_md(interfaces_out),
         "behavior.md": emit.behavior_md(behavior_out),
     }
@@ -154,6 +186,15 @@ def run(scorecard: str | Path | dict, out_dir: str | Path, *,
 
     emit.write_package(out_dir, model=model, artifacts=artifacts, diagrams=diagrams)
     reg.save(out_dir / "symbols.json")
+
+    # Requirement-keyed index for the Planner (sdk/how_to.md). Published alongside
+    # the model so the Planner never has to parse SysML.
+    handover_doc = handover.build(
+        reqs=reqs, reg=reg, manifest=manifest, logical_out=logical_out,
+        functions_out=functions_out, interfaces_out=interfaces_out,
+        constraints_out=constraints_out, allocs_out=allocs_out,
+        behavior_out=behavior_out, verdicts=verdicts)
+    handover.write(handover_doc, out_dir)
 
     return ArchitectureResult(package_dir=out_dir, model=model, registry=reg,
                               requirements=reqs, validation=result,
@@ -225,13 +266,16 @@ def main() -> int:
     import argparse
     ap = argparse.ArgumentParser(description="Generate an MBSE architecture package.")
     ap.add_argument("scorecard", help="reqqa scorecard JSON")
-    ap.add_argument("-o", "--out", default="architecture", help="output directory")
+    ap.add_argument("-o", "--out", default=None,
+                    help="output directory (default: data/architecture/<project_id>)")
     ap.add_argument("-p", "--package", default="Architecture", help="SysML package name")
     ap.add_argument("--review", action="store_true", help="advisory vision review")
+    ap.add_argument("--limit", type=int, default=None,
+                    help="model only the first N requirements")
     args = ap.parse_args()
     try:
         res = run(args.scorecard, args.out, package_name=args.package,
-                  review_diagrams=args.review)
+                  review_diagrams=args.review, limit=args.limit)
     except GateFailure as e:
         print(f"FAILED: {e}")
         return 1

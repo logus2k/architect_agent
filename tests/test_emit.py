@@ -109,3 +109,21 @@ def test_no_duplicate_declarations_when_two_requirements_share_an_element():
              if l.strip().startswith(("action def", "part def", "part ", "constraint def"))]
     assert len(decls) == len(set(decls)), f"duplicate declarations: {decls}"
     assert sysml.validate(model).valid
+
+
+def test_traceability_flags_refined_requirements():
+    """When the Analyst's refinement loop rewrites a requirement, the architecture
+    derives from the rewritten text. Anyone tracing an element back to the source
+    PDF finds different wording, so the table must say so."""
+    from architect_agent.generate import Requirement
+    reg, *_ = _fixture()
+    reqs = [
+        Requirement(req_id="R1", text="refined wording", status="accepted_refined",
+                    text_changed=True, original_text="original wording"),
+        Requirement(req_id="R2", text="untouched", status="unreviewed"),
+    ]
+    md = emit.traceability_md(reg, reqs)
+    assert "**refined** — source document wording differs" in md
+    assert "accepted_refined" in md
+    r2_row = next(l for l in md.splitlines() if l.startswith("| R2 "))
+    assert "original" in r2_row and "refined" not in r2_row

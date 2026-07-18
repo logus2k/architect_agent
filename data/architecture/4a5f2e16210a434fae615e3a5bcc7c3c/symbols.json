@@ -1,0 +1,517 @@
+{
+  "symbols": [
+    {
+      "name": "APIBasedDataExchangeWithGovernmentalDatabases",
+      "kind": "interface def",
+      "req_ids": [
+        "REQ-0018"
+      ],
+      "description": "Interface for exchanging data with external governmental databases via an API.",
+      "parent": null,
+      "intent_key": "api based data exchange with governmental database"
+    },
+    {
+      "name": "APIBasedDataExchangeWithGovernmentalDatabasesPort",
+      "kind": "port def",
+      "req_ids": [
+        "REQ-0018"
+      ],
+      "description": "",
+      "parent": null,
+      "intent_key": "api based data exchange with governmental database port"
+    },
+    {
+      "name": "AdministratorAccount",
+      "kind": "part def",
+      "req_ids": [
+        "REQ-0008"
+      ],
+      "description": "Manages the credentials and permissions for administrative users.",
+      "parent": null,
+      "intent_key": "administrator account"
+    },
+    {
+      "name": "BackupManager",
+      "kind": "part def",
+      "req_ids": [
+        "REQ-0025"
+      ],
+      "description": "Orchestrates the process of creating and maintaining system backups.",
+      "parent": null,
+      "intent_key": "backup manager"
+    },
+    {
+      "name": "ClassifyJobPosting",
+      "kind": "action def",
+      "req_ids": [
+        "REQ-0010"
+      ],
+      "description": "Assigns categories and classifications to a job posting.",
+      "parent": null,
+      "intent_key": "classify job posting"
+    },
+    {
+      "name": "CompanyProfile",
+      "kind": "part def",
+      "req_ids": [
+        "REQ-0005"
+      ],
+      "description": "Stores and manages the detailed information and profile of a registered employer.",
+      "parent": null,
+      "intent_key": "company profile"
+    },
+    {
+      "name": "CreateJobPosting",
+      "kind": "action def",
+      "req_ids": [
+        "REQ-0009"
+      ],
+      "description": "Allows users to create a new job posting.",
+      "parent": null,
+      "intent_key": "create job posting"
+    },
+    {
+      "name": "DataManagementService",
+      "kind": "part def",
+      "req_ids": [
+        "REQ-0025"
+      ],
+      "description": "Handles the storage, retrieval, and integrity of all system data.",
+      "parent": null,
+      "intent_key": "data management service"
+    },
+    {
+      "name": "DeleteUserAccount",
+      "kind": "action def",
+      "req_ids": [
+        "REQ-0006"
+      ],
+      "description": "Permanently removes a user account from the system.",
+      "parent": null,
+      "intent_key": "delete user account"
+    },
+    {
+      "name": "DisableUserAccount",
+      "kind": "action def",
+      "req_ids": [
+        "REQ-0006",
+        "REQ-0012"
+      ],
+      "description": "Deactivates a user account within the system.",
+      "parent": null,
+      "intent_key": "disable user account"
+    },
+    {
+      "name": "EmployerRegistration",
+      "kind": "part def",
+      "req_ids": [
+        "REQ-0005"
+      ],
+      "description": "Manages the process of new employer sign-up and initial data capture.",
+      "parent": null,
+      "intent_key": "employer registration"
+    },
+    {
+      "name": "EnableUserAccount",
+      "kind": "action def",
+      "req_ids": [
+        "REQ-0006",
+        "REQ-0012"
+      ],
+      "description": "Activates a user account within the system.",
+      "parent": null,
+      "intent_key": "enable user account"
+    },
+    {
+      "name": "JobDataSynchronizationInterface",
+      "kind": "interface def",
+      "req_ids": [
+        "REQ-0017"
+      ],
+      "description": "Allows real-time synchronization of job data with external job sites.",
+      "parent": null,
+      "intent_key": "job data synchronization interface"
+    },
+    {
+      "name": "JobDataSynchronizationInterfacePort",
+      "kind": "port def",
+      "req_ids": [
+        "REQ-0017"
+      ],
+      "description": "",
+      "parent": null,
+      "intent_key": "job data synchronization interface port"
+    },
+    {
+      "name": "JobPostingDataProvisionInterface",
+      "kind": "interface def",
+      "req_ids": [
+        "REQ-0013"
+      ],
+      "description": "Provides the necessary data about job postings for matching.",
+      "parent": null,
+      "intent_key": "job posting data provision interface"
+    },
+    {
+      "name": "JobPostingDataProvisionInterfacePort",
+      "kind": "port def",
+      "req_ids": [
+        "REQ-0013"
+      ],
+      "description": "",
+      "parent": null,
+      "intent_key": "job posting data provision interface port"
+    },
+    {
+      "name": "JobSeekerProfileDataProvisionInterface",
+      "kind": "interface def",
+      "req_ids": [
+        "REQ-0013"
+      ],
+      "description": "Provides the necessary data about job seekers for matching.",
+      "parent": null,
+      "intent_key": "job seeker profile data provision interface"
+    },
+    {
+      "name": "JobSeekerProfileDataProvisionInterfacePort",
+      "kind": "port def",
+      "req_ids": [
+        "REQ-0013"
+      ],
+      "description": "",
+      "parent": null,
+      "intent_key": "job seeker profile data provision interface port"
+    },
+    {
+      "name": "ManageCompanyProfile",
+      "kind": "action def",
+      "req_ids": [
+        "REQ-0005"
+      ],
+      "description": "Enables employers to view and update their company profile information.",
+      "parent": null,
+      "intent_key": "manage company profile"
+    },
+    {
+      "name": "ManageSystemConfiguration",
+      "kind": "action def",
+      "req_ids": [
+        "REQ-0024"
+      ],
+      "description": "Allows administrators to configure the overall settings of the system.",
+      "parent": null,
+      "intent_key": "manage system configuration"
+    },
+    {
+      "name": "MatchJobSeekersToPostings",
+      "kind": "action def",
+      "req_ids": [
+        "REQ-0013"
+      ],
+      "description": "Compares job seeker profiles against job posting requirements using vector-based matching.",
+      "parent": null,
+      "intent_key": "match job seeker to posting"
+    },
+    {
+      "name": "MatchingResultProvisionInterface",
+      "kind": "interface def",
+      "req_ids": [
+        "REQ-0013"
+      ],
+      "description": "Provides the output of the vector-based matching process.",
+      "parent": null,
+      "intent_key": "matching result provision interface"
+    },
+    {
+      "name": "MatchingResultProvisionInterfacePort",
+      "kind": "port def",
+      "req_ids": [
+        "REQ-0013"
+      ],
+      "description": "",
+      "parent": null,
+      "intent_key": "matching result provision interface port"
+    },
+    {
+      "name": "PublishJobPosting",
+      "kind": "action def",
+      "req_ids": [
+        "REQ-0009"
+      ],
+      "description": "Makes a created job posting visible to the public.",
+      "parent": null,
+      "intent_key": "publish job posting"
+    },
+    {
+      "name": "RecoverUserAccount",
+      "kind": "action def",
+      "req_ids": [
+        "REQ-0006"
+      ],
+      "description": "Restores a disabled or deleted user account.",
+      "parent": null,
+      "intent_key": "recover user account"
+    },
+    {
+      "name": "RegisterEmployer",
+      "kind": "action def",
+      "req_ids": [
+        "REQ-0005"
+      ],
+      "description": "Allows a new employer to register within the system.",
+      "parent": null,
+      "intent_key": "register employer"
+    },
+    {
+      "name": "SiteManagementAccount",
+      "kind": "part def",
+      "req_ids": [
+        "REQ-0008"
+      ],
+      "description": "Manages the credentials and permissions for site management users.",
+      "parent": null,
+      "intent_key": "site management account"
+    },
+    {
+      "name": "SynchronizeJobData",
+      "kind": "action def",
+      "req_ids": [
+        "REQ-0017",
+        "REQ-0025"
+      ],
+      "description": "Pulls or pushes job posting data to and from external job sites in real-time.",
+      "parent": null,
+      "intent_key": "synchronize job data"
+    },
+    {
+      "name": "SystemConfiguration",
+      "kind": "part def",
+      "req_ids": [
+        "REQ-0024"
+      ],
+      "description": "Manages the overall settings and customization options for the system.",
+      "parent": null,
+      "intent_key": "system configuration"
+    },
+    {
+      "name": "UserAccountLifecycle",
+      "kind": "state def",
+      "req_ids": [
+        "REQ-0006"
+      ],
+      "description": "part administratorAccount",
+      "parent": null,
+      "intent_key": "user account lifecycle"
+    },
+    {
+      "name": "WebApplicationAccessInterface",
+      "kind": "interface def",
+      "req_ids": [
+        "REQ-0030"
+      ],
+      "description": "Provides the interface for users to access the web-based application.",
+      "parent": null,
+      "intent_key": "web application access interface"
+    },
+    {
+      "name": "WebApplicationAccessInterfacePort",
+      "kind": "port def",
+      "req_ids": [
+        "REQ-0030"
+      ],
+      "description": "",
+      "parent": null,
+      "intent_key": "web application access interface port"
+    },
+    {
+      "name": "WebApplicationInterface",
+      "kind": "part def",
+      "req_ids": [
+        "REQ-0030"
+      ],
+      "description": "Provides the user interface accessible via standard web browsers.",
+      "parent": null,
+      "intent_key": "web application interface"
+    },
+    {
+      "name": "accessibility",
+      "kind": "attribute",
+      "req_ids": [
+        "REQ-0030"
+      ],
+      "description": "",
+      "parent": "WebApplicationInterface",
+      "intent_key": "accessibility"
+    },
+    {
+      "name": "administratorAccount",
+      "kind": "part",
+      "req_ids": [
+        "REQ-0008"
+      ],
+      "description": "",
+      "parent": null,
+      "intent_key": "administrator account"
+    },
+    {
+      "name": "backupManager",
+      "kind": "part",
+      "req_ids": [
+        "REQ-0025"
+      ],
+      "description": "",
+      "parent": null,
+      "intent_key": "backup manager"
+    },
+    {
+      "name": "companyName",
+      "kind": "attribute",
+      "req_ids": [
+        "REQ-0005"
+      ],
+      "description": "",
+      "parent": "CompanyProfile",
+      "intent_key": "company name"
+    },
+    {
+      "name": "companyProfile",
+      "kind": "part",
+      "req_ids": [
+        "REQ-0005"
+      ],
+      "description": "",
+      "parent": null,
+      "intent_key": "company profile"
+    },
+    {
+      "name": "configurationData",
+      "kind": "attribute",
+      "req_ids": [
+        "REQ-0024"
+      ],
+      "description": "",
+      "parent": "SystemConfiguration",
+      "intent_key": "configuration data"
+    },
+    {
+      "name": "contactDetails",
+      "kind": "attribute",
+      "req_ids": [
+        "REQ-0005"
+      ],
+      "description": "",
+      "parent": "CompanyProfile",
+      "intent_key": "contact detail"
+    },
+    {
+      "name": "dataManagementService",
+      "kind": "part",
+      "req_ids": [
+        "REQ-0025"
+      ],
+      "description": "",
+      "parent": null,
+      "intent_key": "data management service"
+    },
+    {
+      "name": "dataStore",
+      "kind": "attribute",
+      "req_ids": [
+        "REQ-0025"
+      ],
+      "description": "",
+      "parent": "DataManagementService",
+      "intent_key": "data store"
+    },
+    {
+      "name": "employerRegistration",
+      "kind": "part",
+      "req_ids": [
+        "REQ-0005"
+      ],
+      "description": "",
+      "parent": null,
+      "intent_key": "employer registration"
+    },
+    {
+      "name": "isActive",
+      "kind": "attribute",
+      "req_ids": [
+        "REQ-0008"
+      ],
+      "description": "",
+      "parent": "AdministratorAccount",
+      "intent_key": "is active"
+    },
+    {
+      "name": "passwordHash",
+      "kind": "attribute",
+      "req_ids": [
+        "REQ-0008"
+      ],
+      "description": "",
+      "parent": "AdministratorAccount",
+      "intent_key": "password hash"
+    },
+    {
+      "name": "registrationStatus",
+      "kind": "attribute",
+      "req_ids": [
+        "REQ-0005"
+      ],
+      "description": "",
+      "parent": "EmployerRegistration",
+      "intent_key": "registration statu"
+    },
+    {
+      "name": "retentionPolicy",
+      "kind": "attribute",
+      "req_ids": [
+        "REQ-0025"
+      ],
+      "description": "",
+      "parent": "BackupManager",
+      "intent_key": "retention policy"
+    },
+    {
+      "name": "siteManagementAccount",
+      "kind": "part",
+      "req_ids": [
+        "REQ-0008"
+      ],
+      "description": "",
+      "parent": null,
+      "intent_key": "site management account"
+    },
+    {
+      "name": "systemConfiguration",
+      "kind": "part",
+      "req_ids": [
+        "REQ-0024"
+      ],
+      "description": "",
+      "parent": null,
+      "intent_key": "system configuration"
+    },
+    {
+      "name": "username",
+      "kind": "attribute",
+      "req_ids": [
+        "REQ-0008"
+      ],
+      "description": "",
+      "parent": "AdministratorAccount",
+      "intent_key": "username"
+    },
+    {
+      "name": "webApplicationInterface",
+      "kind": "part",
+      "req_ids": [
+        "REQ-0030"
+      ],
+      "description": "",
+      "parent": null,
+      "intent_key": "web application interface"
+    }
+  ]
+}

@@ -1,0 +1,496 @@
+{
+  "contract_version": "1.0",
+  "source_package": {
+    "project_id": "4a5f2e16210a434fae615e3a5bcc7c3c",
+    "project_name": "AI-Driven Job Matching Platform",
+    "run_id": "5755e967b29042b98d850de0352afca9",
+    "architect_ready": false,
+    "release_status": "draft",
+    "requirements_received": 12,
+    "requirements_modelled": 12
+  },
+  "classification": {
+    "from_analyst": 0,
+    "from_architect_fallback": 12,
+    "unclassified": 0
+  },
+  "by_requirement": {
+    "REQ-0005": {
+      "classes": [
+        "functional",
+        "structural"
+      ],
+      "classified_by": "architect",
+      "components": [
+        {
+          "name": "EmployerRegistration",
+          "usage": "employerRegistration",
+          "responsibility": "Manages the process of new employer sign-up and initial data capture.",
+          "attributes": [
+            {
+              "name": "registrationStatus",
+              "type": "String"
+            }
+          ]
+        },
+        {
+          "name": "CompanyProfile",
+          "usage": "companyProfile",
+          "responsibility": "Stores and manages the detailed information and profile of a registered employer.",
+          "attributes": [
+            {
+              "name": "companyName",
+              "type": "String"
+            },
+            {
+              "name": "contactDetails",
+              "type": "String"
+            }
+          ]
+        }
+      ],
+      "functions": [
+        {
+          "name": "RegisterEmployer",
+          "description": "Allows a new employer to register within the system."
+        },
+        {
+          "name": "ManageCompanyProfile",
+          "description": "Enables employers to view and update their company profile information."
+        }
+      ]
+    },
+    "REQ-0006": {
+      "classes": [
+        "functional",
+        "behavioral"
+      ],
+      "classified_by": "architect",
+      "functions": [
+        {
+          "name": "EnableUserAccount",
+          "description": "Activates a user account within the system."
+        },
+        {
+          "name": "DisableUserAccount",
+          "description": "Deactivates a user account within the system."
+        },
+        {
+          "name": "DeleteUserAccount",
+          "description": "Permanently removes a user account from the system."
+        },
+        {
+          "name": "RecoverUserAccount",
+          "description": "Restores a disabled or deleted user account."
+        }
+      ],
+      "state_machines": [
+        {
+          "name": "UserAccountLifecycle",
+          "states": [
+            "Enabled",
+            "Disabled",
+            "Deleted",
+            "Recoverable"
+          ],
+          "transitions": [
+            {
+              "from": "Enabled",
+              "to": "Disabled",
+              "trigger": "disabling"
+            },
+            {
+              "from": "Disabled",
+              "to": "Enabled",
+              "trigger": "enabling"
+            },
+            {
+              "from": "Enabled",
+              "to": "Deleted",
+              "trigger": "deletion"
+            },
+            {
+              "from": "Disabled",
+              "to": "Recoverable",
+              "trigger": "recovery"
+            },
+            {
+              "from": "Recoverable",
+              "to": "Enabled",
+              "trigger": "recovery"
+            },
+            {
+              "from": "Recoverable",
+              "to": "Deleted",
+              "trigger": "deletion"
+            }
+          ]
+        }
+      ]
+    },
+    "REQ-0008": {
+      "classes": [
+        "structural"
+      ],
+      "classified_by": "architect",
+      "components": [
+        {
+          "name": "AdministratorAccount",
+          "usage": "administratorAccount",
+          "responsibility": "Manages the credentials and permissions for administrative users.",
+          "attributes": [
+            {
+              "name": "username",
+              "type": "String"
+            },
+            {
+              "name": "passwordHash",
+              "type": "String"
+            },
+            {
+              "name": "isActive",
+              "type": "Boolean"
+            }
+          ]
+        },
+        {
+          "name": "SiteManagementAccount",
+          "usage": "siteManagementAccount",
+          "responsibility": "Manages the credentials and permissions for site management users.",
+          "attributes": [
+            {
+              "name": "username",
+              "type": "String"
+            },
+            {
+              "name": "passwordHash",
+              "type": "String"
+            },
+            {
+              "name": "isActive",
+              "type": "Boolean"
+            }
+          ]
+        }
+      ]
+    },
+    "REQ-0009": {
+      "classes": [
+        "functional"
+      ],
+      "classified_by": "architect",
+      "functions": [
+        {
+          "name": "CreateJobPosting",
+          "description": "Allows users to create a new job posting."
+        },
+        {
+          "name": "PublishJobPosting",
+          "description": "Makes a created job posting visible to the public."
+        }
+      ]
+    },
+    "REQ-0010": {
+      "classes": [
+        "functional"
+      ],
+      "classified_by": "architect",
+      "functions": [
+        {
+          "name": "ClassifyJobPosting",
+          "description": "Assigns categories and classifications to a job posting."
+        }
+      ]
+    },
+    "REQ-0012": {
+      "classes": [
+        "functional"
+      ],
+      "classified_by": "architect",
+      "functions": [
+        {
+          "name": "DisableUserAccount",
+          "description": "Deactivates a user account within the system."
+        },
+        {
+          "name": "EnableUserAccount",
+          "description": "Activates a user account within the system."
+        }
+      ]
+    },
+    "REQ-0013": {
+      "classes": [
+        "functional",
+        "interface"
+      ],
+      "classified_by": "architect",
+      "functions": [
+        {
+          "name": "MatchJobSeekersToPostings",
+          "description": "Compares job seeker profiles against job posting requirements using vector-based matching."
+        }
+      ],
+      "interfaces": [
+        {
+          "name": "JobSeekerProfileDataProvisionInterface",
+          "supplier": "employerRegistration",
+          "consumer": "dataManagementService",
+          "description": "Provides the necessary data about job seekers for matching."
+        },
+        {
+          "name": "JobPostingDataProvisionInterface",
+          "supplier": "dataManagementService",
+          "consumer": "dataManagementService",
+          "description": "Provides the necessary data about job postings for matching."
+        },
+        {
+          "name": "MatchingResultProvisionInterface",
+          "supplier": "dataManagementService",
+          "consumer": "webApplicationInterface",
+          "description": "Provides the output of the vector-based matching process."
+        }
+      ]
+    },
+    "REQ-0017": {
+      "classes": [
+        "functional",
+        "interface"
+      ],
+      "classified_by": "architect",
+      "functions": [
+        {
+          "name": "SynchronizeJobData",
+          "description": "Pulls or pushes job posting data to and from external job sites in real-time."
+        }
+      ],
+      "interfaces": [
+        {
+          "name": "JobDataSynchronizationInterface",
+          "supplier": "dataManagementService",
+          "consumer": "webApplicationInterface",
+          "description": "Allows real-time synchronization of job data with external job sites."
+        }
+      ]
+    },
+    "REQ-0018": {
+      "classes": [
+        "interface"
+      ],
+      "classified_by": "architect",
+      "interfaces": [
+        {
+          "name": "APIBasedDataExchangeWithGovernmentalDatabases",
+          "supplier": "dataManagementService",
+          "consumer": null,
+          "description": "Interface for exchanging data with external governmental databases via an API."
+        }
+      ]
+    },
+    "REQ-0024": {
+      "classes": [
+        "functional",
+        "structural"
+      ],
+      "classified_by": "architect",
+      "components": [
+        {
+          "name": "SystemConfiguration",
+          "usage": "systemConfiguration",
+          "responsibility": "Manages the overall settings and customization options for the system.",
+          "attributes": [
+            {
+              "name": "configurationData",
+              "type": "String"
+            }
+          ]
+        }
+      ],
+      "functions": [
+        {
+          "name": "ManageSystemConfiguration",
+          "description": "Allows administrators to configure the overall settings of the system."
+        }
+      ]
+    },
+    "REQ-0025": {
+      "classes": [
+        "functional",
+        "structural"
+      ],
+      "classified_by": "architect",
+      "components": [
+        {
+          "name": "DataManagementService",
+          "usage": "dataManagementService",
+          "responsibility": "Handles the storage, retrieval, and integrity of all system data.",
+          "attributes": [
+            {
+              "name": "dataStore",
+              "type": "String"
+            }
+          ]
+        },
+        {
+          "name": "BackupManager",
+          "usage": "backupManager",
+          "responsibility": "Orchestrates the process of creating and maintaining system backups.",
+          "attributes": [
+            {
+              "name": "retentionPolicy",
+              "type": "String"
+            }
+          ]
+        }
+      ],
+      "functions": [
+        {
+          "name": "SynchronizeJobData",
+          "description": "Pulls or pushes job posting data to and from external job sites in real-time."
+        }
+      ]
+    },
+    "REQ-0030": {
+      "classes": [
+        "structural",
+        "interface"
+      ],
+      "classified_by": "architect",
+      "components": [
+        {
+          "name": "WebApplicationInterface",
+          "usage": "webApplicationInterface",
+          "responsibility": "Provides the user interface accessible via standard web browsers.",
+          "attributes": [
+            {
+              "name": "accessibility",
+              "type": "Boolean"
+            }
+          ]
+        }
+      ],
+      "interfaces": [
+        {
+          "name": "WebApplicationAccessInterface",
+          "supplier": "webApplicationInterface",
+          "consumer": "webApplicationInterface",
+          "description": "Provides the interface for users to access the web-based application."
+        }
+      ]
+    }
+  },
+  "components": [
+    {
+      "name": "AdministratorAccount",
+      "usage": "administratorAccount",
+      "suggested_module": "administrator_account",
+      "responsibility": "Manages the credentials and permissions for administrative users.",
+      "req_ids": [
+        "REQ-0008"
+      ]
+    },
+    {
+      "name": "BackupManager",
+      "usage": "backupManager",
+      "suggested_module": "backup_manager",
+      "responsibility": "Orchestrates the process of creating and maintaining system backups.",
+      "req_ids": [
+        "REQ-0025"
+      ]
+    },
+    {
+      "name": "CompanyProfile",
+      "usage": "companyProfile",
+      "suggested_module": "company_profile",
+      "responsibility": "Stores and manages the detailed information and profile of a registered employer.",
+      "req_ids": [
+        "REQ-0005"
+      ]
+    },
+    {
+      "name": "DataManagementService",
+      "usage": "dataManagementService",
+      "suggested_module": "data_management_service",
+      "responsibility": "Handles the storage, retrieval, and integrity of all system data.",
+      "req_ids": [
+        "REQ-0025"
+      ]
+    },
+    {
+      "name": "EmployerRegistration",
+      "usage": "employerRegistration",
+      "suggested_module": "employer_registration",
+      "responsibility": "Manages the process of new employer sign-up and initial data capture.",
+      "req_ids": [
+        "REQ-0005"
+      ]
+    },
+    {
+      "name": "SiteManagementAccount",
+      "usage": "siteManagementAccount",
+      "suggested_module": "site_management_account",
+      "responsibility": "Manages the credentials and permissions for site management users.",
+      "req_ids": [
+        "REQ-0008"
+      ]
+    },
+    {
+      "name": "SystemConfiguration",
+      "usage": "systemConfiguration",
+      "suggested_module": "system_configuration",
+      "responsibility": "Manages the overall settings and customization options for the system.",
+      "req_ids": [
+        "REQ-0024"
+      ]
+    },
+    {
+      "name": "WebApplicationInterface",
+      "usage": "webApplicationInterface",
+      "suggested_module": "web_application_interface",
+      "responsibility": "Provides the user interface accessible via standard web browsers.",
+      "req_ids": [
+        "REQ-0030"
+      ]
+    }
+  ],
+  "depends_on": [
+    {
+      "from": "dataManagementService",
+      "to": "employerRegistration",
+      "via": "JobSeekerProfileDataProvisionInterface"
+    },
+    {
+      "from": "webApplicationInterface",
+      "to": "dataManagementService",
+      "via": "MatchingResultProvisionInterface"
+    }
+  ],
+  "open_issues": [
+    {
+      "kind": "unresolved_interface",
+      "req_id": "REQ-0013",
+      "detail": "The specific component responsible for executing the vector-based matching logic is not explicitly named, though it seems to be handled by part dataManagementService."
+    },
+    {
+      "kind": "unresolved_interface",
+      "req_id": "REQ-0017",
+      "detail": "{'intent': 'External Job Site Interface', 'description': 'The interface to communicate with external job sites for data synchronization.', 'supplier': 'unresolved', 'consumer': 'part dataManagementService'}"
+    },
+    {
+      "kind": "unresolved_interface",
+      "req_id": "REQ-0018",
+      "detail": "new_elements"
+    },
+    {
+      "kind": "unresolved_interface",
+      "req_id": "REQ-0018",
+      "detail": "interface APIBasedDataExchangeWithGovernmentalDatabases names unknown consumer 'new_elements'"
+    },
+    {
+      "kind": "semantic_defect",
+      "req_id": "REQ-0006",
+      "element": "UserAccountLifecycle",
+      "detail": "The state machine implies that a Disabled account can transition to Enabled, but the requirement only lists enabling, disabling, deletion, and recovery, without specifying the exact allowed transitions.",
+      "suggested_fix": "Review the required state transitions for Disabled and Recoverable states against the business logic for account lifecycle management."
+    }
+  ]
+}

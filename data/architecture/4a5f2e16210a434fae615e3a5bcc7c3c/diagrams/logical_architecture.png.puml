@@ -1,0 +1,216 @@
+@startuml
+!pragma layout smetana
+skin sysmlbw
+skinparam monochrome true
+skinparam wrapWidth 300
+hide circle
+
+package "Architecture" as E1   {
+rec def "RegisterEmployer" as E2  <<(T,blue) action  def>> {
+}
+
+rec def "ManageCompanyProfile" as E3  <<(T,blue) action  def>> {
+}
+
+rec def "EnableUserAccount" as E4  <<(T,blue) action  def>> {
+}
+
+rec def "DisableUserAccount" as E5  <<(T,blue) action  def>> {
+}
+
+rec def "DeleteUserAccount" as E6  <<(T,blue) action  def>> {
+}
+
+rec def "RecoverUserAccount" as E7  <<(T,blue) action  def>> {
+}
+
+rec def "CreateJobPosting" as E8  <<(T,blue) action  def>> {
+}
+
+rec def "PublishJobPosting" as E9  <<(T,blue) action  def>> {
+}
+
+rec def "ClassifyJobPosting" as E10  <<(T,blue) action  def>> {
+}
+
+rec def "MatchJobSeekersToPostings" as E11  <<(T,blue) action  def>> {
+}
+
+rec def "SynchronizeJobData" as E12  <<(T,blue) action  def>> {
+}
+
+rec def "ManageSystemConfiguration" as E13  <<(T,blue) action  def>> {
+}
+
+comp def "EmployerRegistration" as E14  <<(T,blue) part  def>> {
+##//attributes//##
+registrationStatus: String
+}
+comp def "CompanyProfile" as E15  <<(T,blue) part  def>> {
+##//attributes//##
+companyName: String
+contactDetails: String
+}
+comp def "AdministratorAccount" as E16  <<(T,blue) part  def>> {
+##//attributes//##
+isActive: Boolean
+passwordHash: String
+username: String
+}
+comp def "SiteManagementAccount" as E17  <<(T,blue) part  def>> {
+##//attributes//##
+isActive: Boolean
+passwordHash: String
+username: String
+}
+comp def "SystemConfiguration" as E18  <<(T,blue) part  def>> {
+##//attributes//##
+configurationData: String
+}
+comp def "DataManagementService" as E19  <<(T,blue) part  def>> {
+##//attributes//##
+dataStore: String
+}
+comp def "BackupManager" as E20  <<(T,blue) part  def>> {
+##//attributes//##
+retentionPolicy: String
+}
+comp def "WebApplicationInterface" as E21  <<(T,blue) part  def>> {
+##//attributes//##
+accessibility: Boolean
+}
+comp usage "employerRegistration: EmployerRegistration  " as E22  <<(T,blue) part>> {
+}
+comp usage "companyProfile: CompanyProfile  " as E23  <<(T,blue) part>> {
+}
+comp usage "administratorAccount: AdministratorAccount  " as E24  <<(T,blue) part>> {
+}
+comp usage "siteManagementAccount: SiteManagementAccount  " as E25  <<(T,blue) part>> {
+}
+comp usage "systemConfiguration: SystemConfiguration  " as E26  <<(T,blue) part>> {
+}
+comp usage "dataManagementService: DataManagementService  " as E27  <<(T,blue) part>> {
+}
+comp usage "backupManager: BackupManager  " as E28  <<(T,blue) part>> {
+}
+comp usage "webApplicationInterface: WebApplicationInterface  " as E29  <<(T,blue) part>> {
+}
+comp def "JobSeekerProfileDataProvisionInterfacePort" as E30  <<(T,blue) port  def>> {
+##//attributes//##
+behavior_data: String
+education_data: String
+skill_data: String
+}
+comp def "JobSeekerProfileDataProvisionInterface" as E31  <<(T,blue) interface  def>> {
+}
+comp usage "supplier: JobSeekerProfileDataProvisionInterfacePort  " as E32  <<(T,blue) port>> {
+}
+comp usage "consumer: JobSeekerProfileDataProvisionInterfacePort  " as E33  <<(T,blue) port>> {
+}
+comp def "JobPostingDataProvisionInterfacePort" as E34  <<(T,blue) port  def>> {
+##//attributes//##
+behavior_data: String
+education_data: String
+skill_data: String
+}
+comp def "JobPostingDataProvisionInterface" as E35  <<(T,blue) interface  def>> {
+}
+comp usage "supplier: JobPostingDataProvisionInterfacePort  " as E36  <<(T,blue) port>> {
+}
+comp usage "consumer: JobPostingDataProvisionInterfacePort  " as E37  <<(T,blue) port>> {
+}
+comp def "MatchingResultProvisionInterfacePort" as E38  <<(T,blue) port  def>> {
+##//attributes//##
+match_score: Real
+}
+comp def "MatchingResultProvisionInterface" as E39  <<(T,blue) interface  def>> {
+}
+comp usage "supplier: MatchingResultProvisionInterfacePort  " as E40  <<(T,blue) port>> {
+}
+comp usage "consumer: MatchingResultProvisionInterfacePort  " as E41  <<(T,blue) port>> {
+}
+comp def "JobDataSynchronizationInterfacePort" as E42  <<(T,blue) port  def>> {
+##//attributes//##
+Job_Data: String
+}
+comp def "JobDataSynchronizationInterface" as E43  <<(T,blue) interface  def>> {
+}
+comp usage "supplier: JobDataSynchronizationInterfacePort  " as E44  <<(T,blue) port>> {
+}
+comp usage "consumer: JobDataSynchronizationInterfacePort  " as E45  <<(T,blue) port>> {
+}
+comp def "APIBasedDataExchangeWithGovernmentalDatabasesPort" as E46  <<(T,blue) port  def>> {
+##//attributes//##
+API_endpoint_details: String
+}
+comp def "APIBasedDataExchangeWithGovernmentalDatabases" as E47  <<(T,blue) interface  def>> {
+}
+comp usage "supplier: APIBasedDataExchangeWithGovernmentalDatabasesPort  " as E48  <<(T,blue) port>> {
+}
+comp usage "consumer: APIBasedDataExchangeWithGovernmentalDatabasesPort  " as E49  <<(T,blue) port>> {
+}
+comp def "WebApplicationAccessInterfacePort" as E50  <<(T,blue) port  def>> {
+##//attributes//##
+Accessibility: Boolean
+}
+comp def "WebApplicationAccessInterface" as E51  <<(T,blue) interface  def>> {
+}
+comp usage "supplier: WebApplicationAccessInterfacePort  " as E52  <<(T,blue) port>> {
+}
+comp usage "consumer: WebApplicationAccessInterfacePort  " as E53  <<(T,blue) port>> {
+}
+rec def "UserAccountLifecycle" as E54  <<(T,blue) state  def>> {
+rec usage "Enabled" as E55  <<(T,blue) state>> {
+}
+
+rec usage "Disabled" as E56  <<(T,blue) state>> {
+}
+
+rec usage "Deleted" as E57  <<(T,blue) state>> {
+}
+
+rec usage "Recoverable" as E58  <<(T,blue) state>> {
+}
+
+}
+
+}
+E22 --:|> E14 
+E23 --:|> E15 
+E24 --:|> E16 
+E25 --:|> E17 
+E26 --:|> E18 
+E27 --:|> E19 
+E28 --:|> E20 
+E29 --:|> E21 
+E31 o-- E32 
+E32 --:|> E30 
+E31 o-- E33 
+E33 --:|> E30 
+E35 o-- E36 
+E36 --:|> E34 
+E35 o-- E37 
+E37 --:|> E34 
+E39 o-- E40 
+E40 --:|> E38 
+E39 o-- E41 
+E41 --:|> E38 
+E43 o-- E44 
+E44 --:|> E42 
+E43 o-- E45 
+E45 --:|> E42 
+E47 o-- E48 
+E48 --:|> E46 
+E47 o-- E49 
+E49 --:|> E46 
+E51 o-- E52 
+E52 --:|> E50 
+E51 o-- E53 
+E53 --:|> E50 
+E55  --> E56 
+E56  --> E55 
+E55  --> E57 
+E56  --> E58 
+E58  --> E55 
+E58  --> E57 
+@enduml

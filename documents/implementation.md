@@ -73,10 +73,22 @@ is used when present and degrades cleanly when absent:
 2. **`architect_ready` is `false` on every package today** — the Analyst's release gate is
    not built. Enforcing it would block every run, so `require_ready` defaults to False and
    the blockers are recorded as open issues instead.
-3. **Half the requirements bound nothing measurable.** 191 of 386 score C7 < 3. Generating
-   a constraint expression from such text invents a bound the stakeholder never gave, which
-   is worse than no constraint because it looks authoritative. Those requirements are
-   recorded as unquantified and skipped by the constraint stage.
+3. **Half the requirements bound nothing measurable** — 191 of 386 score C7 < 3.
+
+   **This is an Analyst-side issue, not an Architect responsibility.** Requirement quality
+   is fixed upstream by refinement and human sign-off; a package that is genuinely
+   `architect_ready` should not contain unverifiable requirements at all. The Architect
+   does not, and should not, repair requirements.
+
+   What the Architect does is refuse to paper over the gap: generating a constraint
+   expression from text with no number invents a bound the stakeholder never gave, and an
+   invented bound is worse than an absent one because it looks authoritative. So such
+   requirements are skipped by the constraint stage and recorded as unquantified, with
+   the C7 score attached.
+
+   *This guard is defensive, not architectural.* It exists because every package today is
+   `draft`. Once the Analyst's release gate lands it should become a no-op — and if it
+   ever fires on an `architect_ready` package, that is a defect upstream, not here.
 
 #### 2.1.1 Requirement Classification
 **Superseded in part.** An earlier draft of this section stated the Analyst supplies no

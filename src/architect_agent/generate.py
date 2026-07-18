@@ -58,6 +58,18 @@ class Requirement:
     #: INCOSE mean score (1-5) and per-characteristic scores, when supplied.
     score: float | None = None
     characteristic_scores: dict = field(default_factory=dict)
+    #: Where `classes` came from: "analyst" when the package supplied them,
+    #: "architect" when our fallback classifier had to fill the gap. Downstream
+    #: consumers need this to know how much the labels are worth.
+    classified_by: str = "none"
+    #: Analyst review state: unreviewed | accepted_refined | needs_human | skipped.
+    status: str = "unreviewed"
+    #: True when the Analyst's refinement loop rewrote the requirement. The
+    #: architecture is then derived from the rewritten text, NOT the stakeholder's
+    #: original words — which matters when tracing an element back to the source
+    #: document, where the wording will differ.
+    text_changed: bool = False
+    original_text: str = ""
 
     @property
     def is_verifiable(self) -> bool:
@@ -97,10 +109,15 @@ def load_package(path_or_dict) -> tuple[list[Requirement], dict]:
             continue
         req = Requirement.from_scorecard_entry(entry)
         req.classes = [c for c in (entry.get("classes") or []) if c in CLASSES]
+        if req.classes:
+            req.classified_by = "analyst"
         req.constraint_tags = list(entry.get("constraints") or [])
         analysis = entry.get("analysis") or {}
         req.score = analysis.get("score")
         req.characteristic_scores = analysis.get("characteristic_scores") or {}
+        req.status = analysis.get("status") or "unreviewed"
+        req.text_changed = bool(analysis.get("text_changed"))
+        req.original_text = analysis.get("original_text") or ""
         out.append(req)
     return out, manifest
 
@@ -129,6 +146,7 @@ def classify(reqs: list[Requirement], client: AgentClient,
                 f"{req.req_id} produced no valid class (got {data.get('classes')!r}). "
                 "Refusing to drop it silently.")
         req.classes = classes
+        req.classified_by = "architect"
         req.confidence = data.get("confidence")
         return req
 
@@ -299,11 +317,16 @@ def constraints(reqs: list[Requirement], reg: SymbolRegistry, client: AgentClien
         # C7 (Verifiable) below 3 means there is no number in the requirement.
         # Asking the model for a constraint expression here produces an invented
         # bound the stakeholder never stated — worse than no constraint, because it
-        # looks authoritative. Record it as unquantified instead.
+        # looks authoritative.
+        #
+        # Fixing the requirement is the Analyst's job (refinement + sign-off), not
+        # ours. This guard only refuses to fabricate; it does not repair. On a package
+        # that is genuinely architect_ready it should never fire.
         if not req.is_verifiable:
             out.unresolved.append(
-                f"{req.req_id}: bounds nothing measurable (C7="
-                f"{req.characteristic_scores.get('C7')}); no constraint modelled")
+                f"{req.req_id}: states no measurable bound (C7="
+                f"{req.characteristic_scores.get('C7')}) — upstream refinement needed; "
+                f"no constraint modelled")
             continue
         data = _ask(client, "architect_constraint", req, reg, [Kind.PART_DEF])
         out.unresolved += [f"{req.req_id}: {u}" for u in data.get("unquantified", [])]
