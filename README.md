@@ -1,8 +1,13 @@
 # Architect Agent
 
-Transforms INCOSE-validated requirements (from the Analyst Agent / reqqa) into an MBSE
+Transforms INCOSE-validated requirements from the Analyst Agent (`:7803`) into an MBSE
 architecture package: SysML v2 model, rendered diagrams, and MBSE artifacts for the
 Planner Agent.
+
+```bash
+curl -s http://localhost:7803/projects/<PID>/package -o package.json
+PYTHONPATH=src ./.venv/bin/python -m architect_agent.pipeline package.json -o architecture
+```
 
 Runs fully offline. Inference is local (`agent_server` + `llama-vision`); SysML v2
 validation and diagram rendering run from the OMG Pilot Implementation jar. No SysON,
@@ -46,10 +51,21 @@ symptom is well-formed JSON in a schema you never asked for.
 
 ## Status
 
-Working and tested end-to-end: classification → symbol minting → SysML generation →
-validation → rendering → advisory review, with zero symbol drift.
+All pipeline stages built and exercised against a real 386-requirement Analyst package
+(run on a 12-requirement subset; see below). 33 tests pass, including integration tests
+that drive the real SysML v2 jar.
 
-Not built yet: the per-stage generation engines (§2.2–2.8), artifact packaging, and
-the ADD writer. See `documents/implementation.md` §1.1 for how to read the
-prescriptions in the spec — statements are graded *verified*, *borrowed*, or
-*design choice*, and they are not interchangeable.
+Pipeline: load → classify (only if the package is unclassified) → generate
+(functional, logical, interface, behaviour, constraint, allocation, verification) →
+emit → **validate (blocking)** → render → judge → package.
+
+Two review layers, neither of which gates the build on an LLM's opinion:
+- **Semantic judge** — catches valid SysML that means the wrong thing (e.g. a constraint
+  asserting the failure condition). `wrong` *and* `uncertain` escalate to a human.
+- **Vision review** — advisory only, recorded in the ADD's Open Issues.
+
+Known limits: no full-scale run (386 requirements at `--parallel 1` takes hours);
+interface ends are recorded but not connected to specific parts in the model text;
+no `satisfy`/`verify` relationships yet. See `documents/implementation.md` §8 for the
+module-by-module status and §1.1 for how the spec's prescriptions are graded
+(*verified* / *borrowed* / *design choice* — not interchangeable).

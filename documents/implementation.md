@@ -25,65 +25,68 @@ exactly that mistake, and the corrections are noted where they occurred.
 ### 2.1 Requirement Interpreter Module
 **Purpose:** Convert INCOSE requirements into structured objects.
 
-**Input:** Analyst Agent output — the **reqqa scorecard**  
+**Input:** Analyst Agent **package** — `GET http://analyst-agent:7803/projects/{pid}/package`  
 **Output:** Internal requirement objects
 
-The Analyst side is `~/env/labs/requirements` (reqqa). Its terminal artifact is the
-`scorecard` emitted by `src/reqqa/jobs.py:211`. This is the real input contract, read
-from source rather than assumed:
+*Evidence grade: verified — fetched from the live service on 2026-07-18 and consumed
+by `generate.load_package()`.*
 
-```json
+The Analyst (`assets/analyst_agent`, see its `sdk/how_to.md`) supersedes the earlier
+reqqa scorecard contract. One call returns the whole handover:
+
+```jsonc
 {
-  "source_file": "...",
-  "documents": [{ "document_id": "...", "filename": "..." }],
-  "produced_in_s": 42,
-  "requirements": [
-    {
-      "req_id": "DOC-0007",
-      "text": "The system shall allocate GPUs fairly.",
-      "provenance": { "source_file": "...", "page": 3, "bbox": [...],
-                      "section_path": "3.2 Resource Management",
-                      "char_span": [1204, 1261] },
-      "lineage": { "origin": "extracted|derived|assembled",
-                   "was_compound": false, "derived_from": null,
-                   "duplicate_of": null },
-      "characteristics": { "c1_necessary": { "score": 4, "rules_triggered": [] }, "...": {} },
-      "deterministic_findings": [{ "rule_id": "R7", "...": "..." }],
-      "overall": 4.2,
-      "review": null
-    }
-  ],
-  "set_level": { "overlaps": [], "set_assessment": [] },
-  "aggregates": { "per_characteristic_mean": {}, "per_rule_violation_count": {},
-                  "score_distribution": {}, "total": 120 },
-  "characteristic_names": { "c1_necessary": "Necessary", "...": "..." }
+  "manifest":  { "architect_ready": false, "release_status": "draft",
+                 "blockers": [...], "counts": { "total": 386, "unclassified": 386 } },
+  "requirements": [ { "req_id": "REQ-0005", "text": "...",
+                      "classes": ["functional", "interface"],   // multi-label routing
+                      "type": "performance",                    // reporting only
+                      "constraints": ["latency"],               // closed vocabulary
+                      "analysis": { "score": 3.4,
+                                    "characteristic_scores": { "C7": 2, "...": 0 } },
+                      "lineage":    { "duplicate_of": null, "was_compound": true },
+                      "provenance": { "source_document": "...", "page": 9,
+                                      "bbox": [...], "section_path": "..." } } ],
+  "set_level": {}, "aggregates": {}, "coverage": {}, "problem_statement": {}
 }
 ```
 
-The nine INCOSE characteristic keys are `c1_necessary`, `c2_appropriate`,
-`c3_unambiguous`, `c4_complete`, `c5_singular`, `c6_feasible`, `c7_verifiable`,
-`c8_correct`, `c9_conforming` (`src/reqqa/score/characteristics.py:14-24`).
+**What the Architect actually consumes.** Required: `req_id` and `text`. Everything else
+is used when present and degrades cleanly when absent:
 
-**Three consequences for the Architect Agent:**
+| Field | Used for |
+|---|---|
+| `classes[]` | Routing to generation stages — **skips our own classifier when present** |
+| `analysis.characteristic_scores.C7` | Suppressing invented constraint bounds (below) |
+| `lineage.duplicate_of` | Defensive re-filter |
+| `provenance.source_file` | ADD source list |
+| `manifest.architect_ready` / `blockers` | Readiness gate, surfaced as an open issue |
 
-1. **The field is `req_id`, not `id`.** Trace links must use it verbatim so the
-   architecture stays traceable back to the source document.
-2. **There is no `type` field and no `constraints` field.** Earlier drafts of this
-   document assumed both; neither exists in the Analyst output. The Architect must
-   *classify* requirements (functional / performance / interface / constraint) itself
-   — that is an Architect responsibility, not inherited metadata. This is a real work
-   item, not a mapping detail.
-3. **Only gate‑accepted, non‑duplicate requirements arrive.** reqqa filters
-   `duplicate_of is None` and keeps only `ACCEPTED` dispositions (`jobs.py:308-320`).
-   The Architect does not re‑litigate requirement quality; it consumes a clean set.
+**Three findings from real packages that contradict the Analyst's own guarantees:**
 
-`provenance` and `lineage` should be carried through to the verification plan and the
-ADD traceability section (technical_architecture.md §8.8) rather than discarded.
+1. **`classes[]` is NOT always populated.** Its `how_to.md` §3 states the field "is never
+   empty (falls back to `["functional"]`)". Two of three live projects — 649 requirements
+   — carry `classes: []` throughout, because `classify:run` was never executed on them.
+   So classification is treated as *optional upstream input*: when present we use it and
+   skip our own classifier; when absent `architect_classifier` fills the gap. Neither
+   path is authoritative over the other.
+2. **`architect_ready` is `false` on every package today** — the Analyst's release gate is
+   not built. Enforcing it would block every run, so `require_ready` defaults to False and
+   the blockers are recorded as open issues instead.
+3. **Half the requirements bound nothing measurable.** 191 of 386 score C7 < 3. Generating
+   a constraint expression from such text invents a bound the stakeholder never gave, which
+   is worse than no constraint because it looks authoritative. Those requirements are
+   recorded as unquantified and skipped by the constraint stage.
 
 #### 2.1.1 Requirement Classification
-Because the Analyst supplies no `type`, the Interpreter must classify each requirement
-itself. Verified absent upstream: reqqa has no requirement type/kind/category field
-anywhere in `src/reqqa/`, and no classifier agent is registered on agent_server.
+**Superseded in part.** An earlier draft of this section stated the Analyst supplies no
+classification and the Architect must do it. That was true of the old reqqa scorecard and
+is no longer true: the Analyst emits `classes[]` using the *same six-class vocabulary*
+below, and its `classify:run` is the authoritative source when it has been run.
+
+The classifier is retained as a **fallback**, because a package whose `classify:run` was
+never executed arrives with `classes: []` — observed on 649 of 734 live requirements.
+`classify()` skips any requirement that already carries classes.
 
 **The taxonomy is defined by routing, not by theory.** A class exists only if it sends
 the requirement to a different downstream module and a different SysML v2 construct:
@@ -340,9 +343,12 @@ Validate first, then render.
 
 - **Model:** the generated `.sysml` must parse and resolve. *Evidence: tested, syntax
   and semantic errors both detected.*
-- **Regeneration bound: 3 attempts.** *Evidence: none for this pipeline — the number is
-  borrowed from the requirements lab's refine gate (`max_iters=3`). Not tuned here.
-  Treat as a placeholder.*
+- **Regeneration: not implemented, deliberately.** *Evidence: design choice, reasoned.*
+  The borrowed `max_iters=3` was never used. With element names owned by the registry
+  and emission fully deterministic, re-running the emitter on the same stage output
+  produces byte-identical text — a retry cannot fix a validation failure, only hide it.
+  A failure here is a defect in the emitter or an unusable model-proposed expression,
+  and both are handled at source (see `emit._constraint_body`). The gate fails the run.
 - The gate is pass/fail for the whole package. Partial output is not published.
   *Evidence: a design choice, not a measurement.*
 
@@ -479,7 +485,13 @@ llama-vision pair at comparable scale. What transfers:
   exists in that codebase; context limits are documented, not enforced.
 - **Map‑reduce with a Python reduce.** Aggregation is plain Python where it can be;
   the LLM reduce is reserved for genuinely judgemental synthesis.
-- **Parallelism `WORKERS = 8`** (`src/reqqa/jobs.py:48`).
+- **Parallelism — do NOT copy `WORKERS = 8`** (`src/reqqa/jobs.py:48`). *Evidence:
+  refuted by measurement.* llama-vision serves gemma-4 with `--parallel 1`, so eight
+  concurrent requests queue behind a single slot and time out rather than running
+  faster; the pipeline failed twice this way before the cause was found. The default
+  is now 2 (`ARCHITECT_WORKERS`), and the ceiling that matters is llama-vision's
+  `--parallel`, not ours. Note it was observed at `2` earlier the same day and `1`
+  later — read it live, do not assume.
 
 **What does NOT transfer — and this is the important part.** reqqa solves cross‑item
 consistency by moving the cross‑item work *out* of the LLM: duplicate detection is O(n)
@@ -559,7 +571,36 @@ from the prompts, it is not fixed up front.
 ### 7.3 Planner Agent
 - Receives full architecture package
 
-## 8. Completion Criteria
+## 8. Implementation Status
+
+*As built on 2026-07-18. This section exists because earlier revisions of this document
+described modules that did not exist, and later ones described as missing modules that
+did. Verified against the code and a passing test suite (33 tests).*
+
+| §   | Module | Status |
+|-----|--------|--------|
+| 2.1 | Requirement Interpreter | built — `generate.load_package` |
+| 2.1.1 | Classification (fallback) | built — `generate.classify` |
+| 2.2 | Functional Decomposition | built — `generate.decompose` |
+| 2.3 | Logical Architecture | built — `generate.logical` |
+| 2.4 | Interface Modeling | built — `generate.interfaces` |
+| 2.5 | Behavior Modeling | built — `generate.behavior` |
+| 2.6 | Constraint Modeling | built — `generate.constraints` (skips C7 < 3) |
+| 2.7 | Allocation | built — `generate.allocations`, LLM + deterministic fallback |
+| 2.8 | SysML v2 Text Generator | built — `emit.emit_model` |
+| 2.9 | Diagram Renderer | built — `sysml.validate(render_png=...)` |
+| 2.10 | Artifact Packager | built — `emit.write_package` |
+| — | Semantic judge | built — `judge.review`, escalates to human |
+| — | Vision review | built — `vision_review`, advisory only |
+
+**Not built:** interface `end` connection to specific parts (ends are recorded in
+`interfaces.md` but both ends are declared against one port def); nested part
+containment; `satisfy`/`verify` requirement relationships in the model text.
+
+**Largest untested area:** everything is proven on ≤12 requirements. The biggest real
+package is 386, and no full-scale run has been made — at `--parallel 1` that is hours.
+
+## 9. Completion Criteria
 The Architect Agent is considered complete when:
 - All MBSE artifacts are generated
 - SysML v2 model validates in SysON

@@ -235,12 +235,13 @@ def interfaces(reqs: list[Requirement], reg: SymbolRegistry, client: AgentClient
                                   "type": _scalar(a.get("type"))})
             ends = []
             for role in ("supplier", "consumer"):
-                name = iface.get(role)
-                if name in reg:
-                    ends.append({"role": role, "element": name})
-                elif name:
+                raw = iface.get(role)
+                resolved = _resolve(reg, raw, Kind.PART_USAGE, also=(Kind.PART_DEF,))
+                if resolved:
+                    ends.append({"role": role, "element": resolved})
+                elif raw:
                     out.unresolved.append(
-                        f"{req.req_id}: interface {sym.name} names unknown {role} {name!r}")
+                        f"{req.req_id}: interface {sym.name} names unknown {role} {raw!r}")
             out.symbols += [port, sym]
             out.records.append({"req_id": req.req_id, "name": sym.name,
                                 "port": port.name, "attributes": attrs,
@@ -339,8 +340,10 @@ def allocations(reqs: list[Requirement], reg: SymbolRegistry, client: AgentClien
                     [Kind.ACTION_DEF, Kind.PART_USAGE])
         out.unresolved += [f"{req.req_id}: {u}" for u in data.get("unallocated", [])]
         for alloc in data.get("allocations", []):
-            fn = _resolve(reg, alloc.get("function"), Kind.ACTION_DEF)
-            comp = _resolve(reg, alloc.get("component"), Kind.PART_DEF)
+            fn = _resolve(reg, alloc.get("function"), Kind.ACTION_DEF,
+                          also=(Kind.ACTION_USAGE,))
+            comp = _resolve(reg, alloc.get("component"), Kind.PART_DEF,
+                            also=(Kind.PART_USAGE,))
             if fn and comp:
                 out.records.append({"req_id": req.req_id, "function": fn,
                                     "component": comp,
@@ -367,20 +370,33 @@ def allocations(reqs: list[Requirement], reg: SymbolRegistry, client: AgentClien
     return out
 
 
-def _resolve(reg: SymbolRegistry, proposed: str | None, kind: Kind) -> str | None:
+#: Models routinely echo the SysML keyword back with the name ("part
+#: dataManagementService", "action def AllocateGPU"). Observed on real data: every
+#: interface endpoint in a 12-requirement run came back prefixed, so none resolved.
+_KIND_PREFIX = __import__("re").compile(
+    r"^\s*(part|action|port|interface|state|constraint|attribute)(\s+def)?\s+", __import__("re").I)
+
+
+def _resolve(reg: SymbolRegistry, proposed: str | None,
+             kind: Kind, *, also: tuple[Kind, ...] = ()) -> str | None:
     """Map a model-proposed endpoint onto a registered name.
 
-    Accepts an exact name, or falls back to matching the normalised intent — the
-    model often paraphrases ("GPU cluster" for the registered "GPUCluster").
+    Accepts an exact name, strips a SysML keyword prefix, then falls back to
+    matching the normalised intent — the model often paraphrases ("GPU cluster"
+    for the registered "GPUCluster").
     """
     if not proposed:
         return None
-    if proposed in reg:
-        return proposed
-    key = reg._normalise_intent(proposed)
-    for name in reg.names(kind):
-        if reg.get(name).intent_key == key:
-            return name
+    candidate = _KIND_PREFIX.sub("", proposed).strip()
+    if not candidate:
+        return None
+    if candidate in reg:
+        return candidate
+    key = reg._normalise_intent(candidate)
+    for k in (kind, *also):
+        for name in reg.names(k):
+            if reg.get(name).intent_key == key:
+                return name
     return None
 
 

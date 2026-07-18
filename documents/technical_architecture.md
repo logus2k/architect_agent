@@ -4,9 +4,13 @@
 The Architect Agent transforms INCOSE‑compliant requirements (provided by the Analyst Agent) into a complete Model‑Based Systems Engineering (MBSE) architecture package using SysML v2. It produces textual SysML v2 models and rendered diagrams. Its output is consumed by the Planner Agent to generate executable specifications.
 
 ## 2. Inputs
-- INCOSE‑validated requirements document (structured JSON or Markdown)
-- Domain constraints (optional)
-- System context (optional)
+The Analyst Agent package, one HTTP call:
+`GET http://analyst-agent:7803/projects/{pid}/package`
+
+It carries the requirements, their routing classes, INCOSE quality scores, provenance,
+and a readiness manifest. See implementation.md §2.1 for the fields actually consumed
+and for three respects in which live packages differ from the Analyst's documented
+guarantees.
 
 ## 3. Outputs
 - SysML v2 textual model (`.sysml`)
@@ -47,8 +51,12 @@ The Architect Agent transforms INCOSE‑compliant requirements (provided by the 
 - **Artifact Packager**
 
 ### 5.2 Data Flow
-1. Analyst Agent → INCOSE requirements → Architect Agent
-2. Architect Agent → SysML v2 model + MBSE artifacts → Planner Agent
+1. Analyst Agent (`:7803`) → requirements package → Architect Agent
+2. Architect Agent → SysML v2 model + diagrams + MBSE artifacts → Planner Agent
+
+Classification is performed upstream by the Analyst using the same six-class
+vocabulary the Architect routes on (§8). The Architect classifies only when the
+package arrives unclassified.
 
 ## 6. SysML v2 Modeling Requirements
 ### 6.1 Structural Modeling
@@ -60,8 +68,11 @@ The Architect Agent transforms INCOSE‑compliant requirements (provided by the 
 - Model workflows, lifecycle, and operational behavior.
 
 ### 6.3 Constraint Modeling
-- Use `constraint`, `parametric`, `equation`.
+- Use `constraint def` with a boolean body. There is no `equation` keyword.
 - Capture performance, resource, safety constraints.
+- **Only where the requirement states a measurable bound.** A requirement scoring
+  C7 (Verifiable) below 3 states no number; generating an expression from it invents
+  a value the stakeholder never gave. Such requirements are recorded as unquantified.
 
 ### 6.4 Allocation Modeling
 - Use `allocate` relationships.

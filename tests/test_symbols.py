@@ -137,3 +137,16 @@ def test_pascal_and_phrase_forms_converge(a, b):
     r = SymbolRegistry()
     assert r.mint(a, Kind.ACTION_DEF).name == r.mint(b, Kind.ACTION_DEF).name
     assert len(r) == 1
+
+
+def test_resolver_strips_sysml_keyword_prefix():
+    """Regression: on real data the model returned every interface endpoint as
+    'part dataManagementService' rather than 'dataManagementService', so none
+    resolved and all interfaces lost both ends."""
+    from architect_agent.generate import _resolve
+    r = SymbolRegistry()
+    r.mint("data management service", Kind.PART_USAGE)
+    assert _resolve(r, "part dataManagementService", Kind.PART_USAGE) == "dataManagementService"
+    assert _resolve(r, "dataManagementService", Kind.PART_USAGE) == "dataManagementService"
+    assert _resolve(r, "data management service", Kind.PART_USAGE) == "dataManagementService"
+    assert _resolve(r, "part def NoSuchThing", Kind.PART_USAGE) is None
