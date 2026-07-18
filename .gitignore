@@ -1,0 +1,8 @@
+# Toolchain binaries and the SysML v2 standard library live in the data/ mount,
+# never in git: the kernel jar alone is ~127 MB. Fetch with scripts/fetch_toolchain.sh.
+data/sysml-toolchain/
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+build/

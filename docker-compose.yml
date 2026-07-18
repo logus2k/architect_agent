@@ -1,0 +1,25 @@
+services:
+  architect-agent:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        # Match the host user so bind-mounted output is not root-owned.
+        APP_UID: ${APP_UID:-1000}
+        APP_GID: ${APP_GID:-1000}
+    image: architect_agent:0.1
+    container_name: architect-agent
+    restart: unless-stopped
+    environment:
+      # agent_server owns prompts and profiles; llama-vision does inference.
+      AGENT_SERVER_URL: http://agent_server:7701
+      ARCHITECT_DATA_DIR: /app/data
+    volumes:
+      # Toolchain (jar + SysML standard library) and generated output persist here.
+      - ./data:/app/data
+    networks:
+      - logus2k_network
+
+networks:
+  logus2k_network:
+    external: true

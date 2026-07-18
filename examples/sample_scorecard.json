@@ -1,0 +1,22 @@
+{
+  "source_file": "gpu_platform_srs.md",
+  "documents": [{"document_id": "d1", "filename": "gpu_platform_srs.md"}],
+  "requirements": [
+    {"req_id": "GPU-0001", "text": "The system shall provide a GPU cluster composed of GPU nodes.",
+     "provenance": {"source_file": "gpu_platform_srs.md", "section_path": "3.1"},
+     "lineage": {"origin": "extracted", "duplicate_of": null}},
+    {"req_id": "GPU-0002", "text": "The system shall allocate GPUs to notebook sessions within 100 milliseconds.",
+     "provenance": {"source_file": "gpu_platform_srs.md", "section_path": "3.2"},
+     "lineage": {"origin": "extracted", "duplicate_of": null}},
+    {"req_id": "GPU-0003", "text": "The scheduler shall enforce a per-user GPU quota.",
+     "provenance": {"source_file": "gpu_platform_srs.md", "section_path": "3.3"},
+     "lineage": {"origin": "extracted", "duplicate_of": null}},
+    {"req_id": "GPU-0004", "text": "The system shall reject an allocation request that exceeds the user quota.",
+     "provenance": {"source_file": "gpu_platform_srs.md", "section_path": "3.4"},
+     "lineage": {"origin": "extracted", "duplicate_of": null}},
+    {"req_id": "GPU-0099", "text": "Duplicate of the quota requirement.",
+     "provenance": {}, "lineage": {"origin": "extracted", "duplicate_of": "GPU-0003"}}
+  ],
+  "set_level": {"overlaps": [], "set_assessment": []},
+  "aggregates": {"total": 4}
+}

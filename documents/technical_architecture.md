@@ -1,7 +1,7 @@
 # Architect Agent Technical Architecture
 
 ## 1. Purpose
-The Architect Agent transforms INCOSE‑compliant requirements (provided by the Analyst Agent) into a complete Model‑Based Systems Engineering (MBSE) architecture package using SysML v2. It produces both textual SysML v2 models and diagram‑layout hints compatible with SysON. Its output is consumed by the Planner Agent to generate executable specifications.
+The Architect Agent transforms INCOSE‑compliant requirements (provided by the Analyst Agent) into a complete Model‑Based Systems Engineering (MBSE) architecture package using SysML v2. It produces textual SysML v2 models and rendered diagrams. Its output is consumed by the Planner Agent to generate executable specifications.
 
 ## 2. Inputs
 - INCOSE‑validated requirements document (structured JSON or Markdown)
@@ -10,7 +10,7 @@ The Architect Agent transforms INCOSE‑compliant requirements (provided by the 
 
 ## 3. Outputs
 - SysML v2 textual model (`.sysml`)
-- SysML v2 diagram hints (`.json`)
+- Rendered diagrams (`.png` + `.puml` source)
 - MBSE artifacts:
   - Functional decomposition
   - Logical architecture
@@ -30,7 +30,7 @@ The Architect Agent transforms INCOSE‑compliant requirements (provided by the 
 6. Define constraints and parametric relationships.
 7. Allocate functions to components and resources.
 8. Generate SysML v2 textual model.
-9. Generate diagram‑layout hints for SysON.
+9. Render diagrams from the validated model.
 10. Produce MBSE artifacts for Planner Agent consumption.
 
 ## 5. Architecture Overview
@@ -43,7 +43,7 @@ The Architect Agent transforms INCOSE‑compliant requirements (provided by the 
 - **Constraint Modeling Engine**
 - **Allocation Engine**
 - **SysML v2 Text Generator**
-- **Diagram Hint Generator**
+- **Diagram Renderer**
 - **Artifact Packager**
 
 ### 5.2 Data Flow
@@ -70,10 +70,28 @@ The Architect Agent transforms INCOSE‑compliant requirements (provided by the 
 ### 6.5 Requirements Modeling
 - Use `requirement`, `deriveReqt`, `satisfy`, `verify`.
 
-## 7. Diagram Hint Specification
-Diagram hints are JSON structures consumed by SysON to pre‑arrange diagram layouts.
+## 7. Diagram Generation
 
-### 7.1 Example
+> **Diagram hints were dropped on 2026‑07‑18.** This section originally specified a JSON
+> coordinate format to pre‑arrange SysON layouts. It is no longer part of the design.
+
+**Current approach:** diagrams are rendered directly from the validated model by the
+SysML v2 Pilot Implementation's bundled PlantUML, using the pure‑Java Smetana layout
+engine. No coordinates are supplied and no SysON instance is involved.
+
+*Evidence for the change:* a 16‑entity model rendered to a clean hierarchical layout
+(1492×349, no crossing edges) with no positioning input. Supplying coordinates would
+have required an online stateful applier — a WebSocket client against SysON's
+`diagramEvent` subscription to resolve diagram node IDs, then a `layoutDiagram`
+mutation. That machinery bought only cosmetic control and is not built.
+
+**Outputs:** `diagrams/<name>.png` plus the `.puml` source, so a diagram can be
+re‑rendered or hand‑adjusted without re‑running the agent.
+
+**Known gap:** PlantUML does not draw multiplicities — `part nodes : GPUNode[1..64]`
+appears as `nodes: GPUNode`. The constraint remains in the model and the ADD.
+
+### 7.1 Obsolete — original hint file format (retained for reference)
 ```json
 {
   "diagram": "logical_architecture",
@@ -94,7 +112,7 @@ Diagram hints are JSON structures consumed by SysON to pre‑arrange diagram lay
 
 ### 8.2 Logical Architecture
 - Components, boundaries, responsibilities.
-- Represented in SysML v2 + diagram hints.
+- Represented in SysML v2 + rendered diagrams.
 
 ### 8.3 Interfaces
 - Ports, flows, contracts.
@@ -117,15 +135,38 @@ Diagram hints are JSON structures consumed by SysON to pre‑arrange diagram lay
 ### 8.7 Verification Plan
 - Requirement → verification method mapping.
 
-## 9. Integration with SysON
-- SysML v2 text saved as `.sysml`
-- Diagram hints saved as `.json`
-- SysON loads both for visualization and validation
+### 8.8 Architecture Definition Document (ADD)
+Human‑readable synthesis of the full architecture package. Unlike the artifacts above,
+the ADD is narrative rather than generated model content: it explains and justifies the
+architecture for review and sign‑off.
+
+**Required sections:**
+1. Introduction — purpose, scope, intended audience.
+2. Requirements Summary — source requirements and their origin.
+3. Functional Architecture — narrative over the functional decomposition (§8.1).
+4. Logical Architecture — components, boundaries, responsibilities (§8.2).
+5. Interfaces — external and internal interface summary (§8.3).
+6. Behavior — operational scenarios and lifecycle (§8.4).
+7. Constraints — performance, resource, and safety constraints (§8.5).
+8. Allocation — function → component → resource rationale (§8.6).
+9. Verification Approach — summary of the verification plan (§8.7).
+10. Traceability — requirement → architecture element coverage.
+11. Assumptions and Open Issues — unresolved decisions and known gaps.
+
+**Rules:**
+- Derived entirely from the other artifacts; introduces no new model content.
+- Every architectural decision states its driving requirement.
+- Represented in Markdown.
+
+## 9. Integration with SysON (optional)
+- SysML v2 text saved as `.sysml`; SysON can import it for interactive viewing/editing.
+- SysON is **not** a runtime dependency: validation and rendering both run from the
+  SysML v2 Pilot Implementation jar. See implementation.md §3 Step 6.
 
 ## 10. Integration with Planner Agent
 Planner Agent receives:
 - SysML v2 model
-- Diagram hints
+- Rendered diagrams
 - MBSE artifacts
 - Architecture Definition Document
 
