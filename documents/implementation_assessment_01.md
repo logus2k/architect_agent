@@ -1,5 +1,22 @@
 # Architecture Assessment: Architect Agent
 
+> **Disposition (2026-07-20, verified by running the code):**
+> - **§2.1 Single JVM invocation — DONE.** `pipeline.py` now makes one
+>   `sysml.validate(model, render_png=...)` call instead of two. Confirmed a
+>   12-requirement run still validates and renders (model VALID, PNG written).
+> - **§3.1 Strip `usage` prefix — DONE.** `_KIND_PREFIX` now matches
+>   `(def|usage)`; `part usage X` and `action usage X` resolve where they
+>   returned `None` before. Regression test added (`test_resolver_strips_usage_prefix_too`).
+> - **§2.2 `.puml` cleanup — NOT actioned (by design).** The `.puml` is written
+>   beside the PNG deliberately, so a human can re-render or hand-edit a diagram.
+>   It is only "untracked" when `render_png` points at a throwaway path, which the
+>   pipeline never does — it always renders into the package's `diagrams/`. No change.
+> - **§3.2 Strict `require_ready` — deferred (correctly).** The flag exists and
+>   defaults False *because* no Analyst package sets `architect_ready` yet. Turning
+>   it on now would block every run. It flips when the Analyst release gate lands;
+>   no code change needed here.
+
+
 ## 1. Architecture Overview
 
 The **Architect Agent** is a pipeline that transforms INCOSE-validated requirements into an MBSE (Model-Based Systems Engineering) architecture package. It produces SysML v2 models, rendered diagrams, and Markdown artifacts. 

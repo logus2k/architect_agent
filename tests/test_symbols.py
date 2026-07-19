@@ -150,3 +150,14 @@ def test_resolver_strips_sysml_keyword_prefix():
     assert _resolve(r, "dataManagementService", Kind.PART_USAGE) == "dataManagementService"
     assert _resolve(r, "data management service", Kind.PART_USAGE) == "dataManagementService"
     assert _resolve(r, "part def NoSuchThing", Kind.PART_USAGE) is None
+
+
+def test_resolver_strips_usage_prefix_too():
+    """Assessment finding: models hallucinate 'part usage X' / 'action usage X'
+    when returning usages, not just 'part def X'. The resolver must strip the
+    'usage' variant or every such endpoint lands in the unresolved list."""
+    from architect_agent.generate import _resolve
+    r = SymbolRegistry()
+    r.mint("data management service", Kind.PART_USAGE)
+    assert _resolve(r, "part usage dataManagementService", Kind.PART_USAGE) == "dataManagementService"
+    assert _resolve(r, "action usage dataManagementService", Kind.PART_USAGE) == "dataManagementService"
