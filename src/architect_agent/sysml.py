@@ -81,6 +81,13 @@ def validate(
 
     Rendering only happens when the model is valid — an invalid model cannot be
     resolved into a diagram, so validation necessarily precedes it.
+
+    Artifact ownership: this function cleans up its own temporary `.sysml` input,
+    but when `render_png` is given it writes TWO files the caller owns — the PNG at
+    `render_png` and its PlantUML source at `render_png + ".puml"`. Both paths are
+    returned on the result (`.png`, `.puml`). A caller rendering into a transient
+    directory is responsible for removing both; the `.puml` is kept beside the PNG
+    deliberately so a diagram can be re-rendered or hand-edited.
     """
     for path, what in ((jar, "kernel jar"), (library, "standard library")):
         if not path.exists():

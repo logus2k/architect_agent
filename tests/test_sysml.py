@@ -71,3 +71,16 @@ def test_missing_toolchain_raises_not_returns_invalid(tmp_path):
     """A broken install must never masquerade as 'your model is invalid'."""
     with pytest.raises(sysml.SysMLToolError):
         sysml.validate(VALID, jar=tmp_path / "absent.jar")
+
+
+def test_render_reports_both_artifact_paths(tmp_path):
+    """Artifact ownership: rendering writes a PNG and a sibling .puml, and BOTH
+    paths must come back on the result so a caller rendering into a transient dir
+    can clean up. Flagged twice in review as a potential dangling-file source; the
+    contract is that nothing is untracked because both paths are returned."""
+    out = tmp_path / "d.png"
+    r = sysml.validate(VALID, render_png=out)
+    assert r.valid
+    assert r.png == str(out) and r.puml == str(out) + ".puml"
+    assert (tmp_path / "d.png").exists()
+    assert (tmp_path / "d.png.puml").exists()
