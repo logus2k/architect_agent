@@ -397,7 +397,7 @@ def allocations(reqs: list[Requirement], reg: SymbolRegistry, client: AgentClien
 #: dataManagementService", "action def AllocateGPU"). Observed on real data: every
 #: interface endpoint in a 12-requirement run came back prefixed, so none resolved.
 _KIND_PREFIX = __import__("re").compile(
-    r"^\s*(part|action|port|interface|state|constraint|attribute)(\s+def)?\s+", __import__("re").I)
+    r"^\s*(part|action|port|interface|state|constraint|attribute)(\s+(def|usage))?\s+", __import__("re").I)
 
 
 def _resolve(reg: SymbolRegistry, proposed: str | None,

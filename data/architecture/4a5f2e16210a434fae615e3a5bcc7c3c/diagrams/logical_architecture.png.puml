@@ -1,11 +1,14 @@
 @startuml
 !pragma layout smetana
+skinparam titleBorderThickness 2
+skinparam titleBorderColor red
+title EXCEEDS THE LIMIT!!!\nSince it exceeds the maximum number of model elements to be processed,\n the visualization result may be incomplete.
 skin sysmlbw
 skinparam monochrome true
 skinparam wrapWidth 300
 hide circle
 
-package "Architecture" as E1   {
+package "JobMatchingPlatform" as E1   {
 rec def "RegisterEmployer" as E2  <<(T,blue) action  def>> {
 }
 
@@ -42,175 +45,1598 @@ rec def "SynchronizeJobData" as E12  <<(T,blue) action  def>> {
 rec def "ManageSystemConfiguration" as E13  <<(T,blue) action  def>> {
 }
 
-comp def "EmployerRegistration" as E14  <<(T,blue) part  def>> {
+rec def "CacheJobPostingData" as E14  <<(T,blue) action  def>> {
+}
+
+rec def "QueueDataSynchronization" as E15  <<(T,blue) action  def>> {
+}
+
+rec def "DisplayContextSensitiveHelp" as E16  <<(T,blue) action  def>> {
+}
+
+rec def "DisplayCurrentLogins" as E17  <<(T,blue) action  def>> {
+}
+
+rec def "DisplayLoginStatistics" as E18  <<(T,blue) action  def>> {
+}
+
+rec def "ProvideUserProfileLinks" as E19  <<(T,blue) action  def>> {
+}
+
+rec def "DisplayApplicationTracking" as E20  <<(T,blue) action  def>> {
+}
+
+rec def "DisplayRecommendationInsights" as E21  <<(T,blue) action  def>> {
+}
+
+rec def "BrowseJobListings" as E22  <<(T,blue) action  def>> {
+}
+
+rec def "PromptRegistrationOrLogin" as E23  <<(T,blue) action  def>> {
+}
+
+rec def "SupportMultilingualInterface" as E24  <<(T,blue) action  def>> {
+}
+
+rec def "UtilizeLanguageSpecificAIFunctions" as E25  <<(T,blue) action  def>> {
+}
+
+rec def "DisplayLatestJobPostings" as E26  <<(T,blue) action  def>> {
+}
+
+rec def "DisplayFeaturedOpportunities" as E27  <<(T,blue) action  def>> {
+}
+
+rec def "DisplaySectorBasedNews" as E28  <<(T,blue) action  def>> {
+}
+
+rec def "OptimizePublicPagesForSEO" as E29  <<(T,blue) action  def>> {
+}
+
+rec def "ReceiveRealTimeNotifications" as E30  <<(T,blue) action  def>> {
+}
+
+rec def "SendEmailNotifications" as E31  <<(T,blue) action  def>> {
+}
+
+rec def "DefineEscalationProcedures" as E32  <<(T,blue) action  def>> {
+}
+
+rec def "MigrateExistingData" as E33  <<(T,blue) action  def>> {
+}
+
+rec def "AcceptResumeUpload" as E34  <<(T,blue) action  def>> {
+}
+
+rec def "ExtractInformationFromResumes" as E35  <<(T,blue) action  def>> {
+}
+
+rec def "UpdateUserProfileWithExtractedData" as E36  <<(T,blue) action  def>> {
+}
+
+rec def "BuildUserProfile" as E37  <<(T,blue) action  def>> {
+}
+
+rec def "InputEducationDetails" as E38  <<(T,blue) action  def>> {
+}
+
+rec def "InputExperienceDetails" as E39  <<(T,blue) action  def>> {
+}
+
+rec def "InputSkills" as E40  <<(T,blue) action  def>> {
+}
+
+rec def "InputJobPreferences" as E41  <<(T,blue) action  def>> {
+}
+
+rec def "SetProfileVisibilityPreferences" as E42  <<(T,blue) action  def>> {
+}
+
+rec def "RequestAccountDeactivation" as E43  <<(T,blue) action  def>> {
+}
+
+rec def "RequestAccountDeletion" as E44  <<(T,blue) action  def>> {
+}
+
+rec def "GenerateShareableProfileURL" as E45  <<(T,blue) action  def>> {
+}
+
+rec def "ReviewJobPostingStatus" as E46  <<(T,blue) action  def>> {
+}
+
+rec def "ProvideAPISchema" as E47  <<(T,blue) action  def>> {
+}
+
+rec def "ValidateJobPostingStructure" as E48  <<(T,blue) action  def>> {
+}
+
+rec def "RecordJobPostingSource" as E49  <<(T,blue) action  def>> {
+}
+
+rec def "DisplayJobSourceTraceability" as E50  <<(T,blue) action  def>> {
+}
+
+rec def "MaintainAuditLog" as E51  <<(T,blue) action  def>> {
+}
+
+rec def "ViewJobPostings" as E52  <<(T,blue) action  def>> {
+}
+
+rec def "SuspendJobOfferings" as E53  <<(T,blue) action  def>> {
+}
+
+rec def "DeleteJobOfferings" as E54  <<(T,blue) action  def>> {
+}
+
+rec def "GenerateSectorReports" as E55  <<(T,blue) action  def>> {
+}
+
+rec def "GenerateRegionReports" as E56  <<(T,blue) action  def>> {
+}
+
+rec def "GenerateIndustryReports" as E57  <<(T,blue) action  def>> {
+}
+
+rec def "GenerateRegistrationStatistics" as E58  <<(T,blue) action  def>> {
+}
+
+rec def "GenerateSearchTrendReports" as E59  <<(T,blue) action  def>> {
+}
+
+rec def "GenerateInteractionReports" as E60  <<(T,blue) action  def>> {
+}
+
+rec def "GenerateSystemMetrics" as E61  <<(T,blue) action  def>> {
+}
+
+rec def "RestrictFeatureAccessByRole" as E62  <<(T,blue) action  def>> {
+}
+
+rec def "RestrictDataVisibilityByRole" as E63  <<(T,blue) action  def>> {
+}
+
+rec def "UpdateJobPostingDetails" as E64  <<(T,blue) action  def>> {
+}
+
+rec def "SetJobPostingExpiration" as E65  <<(T,blue) action  def>> {
+}
+
+rec def "RenewJobPosting" as E66  <<(T,blue) action  def>> {
+}
+
+rec def "DisplaySearchResults" as E67  <<(T,blue) action  def>> {
+}
+
+rec def "SaveJobToFavorites" as E68  <<(T,blue) action  def>> {
+}
+
+rec def "ViewSavedFavorites" as E69  <<(T,blue) action  def>> {
+}
+
+rec def "SaveSearchCriteria" as E70  <<(T,blue) action  def>> {
+}
+
+rec def "MonitorJobPostings" as E71  <<(T,blue) action  def>> {
+}
+
+rec def "ReceiveMatchingJobNotifications" as E72  <<(T,blue) action  def>> {
+}
+
+rec def "GenerateShortlistsForPostings" as E73  <<(T,blue) action  def>> {
+}
+
+rec def "ConfigureMatchingParameters" as E74  <<(T,blue) action  def>> {
+}
+
+rec def "ReviewExtractedResumeData" as E75  <<(T,blue) action  def>> {
+}
+
+rec def "UpdateUserProfileWithCorrections" as E76  <<(T,blue) action  def>> {
+}
+
+rec def "SearchCandidateDatabase" as E77  <<(T,blue) action  def>> {
+}
+
+rec def "StandardizeJobPostings" as E78  <<(T,blue) action  def>> {
+}
+
+rec def "MonitorJobPostingSources" as E79  <<(T,blue) action  def>> {
+}
+
+rec def "VerifyExternalData" as E80  <<(T,blue) action  def>> {
+}
+
+rec def "MonitorJobSeekerActivities" as E81  <<(T,blue) action  def>> {
+}
+
+rec def "TrackEmploymentOutcomes" as E82  <<(T,blue) action  def>> {
+}
+
+rec def "TrackMatchingAlgorithmPerformance" as E83  <<(T,blue) action  def>> {
+}
+
+rec def "ConfigureReportTemplates" as E84  <<(T,blue) action  def>> {
+}
+
+rec def "ConfigureEmailNotificationPreferences" as E85  <<(T,blue) action  def>> {
+}
+
+rec def "LogEmailNotifications" as E86  <<(T,blue) action  def>> {
+}
+
+rec def "GeneratePersonalizedJobRecommendations" as E87  <<(T,blue) action  def>> {
+}
+
+rec def "ManageUserNotifications" as E88  <<(T,blue) action  def>> {
+}
+
+rec def "SendSMSNotifications" as E89  <<(T,blue) action  def>> {
+}
+
+rec def "PublishNewsContent" as E90  <<(T,blue) action  def>> {
+}
+
+rec def "CreateAnnouncements" as E91  <<(T,blue) action  def>> {
+}
+
+rec def "EditAnnouncements" as E92  <<(T,blue) action  def>> {
+}
+
+rec def "PublishAnnouncements" as E93  <<(T,blue) action  def>> {
+}
+
+rec def "SupportRichTextFormatting" as E94  <<(T,blue) action  def>> {
+}
+
+rec def "EmbedMediaInContent" as E95  <<(T,blue) action  def>> {
+}
+
+rec def "ViewAnnouncements" as E96  <<(T,blue) action  def>> {
+}
+
+rec def "CollectFeedbackOnHelpContent" as E97  <<(T,blue) action  def>> {
+}
+
+rec def "ProcessBatchOperations" as E98  <<(T,blue) action  def>> {
+}
+
+rec def "OptimizeDatabaseQueries" as E99  <<(T,blue) action  def>> {
+}
+
+rec def "EnforceMFAForAdministrators" as E100  <<(T,blue) action  def>> {
+}
+
+rec def "EnableMFAForUsers" as E101  <<(T,blue) action  def>> {
+}
+
+rec def "EnforcePasswordPolicy" as E102  <<(T,blue) action  def>> {
+}
+
+rec def "ManagePasswordChanges" as E103  <<(T,blue) action  def>> {
+}
+
+rec def "EnforceLoginAttemptLimits" as E104  <<(T,blue) action  def>> {
+}
+
+rec def "ManageSessionTimeouts" as E105  <<(T,blue) action  def>> {
+}
+
+rec def "SupportThirdPartyAuthentication" as E106  <<(T,blue) action  def>> {
+}
+
+rec def "EncryptSensitiveDataAtRest" as E107  <<(T,blue) action  def>> {
+}
+
+rec def "MaskSensitiveDataInUI" as E108  <<(T,blue) action  def>> {
+}
+
+rec def "ManageEncryptionKeys" as E109  <<(T,blue) action  def>> {
+}
+
+rec def "ViewPersonalData" as E110  <<(T,blue) action  def>> {
+}
+
+rec def "ExportPersonalData" as E111  <<(T,blue) action  def>> {
+}
+
+rec def "DeletePersonalData" as E112  <<(T,blue) action  def>> {
+}
+
+rec def "CollectNecessaryUserData" as E113  <<(T,blue) action  def>> {
+}
+
+rec def "LimitDataRetention" as E114  <<(T,blue) action  def>> {
+}
+
+rec def "ObtainDataCollectionConsent" as E115  <<(T,blue) action  def>> {
+}
+
+rec def "DisplayPrivacyNotices" as E116  <<(T,blue) action  def>> {
+}
+
+rec def "SupportDataProtectionImpactAssessments" as E117  <<(T,blue) action  def>> {
+}
+
+rec def "MonitorSystemActivity" as E118  <<(T,blue) action  def>> {
+}
+
+rec def "DetectSecurityThreats" as E119  <<(T,blue) action  def>> {
+}
+
+rec def "PreventUnauthorizedAccess" as E120  <<(T,blue) action  def>> {
+}
+
+rec def "MaintainSystemAvailability" as E121  <<(T,blue) action  def>> {
+}
+
+rec def "ReplicateDatabase" as E122  <<(T,blue) action  def>> {
+}
+
+rec def "DistributeTrafficAcrossServers" as E123  <<(T,blue) action  def>> {
+}
+
+rec def "ImplementCircuitBreakerPatterns" as E124  <<(T,blue) action  def>> {
+}
+
+rec def "PerformFullDataBackup" as E125  <<(T,blue) action  def>> {
+}
+
+rec def "PerformIncrementalDataBackup" as E126  <<(T,blue) action  def>> {
+}
+
+rec def "DefineRecoveryTimeObjective" as E127  <<(T,blue) action  def>> {
+}
+
+rec def "DefineRecoveryPointObjective" as E128  <<(T,blue) action  def>> {
+}
+
+rec def "DisplayMeaningfulErrorMessages" as E129  <<(T,blue) action  def>> {
+}
+
+rec def "ImplementRetryMechanisms" as E130  <<(T,blue) action  def>> {
+}
+
+rec def "OptimizeUserWorkflows" as E131  <<(T,blue) action  def>> {
+}
+
+rec def "SupportKeyboardNavigation" as E132  <<(T,blue) action  def>> {
+}
+
+rec def "ProvideTextAlternativesForContent" as E133  <<(T,blue) action  def>> {
+}
+
+rec def "PauseMovingContent" as E134  <<(T,blue) action  def>> {
+}
+
+rec def "StopMovingContent" as E135  <<(T,blue) action  def>> {
+}
+
+rec def "HideMovingContent" as E136  <<(T,blue) action  def>> {
+}
+
+rec def "DetectUserLanguage" as E137  <<(T,blue) action  def>> {
+}
+
+rec def "GuideUsersThroughComplexFeatures" as E138  <<(T,blue) action  def>> {
+}
+
+rec def "ApplyDefaultSettings" as E139  <<(T,blue) action  def>> {
+}
+
+rec def "ExecuteAutomatedTests" as E140  <<(T,blue) action  def>> {
+}
+
+rec def "ManageSystemArtifactsVersions" as E141  <<(T,blue) action  def>> {
+}
+
+rec def "ImportDataFromFiles" as E142  <<(T,blue) action  def>> {
+}
+
+rec def "ExportDataToFiles" as E143  <<(T,blue) action  def>> {
+}
+
+rec def "UpdateRegulatoryPolicies" as E144  <<(T,blue) action  def>> {
+}
+
+rec def "DetectCopyrightInfringement" as E145  <<(T,blue) action  def>> {
+}
+
+rec def "ManageUserAccounts" as E146  <<(T,blue) action  def>> {
+}
+
+rec def "ManageUserData" as E147  <<(T,blue) action  def>> {
+}
+
+rec def "ProvideUserSupport" as E148  <<(T,blue) action  def>> {
+}
+
+comp def "EmployerRegistration" as E149  <<(T,blue) part  def>> {
 ##//attributes//##
 registrationStatus: String
 }
-comp def "CompanyProfile" as E15  <<(T,blue) part  def>> {
+comp def "CompanyProfile" as E150  <<(T,blue) part  def>> {
 ##//attributes//##
 companyName: String
 contactDetails: String
 }
-comp def "AdministratorAccount" as E16  <<(T,blue) part  def>> {
+comp def "AdministratorAccount" as E151  <<(T,blue) part  def>> {
 ##//attributes//##
-isActive: Boolean
 passwordHash: String
 username: String
 }
-comp def "SiteManagementAccount" as E17  <<(T,blue) part  def>> {
+comp def "SiteManagementAccount" as E152  <<(T,blue) part  def>> {
 ##//attributes//##
-isActive: Boolean
 passwordHash: String
 username: String
 }
-comp def "SystemConfiguration" as E18  <<(T,blue) part  def>> {
+comp def "JobSeekerProfile" as E153  <<(T,blue) part  def>> {
+##//attributes//##
+behavior: String
+education: String
+skills: String
+}
+comp def "JobPosting" as E154  <<(T,blue) part  def>> {
+}
+comp def "MatcherService" as E155  <<(T,blue) part  def>> {
+}
+comp def "SystemConfiguration" as E156  <<(T,blue) part  def>> {
 ##//attributes//##
 configurationData: String
 }
-comp def "DataManagementService" as E19  <<(T,blue) part  def>> {
+comp def "DataManagementService" as E157  <<(T,blue) part  def>> {
 ##//attributes//##
 dataStore: String
 }
-comp def "BackupManager" as E20  <<(T,blue) part  def>> {
+comp def "BackupService" as E158  <<(T,blue) part  def>> {
 ##//attributes//##
 retentionPolicy: String
 }
-comp def "WebApplicationInterface" as E21  <<(T,blue) part  def>> {
+comp def "WebApplicationInterface" as E159  <<(T,blue) part  def>> {
 ##//attributes//##
 accessibility: Boolean
 }
-comp usage "employerRegistration: EmployerRegistration  " as E22  <<(T,blue) part>> {
-}
-comp usage "companyProfile: CompanyProfile  " as E23  <<(T,blue) part>> {
-}
-comp usage "administratorAccount: AdministratorAccount  " as E24  <<(T,blue) part>> {
-}
-comp usage "siteManagementAccount: SiteManagementAccount  " as E25  <<(T,blue) part>> {
-}
-comp usage "systemConfiguration: SystemConfiguration  " as E26  <<(T,blue) part>> {
-}
-comp usage "dataManagementService: DataManagementService  " as E27  <<(T,blue) part>> {
-}
-comp usage "backupManager: BackupManager  " as E28  <<(T,blue) part>> {
-}
-comp usage "webApplicationInterface: WebApplicationInterface  " as E29  <<(T,blue) part>> {
-}
-comp def "JobSeekerProfileDataProvisionInterfacePort" as E30  <<(T,blue) port  def>> {
+comp def "AIProcessingInfrastructure" as E160  <<(T,blue) part  def>> {
 ##//attributes//##
-behavior_data: String
-education_data: String
-skill_data: String
+processingCapacity: String
 }
-comp def "JobSeekerProfileDataProvisionInterface" as E31  <<(T,blue) interface  def>> {
-}
-comp usage "supplier: JobSeekerProfileDataProvisionInterfacePort  " as E32  <<(T,blue) port>> {
-}
-comp usage "consumer: JobSeekerProfileDataProvisionInterfacePort  " as E33  <<(T,blue) port>> {
-}
-comp def "JobPostingDataProvisionInterfacePort" as E34  <<(T,blue) port  def>> {
+comp def "NetworkInfrastructure" as E161  <<(T,blue) part  def>> {
 ##//attributes//##
-behavior_data: String
-education_data: String
-skill_data: String
+autoScaling: Boolean
+bandwidth: String
+highAvailability: Boolean
+loadBalancing: Boolean
 }
-comp def "JobPostingDataProvisionInterface" as E35  <<(T,blue) interface  def>> {
-}
-comp usage "supplier: JobPostingDataProvisionInterfacePort  " as E36  <<(T,blue) port>> {
-}
-comp usage "consumer: JobPostingDataProvisionInterfacePort  " as E37  <<(T,blue) port>> {
-}
-comp def "MatchingResultProvisionInterfacePort" as E38  <<(T,blue) port  def>> {
+comp def "TrainingContent" as E162  <<(T,blue) part  def>> {
 ##//attributes//##
-match_score: Real
+contentID: String
+version: String
 }
-comp def "MatchingResultProvisionInterface" as E39  <<(T,blue) interface  def>> {
-}
-comp usage "supplier: MatchingResultProvisionInterfacePort  " as E40  <<(T,blue) port>> {
-}
-comp usage "consumer: MatchingResultProvisionInterfacePort  " as E41  <<(T,blue) port>> {
-}
-comp def "JobDataSynchronizationInterfacePort" as E42  <<(T,blue) port  def>> {
+comp def "SystemDemonstrationMaterials" as E163  <<(T,blue) part  def>> {
 ##//attributes//##
-Job_Data: String
+materialType: String
 }
-comp def "JobDataSynchronizationInterface" as E43  <<(T,blue) interface  def>> {
-}
-comp usage "supplier: JobDataSynchronizationInterfacePort  " as E44  <<(T,blue) port>> {
-}
-comp usage "consumer: JobDataSynchronizationInterfacePort  " as E45  <<(T,blue) port>> {
-}
-comp def "APIBasedDataExchangeWithGovernmentalDatabasesPort" as E46  <<(T,blue) port  def>> {
+comp def "LoginTracker" as E164  <<(T,blue) part  def>> {
 ##//attributes//##
-API_endpoint_details: String
+currentLogins: Integer
+lastSessions: Integer
 }
-comp def "APIBasedDataExchangeWithGovernmentalDatabases" as E47  <<(T,blue) interface  def>> {
+comp def "UserProfile" as E165  <<(T,blue) part  def>> {
 }
-comp usage "supplier: APIBasedDataExchangeWithGovernmentalDatabasesPort  " as E48  <<(T,blue) port>> {
-}
-comp usage "consumer: APIBasedDataExchangeWithGovernmentalDatabasesPort  " as E49  <<(T,blue) port>> {
-}
-comp def "WebApplicationAccessInterfacePort" as E50  <<(T,blue) port  def>> {
+comp def "Dashboard" as E166  <<(T,blue) part  def>> {
 ##//attributes//##
-Accessibility: Boolean
+applicationStatus: String
+recommendationData: String
 }
-comp def "WebApplicationAccessInterface" as E51  <<(T,blue) interface  def>> {
+comp def "ContentDeliveryService" as E167  <<(T,blue) part  def>> {
 }
-comp usage "supplier: WebApplicationAccessInterfacePort  " as E52  <<(T,blue) port>> {
+comp def "SyncDashboard" as E168  <<(T,blue) part  def>> {
+##//attributes//##
+statusIndicators: String
 }
-comp usage "consumer: WebApplicationAccessInterfacePort  " as E53  <<(T,blue) port>> {
+comp def "AuditLog" as E169  <<(T,blue) part  def>> {
+##//attributes//##
+logEntries: Integer
 }
-rec def "UserAccountLifecycle" as E54  <<(T,blue) state  def>> {
-rec usage "Enabled" as E55  <<(T,blue) state>> {
+comp def "FavoritesManager" as E170  <<(T,blue) part  def>> {
+##//attributes//##
+jobId: String
+userId: String
+}
+comp def "NLPEngine" as E171  <<(T,blue) part  def>> {
+##//attributes//##
+processingMode: String
+}
+comp def "MetricsTracker" as E172  <<(T,blue) part  def>> {
+##//attributes//##
+applicationRates: Real
+hiringRates: Real
+jobPostingTrends: String
+timeToFill: Real
+}
+comp def "ReportLibrary" as E173  <<(T,blue) part  def>> {
+##//attributes//##
+creationTimestamp: String
+reportData: String
+reportId: String
+}
+comp def "EmailTemplateManager" as E174  <<(T,blue) part  def>> {
+##//attributes//##
+templateContent: String
+templateId: String
+}
+comp def "NotificationCenter" as E175  <<(T,blue) part  def>> {
+##//attributes//##
+notificationCount: Integer
+}
+comp def "SMSDeliveryTracker" as E176  <<(T,blue) part  def>> {
+##//attributes//##
+deliveryStatus: String
+}
+comp def "IntrusionDetectionSystem" as E177  <<(T,blue) part  def>> {
+##//attributes//##
+detectionThreshold: Integer
+}
+comp def "IntrusionPreventionSystem" as E178  <<(T,blue) part  def>> {
+##//attributes//##
+preventionPolicy: String
+}
+comp def "LoadBalancer" as E179  <<(T,blue) part  def>> {
+##//attributes//##
+serverCount: Integer
+}
+comp def "TechnicalDocumentationRepository" as E180  <<(T,blue) part  def>> {
+##//attributes//##
+documentationVersion: String
+}
+comp def "ContainerizationTechnology" as E181  <<(T,blue) part  def>> {
+##//attributes//##
+deploymentConsistency: Boolean
+}
+comp usage "employerRegistration: EmployerRegistration  " as E182  <<(T,blue) part>> {
+}
+comp usage "companyProfile: CompanyProfile  " as E183  <<(T,blue) part>> {
+}
+comp usage "administratorAccount: AdministratorAccount  " as E184  <<(T,blue) part>> {
+}
+comp usage "siteManagementAccount: SiteManagementAccount  " as E185  <<(T,blue) part>> {
+}
+comp usage "jobSeekerProfile: JobSeekerProfile  " as E186  <<(T,blue) part>> {
+}
+comp usage "jobPosting: JobPosting  " as E187  <<(T,blue) part>> {
+}
+comp usage "matcherService: MatcherService  " as E188  <<(T,blue) part>> {
+}
+comp usage "systemConfiguration: SystemConfiguration  " as E189  <<(T,blue) part>> {
+}
+comp usage "dataManagementService: DataManagementService  " as E190  <<(T,blue) part>> {
+}
+comp usage "backupService: BackupService  " as E191  <<(T,blue) part>> {
+}
+comp usage "webApplicationInterface: WebApplicationInterface  " as E192  <<(T,blue) part>> {
+}
+comp usage "aiProcessingInfrastructure: AIProcessingInfrastructure  " as E193  <<(T,blue) part>> {
+}
+comp usage "networkInfrastructure: NetworkInfrastructure  " as E194  <<(T,blue) part>> {
+}
+comp usage "trainingContent: TrainingContent  " as E195  <<(T,blue) part>> {
+}
+comp usage "systemDemonstrationMaterials: SystemDemonstrationMaterials  " as E196  <<(T,blue) part>> {
+}
+comp usage "loginTracker: LoginTracker  " as E197  <<(T,blue) part>> {
+}
+comp usage "userProfile: UserProfile  " as E198  <<(T,blue) part>> {
+}
+comp usage "dashboard: Dashboard  " as E199  <<(T,blue) part>> {
+}
+comp usage "contentDeliveryService: ContentDeliveryService  " as E200  <<(T,blue) part>> {
+}
+comp usage "syncDashboard: SyncDashboard  " as E201  <<(T,blue) part>> {
+}
+comp usage "auditLog: AuditLog  " as E202  <<(T,blue) part>> {
+}
+comp usage "favoritesManager: FavoritesManager  " as E203  <<(T,blue) part>> {
+}
+comp usage "nlpEngine: NLPEngine  " as E204  <<(T,blue) part>> {
+}
+comp usage "metricsTracker: MetricsTracker  " as E205  <<(T,blue) part>> {
+}
+comp usage "reportLibrary: ReportLibrary  " as E206  <<(T,blue) part>> {
+}
+comp usage "emailTemplateManager: EmailTemplateManager  " as E207  <<(T,blue) part>> {
+}
+comp usage "notificationCenter: NotificationCenter  " as E208  <<(T,blue) part>> {
+}
+comp usage "smsDeliveryTracker: SMSDeliveryTracker  " as E209  <<(T,blue) part>> {
+}
+comp usage "intrusionDetectionSystem: IntrusionDetectionSystem  " as E210  <<(T,blue) part>> {
+}
+comp usage "intrusionPreventionSystem: IntrusionPreventionSystem  " as E211  <<(T,blue) part>> {
+}
+comp usage "loadBalancer: LoadBalancer  " as E212  <<(T,blue) part>> {
+}
+comp usage "technicalDocumentationRepository: TechnicalDocumentationRepository  " as E213  <<(T,blue) part>> {
+}
+comp usage "containerizationTechnology: ContainerizationTechnology  " as E214  <<(T,blue) part>> {
+}
+comp def "ExternalJobDataSynchronizationInterfacePort" as E215  <<(T,blue) port  def>> {
+##//attributes//##
+Synchronization_Status: String
+}
+comp def "ExternalJobDataSynchronizationInterface" as E216  <<(T,blue) interface  def>> {
+}
+comp usage "supplier: ExternalJobDataSynchronizationInterfacePort  " as E217  <<(T,blue) port>> {
+}
+comp usage "consumer: ExternalJobDataSynchronizationInterfacePort  " as E218  <<(T,blue) port>> {
+}
+comp def "GovernmentalDatabaseDataExchangeInterfacePort" as E219  <<(T,blue) port  def>> {
+##//attributes//##
+Data_payload: String
+}
+comp def "GovernmentalDatabaseDataExchangeInterface" as E220  <<(T,blue) interface  def>> {
+}
+comp usage "supplier: GovernmentalDatabaseDataExchangeInterfacePort  " as E221  <<(T,blue) port>> {
+}
+comp usage "consumer: GovernmentalDatabaseDataExchangeInterfacePort  " as E222  <<(T,blue) port>> {
+}
+comp def "WebApplicationAccessInterfacePort" as E223  <<(T,blue) port  def>> {
+##//attributes//##
+Access_Protocol: String
+}
+comp def "WebApplicationAccessInterface" as E224  <<(T,blue) interface  def>> {
+}
+comp usage "supplier: WebApplicationAccessInterfacePort  " as E225  <<(T,blue) port>> {
+}
+comp usage "consumer: WebApplicationAccessInterfacePort  " as E226  <<(T,blue) port>> {
+}
+comp def "WebInterfacePresentationPort" as E227  <<(T,blue) port  def>> {
+##//attributes//##
+Device_type: String
+}
+comp def "WebInterfacePresentation" as E228  <<(T,blue) interface  def>> {
+}
+comp usage "supplier: WebInterfacePresentationPort  " as E229  <<(T,blue) port>> {
+}
+comp usage "consumer: WebInterfacePresentationPort  " as E230  <<(T,blue) port>> {
+}
+comp def "IntegrationWithMoLSystemPort" as E231  <<(T,blue) port  def>> {
+}
+comp def "IntegrationWithMoLSystem" as E232  <<(T,blue) interface  def>> {
+}
+comp usage "supplier: IntegrationWithMoLSystemPort  " as E233  <<(T,blue) port>> {
+}
+comp usage "consumer: IntegrationWithMoLSystemPort  " as E234  <<(T,blue) port>> {
+}
+comp def "IntegrationWithPEFSystemPort" as E235  <<(T,blue) port  def>> {
+}
+comp def "IntegrationWithPEFSystem" as E236  <<(T,blue) interface  def>> {
+}
+comp usage "supplier: IntegrationWithPEFSystemPort  " as E237  <<(T,blue) port>> {
+}
+comp usage "consumer: IntegrationWithPEFSystemPort  " as E238  <<(T,blue) port>> {
+}
+comp def "WebAccessibilityInterfacePort" as E239  <<(T,blue) port  def>> {
+##//attributes//##
+Browser_compatibility: String
+}
+comp def "WebAccessibilityInterface" as E240  <<(T,blue) interface  def>> {
+}
+comp def "ContextSensitiveHelpProvisionInterfacePort" as E241  <<(T,blue) port  def>> {
+}
+comp def "ContextSensitiveHelpProvisionInterface" as E242  <<(T,blue) interface  def>> {
+}
+comp def "LoginTrackingInterfacePort" as E243  <<(T,blue) port  def>> {
+}
+comp def "LoginTrackingInterface" as E244  <<(T,blue) interface  def>> {
+}
+comp def "UserProfileRetrievalInterfacePort" as E245  <<(T,blue) port  def>> {
+}
+comp def "UserProfileRetrievalInterface" as E246  <<(T,blue) interface  def>> {
+}
+comp def "UserProfileManagementInterfacePort" as E247  <<(T,blue) port  def>> {
+}
+comp def "UserProfileManagementInterface" as E248  <<(T,blue) interface  def>> {
+}
+comp def "EmployerRegistrationInterfacePort" as E249  <<(T,blue) port  def>> {
+}
+comp def "EmployerRegistrationInterface" as E250  <<(T,blue) interface  def>> {
+}
+comp def "NotificationInterfacePort" as E251  <<(T,blue) port  def>> {
+}
+comp def "NotificationInterface" as E252  <<(T,blue) interface  def>> {
+}
+comp def "MessagingInterfacePort" as E253  <<(T,blue) port  def>> {
+}
+comp def "MessagingInterface" as E254  <<(T,blue) interface  def>> {
+}
+comp def "CompanyProfileManagementInterfacePort" as E255  <<(T,blue) port  def>> {
+}
+comp def "CompanyProfileManagementInterface" as E256  <<(T,blue) interface  def>> {
+}
+comp def "JobListingBrowsingInterfacePort" as E257  <<(T,blue) port  def>> {
+}
+comp def "JobListingBrowsingInterface" as E258  <<(T,blue) interface  def>> {
+}
+comp def "JobApplicationInitiationInterfacePort" as E259  <<(T,blue) port  def>> {
+}
+comp def "JobApplicationInitiationInterface" as E260  <<(T,blue) interface  def>> {
+}
+comp def "ListingSavingInterfacePort" as E261  <<(T,blue) port  def>> {
+}
+comp def "ListingSavingInterface" as E262  <<(T,blue) interface  def>> {
+}
+comp def "NotificationSubscriptionInterfacePort" as E263  <<(T,blue) port  def>> {
+}
+comp def "NotificationSubscriptionInterface" as E264  <<(T,blue) interface  def>> {
+}
+comp def "JobPostingDisplayInterfacePort" as E265  <<(T,blue) port  def>> {
+}
+comp def "JobPostingDisplayInterface" as E266  <<(T,blue) interface  def>> {
+}
+comp def "FeaturedOpportunitiesDisplayInterfacePort" as E267  <<(T,blue) port  def>> {
+}
+comp def "FeaturedOpportunitiesDisplayInterface" as E268  <<(T,blue) interface  def>> {
+}
+comp def "CareerAdviceNewsDisplayInterfacePort" as E269  <<(T,blue) port  def>> {
+}
+comp def "CareerAdviceNewsDisplayInterface" as E270  <<(T,blue) interface  def>> {
+}
+comp def "MultilingualContentProvisionInterfacePort" as E271  <<(T,blue) port  def>> {
+}
+comp def "MultilingualContentProvisionInterface" as E272  <<(T,blue) interface  def>> {
+}
+comp def "AIProcessingInterfaceForLanguageSpecificFunctionsPort" as E273  <<(T,blue) port  def>> {
+}
+comp def "AIProcessingInterfaceForLanguageSpecificFunctions" as E274  <<(T,blue) interface  def>> {
+}
+comp def "DisplayJobPostingsOnHomepagePort" as E275  <<(T,blue) port  def>> {
+}
+comp def "DisplayJobPostingsOnHomepage" as E276  <<(T,blue) interface  def>> {
+}
+comp def "DisplayFeaturedOpportunitiesOnHomepagePort" as E277  <<(T,blue) port  def>> {
+}
+comp def "DisplayFeaturedOpportunitiesOnHomepage" as E278  <<(T,blue) interface  def>> {
+}
+comp def "DisplaySectorBasedNewsAdviceOnHomepagePort" as E279  <<(T,blue) port  def>> {
+}
+comp def "DisplaySectorBasedNewsAdviceOnHomepage" as E280  <<(T,blue) interface  def>> {
+}
+comp def "ExternalJobSiteIntegrationInterfacePort" as E281  <<(T,blue) port  def>> {
+}
+comp def "ExternalJobSiteIntegrationInterface" as E282  <<(T,blue) interface  def>> {
+}
+comp def "InterfaceDocumentationSpecificationInterfacePort" as E283  <<(T,blue) port  def>> {
+}
+comp def "InterfaceDocumentationSpecificationInterface" as E284  <<(T,blue) interface  def>> {
+}
+comp def "WebAccessInterfacePort" as E285  <<(T,blue) port  def>> {
+}
+comp def "WebAccessInterface" as E286  <<(T,blue) interface  def>> {
+}
+comp def "RealTimeNotificationInterfacePort" as E287  <<(T,blue) port  def>> {
+}
+comp def "RealTimeNotificationInterface" as E288  <<(T,blue) interface  def>> {
+}
+comp def "EmailSendingInterfacePort" as E289  <<(T,blue) port  def>> {
+}
+comp def "EmailSendingInterface" as E290  <<(T,blue) interface  def>> {
+}
+comp def "SMSNotificationInterfacePort" as E291  <<(T,blue) port  def>> {
+}
+comp def "SMSNotificationInterface" as E292  <<(T,blue) interface  def>> {
+}
+comp def "DataExchangeInterfacePort" as E293  <<(T,blue) port  def>> {
+}
+comp def "DataExchangeInterface" as E294  <<(T,blue) interface  def>> {
+}
+comp def "LegacySystemIntegrationInterfacePort" as E295  <<(T,blue) port  def>> {
+}
+comp def "LegacySystemIntegrationInterface" as E296  <<(T,blue) interface  def>> {
+}
+comp def "SecureCommunicationInterfacePort" as E297  <<(T,blue) port  def>> {
+}
+comp def "SecureCommunicationInterface" as E298  <<(T,blue) interface  def>> {
+}
+comp def "DataMigrationInterfaceFromLegacySystemsPort" as E299  <<(T,blue) port  def>> {
+}
+comp def "DataMigrationInterfaceFromLegacySystems" as E300  <<(T,blue) interface  def>> {
+}
+comp def "UITextProvisionInterfacePort" as E301  <<(T,blue) port  def>> {
+}
+comp def "UITextProvisionInterface" as E302  <<(T,blue) interface  def>> {
+}
+comp def "LanguageVariationSupportInterfacePort" as E303  <<(T,blue) port  def>> {
+}
+comp def "LanguageVariationSupportInterface" as E304  <<(T,blue) interface  def>> {
+}
+comp def "ContentDeliveryInterfacePort" as E305  <<(T,blue) port  def>> {
+}
+comp def "ContentDeliveryInterface" as E306  <<(T,blue) interface  def>> {
+}
+comp def "AccountActivationViaMobileNumberPort" as E307  <<(T,blue) port  def>> {
+}
+comp def "AccountActivationViaMobileNumber" as E308  <<(T,blue) interface  def>> {
+}
+comp def "JobSeekerOnboardingDataCollectionInterfacePort" as E309  <<(T,blue) port  def>> {
+}
+comp def "JobSeekerOnboardingDataCollectionInterface" as E310  <<(T,blue) interface  def>> {
+}
+comp def "JobSeekerDetailedProfileUpdateInterfacePort" as E311  <<(T,blue) port  def>> {
+}
+comp def "JobSeekerDetailedProfileUpdateInterface" as E312  <<(T,blue) interface  def>> {
+}
+comp def "JobSeekerOptionalProfileEnrichmentInterfacePort" as E313  <<(T,blue) port  def>> {
+}
+comp def "JobSeekerOptionalProfileEnrichmentInterface" as E314  <<(T,blue) interface  def>> {
+}
+comp def "ResumeCVUploadInterfacePort" as E315  <<(T,blue) port  def>> {
+}
+comp def "ResumeCVUploadInterface" as E316  <<(T,blue) interface  def>> {
+}
+comp def "CVInformationExtractionInterfacePort" as E317  <<(T,blue) port  def>> {
+}
+comp def "CVInformationExtractionInterface" as E318  <<(T,blue) interface  def>> {
+}
+comp def "ExtractedCVDataInterfacePort" as E319  <<(T,blue) port  def>> {
+}
+comp def "ExtractedCVDataInterface" as E320  <<(T,blue) interface  def>> {
+}
+comp def "JobSeekerProfileBuildingInterfacePort" as E321  <<(T,blue) port  def>> {
+}
+comp def "JobSeekerProfileBuildingInterface" as E322  <<(T,blue) interface  def>> {
+}
+comp def "ProfileURLQRCodeGenerationInterfacePort" as E323  <<(T,blue) port  def>> {
+}
+comp def "ProfileURLQRCodeGenerationInterface" as E324  <<(T,blue) interface  def>> {
+}
+comp def "DocumentUploadInterfacePort" as E325  <<(T,blue) port  def>> {
+}
+comp def "DocumentUploadInterface" as E326  <<(T,blue) interface  def>> {
+}
+comp def "JobSubmissionConfirmationInterfacePort" as E327  <<(T,blue) port  def>> {
+}
+comp def "JobSubmissionConfirmationInterface" as E328  <<(T,blue) interface  def>> {
+}
+comp def "JobPostingTaggingAndLinkingInterfacePort" as E329  <<(T,blue) port  def>> {
+}
+comp def "JobPostingTaggingAndLinkingInterface" as E330  <<(T,blue) interface  def>> {
+}
+comp def "JobUpdateSynchronizationInterfacePort" as E331  <<(T,blue) port  def>> {
+}
+comp def "JobUpdateSynchronizationInterface" as E332  <<(T,blue) interface  def>> {
+}
+comp def "JobStatusReviewInterfacePort" as E333  <<(T,blue) port  def>> {
+}
+comp def "JobStatusReviewInterface" as E334  <<(T,blue) interface  def>> {
+}
+comp def "IntegrationUsageStatisticsReportingInterfacePort" as E335  <<(T,blue) port  def>> {
+}
+comp def "IntegrationUsageStatisticsReportingInterface" as E336  <<(T,blue) interface  def>> {
+}
+comp def "APISchemaAndValidationRuleProvisionPort" as E337  <<(T,blue) port  def>> {
+}
+comp def "APISchemaAndValidationRuleProvision" as E338  <<(T,blue) interface  def>> {
+}
+comp def "SourcePlatformAttributionVisibilityConfigurationInterfacePort" as E339  <<(T,blue) port  def>> {
+}
+comp def "SourcePlatformAttributionVisibilityConfigurationInterface" as E340  <<(T,blue) interface  def>> {
+}
+comp def "JobPostingAuditTrailInterfacePort" as E341  <<(T,blue) port  def>> {
+}
+comp def "JobPostingAuditTrailInterface" as E342  <<(T,blue) interface  def>> {
+}
+comp def "JobPostingTraceabilityDisplayInterfacePort" as E343  <<(T,blue) port  def>> {
+}
+comp def "JobPostingTraceabilityDisplayInterface" as E344  <<(T,blue) interface  def>> {
+}
+comp def "JobPostingStatisticsReportingInterfacePort" as E345  <<(T,blue) port  def>> {
+}
+comp def "JobPostingStatisticsReportingInterface" as E346  <<(T,blue) interface  def>> {
+}
+comp def "UserRegistrationStatisticsReportingInterfacePort" as E347  <<(T,blue) port  def>> {
+}
+comp def "UserRegistrationStatisticsReportingInterface" as E348  <<(T,blue) interface  def>> {
+}
+comp def "TopSearchesReportingInterfacePort" as E349  <<(T,blue) port  def>> {
+}
+comp def "TopSearchesReportingInterface" as E350  <<(T,blue) interface  def>> {
+}
+comp def "UserInteractionReportingInterfacePort" as E351  <<(T,blue) port  def>> {
+}
+comp def "UserInteractionReportingInterface" as E352  <<(T,blue) interface  def>> {
+}
+comp def "OverallSystemMetricsReportingInterfacePort" as E353  <<(T,blue) port  def>> {
+}
+comp def "OverallSystemMetricsReportingInterface" as E354  <<(T,blue) interface  def>> {
+}
+comp def "AuthenticationInterfacePort" as E355  <<(T,blue) port  def>> {
+}
+comp def "AuthenticationInterface" as E356  <<(T,blue) interface  def>> {
+}
+comp def "JobPostingSubmissionInterfacePort" as E357  <<(T,blue) port  def>> {
+}
+comp def "JobPostingSubmissionInterface" as E358  <<(T,blue) interface  def>> {
+}
+comp def "JobPostingDataInputInterfacePort" as E359  <<(T,blue) port  def>> {
+}
+comp def "JobPostingDataInputInterface" as E360  <<(T,blue) interface  def>> {
+}
+comp def "JobPostingManagementInterfacePort" as E361  <<(T,blue) port  def>> {
+}
+comp def "JobPostingManagementInterface" as E362  <<(T,blue) interface  def>> {
+}
+comp def "JobSearchInterfacePort" as E363  <<(T,blue) port  def>> {
+}
+comp def "JobSearchInterface" as E364  <<(T,blue) interface  def>> {
+}
+comp def "JobSearchResultsRetrievalPort" as E365  <<(T,blue) port  def>> {
+}
+comp def "JobSearchResultsRetrieval" as E366  <<(T,blue) interface  def>> {
+}
+comp def "JobPostingDataAccessPort" as E367  <<(T,blue) port  def>> {
+}
+comp def "JobPostingDataAccess" as E368  <<(T,blue) interface  def>> {
+}
+comp def "SearchInterfaceForBasicAndAdvancedSearchModesPort" as E369  <<(T,blue) port  def>> {
+}
+comp def "SearchInterfaceForBasicAndAdvancedSearchModes" as E370  <<(T,blue) interface  def>> {
+}
+comp def "JobSearchInterfacePort" as E371  <<(T,blue) port  def>> {
+}
+comp def "JobSearchInterface" as E372  <<(T,blue) interface  def>> {
+}
+comp def "DisplaySearchResultsWithRankingAndSortingPort" as E373  <<(T,blue) port  def>> {
+}
+comp def "DisplaySearchResultsWithRankingAndSorting" as E374  <<(T,blue) interface  def>> {
+}
+comp def "DisplayRecommendedJobsUponLoginPort" as E375  <<(T,blue) port  def>> {
+}
+comp def "DisplayRecommendedJobsUponLogin" as E376  <<(T,blue) interface  def>> {
+}
+comp def "MatchThresholdConfigurationInterfacePort" as E377  <<(T,blue) port  def>> {
+}
+comp def "MatchThresholdConfigurationInterface" as E378  <<(T,blue) interface  def>> {
+}
+comp def "JobSeekerToMatcherServiceInterfacePort" as E379  <<(T,blue) port  def>> {
+}
+comp def "JobSeekerToMatcherServiceInterface" as E380  <<(T,blue) interface  def>> {
+}
+comp def "MatcherServiceToJobSeekerInterfaceInterfacePort" as E381  <<(T,blue) port  def>> {
+}
+comp def "MatcherServiceToJobSeekerInterfaceInterface" as E382  <<(T,blue) interface  def>> {
+}
+comp def "EmployerToMatcherServiceInterfacePort" as E383  <<(T,blue) port  def>> {
+}
+comp def "EmployerToMatcherServiceInterface" as E384  <<(T,blue) interface  def>> {
+}
+comp def "MatcherServiceToEmployerInterfaceInterfacePort" as E385  <<(T,blue) port  def>> {
+}
+comp def "MatcherServiceToEmployerInterfaceInterface" as E386  <<(T,blue) interface  def>> {
+}
+comp def "MatchingParameterConfigurationInterfacePort" as E387  <<(T,blue) port  def>> {
+}
+comp def "MatchingParameterConfigurationInterface" as E388  <<(T,blue) interface  def>> {
+}
+comp def "LanguageAwareResumeParsingInterfacePort" as E389  <<(T,blue) port  def>> {
+}
+comp def "LanguageAwareResumeParsingInterface" as E390  <<(T,blue) interface  def>> {
+}
+comp def "ConfidenceScoreProvisionInterfacePort" as E391  <<(T,blue) port  def>> {
+}
+comp def "ConfidenceScoreProvisionInterface" as E392  <<(T,blue) interface  def>> {
+}
+comp def "ManualVerificationHighlightingInterfacePort" as E393  <<(T,blue) port  def>> {
+}
+comp def "ManualVerificationHighlightingInterface" as E394  <<(T,blue) interface  def>> {
+}
+comp def "RecommendationInputInterfacePort" as E395  <<(T,blue) port  def>> {
+}
+comp def "RecommendationInputInterface" as E396  <<(T,blue) interface  def>> {
+}
+comp def "CandidateSearchInterfacePort" as E397  <<(T,blue) port  def>> {
+}
+comp def "CandidateSearchInterface" as E398  <<(T,blue) interface  def>> {
+}
+comp def "ExternalJobSiteIntegrationInterfacePort" as E399  <<(T,blue) port  def>> {
+}
+comp def "ExternalJobSiteIntegrationInterface" as E400  <<(T,blue) interface  def>> {
+}
+comp def "ExternalJobDataSynchronizationAPIPort" as E401  <<(T,blue) port  def>> {
+}
+comp def "ExternalJobDataSynchronizationAPI" as E402  <<(T,blue) interface  def>> {
+}
+comp def "JobPostingDataStandardizationInterfacePort" as E403  <<(T,blue) port  def>> {
+}
+comp def "JobPostingDataStandardizationInterface" as E404  <<(T,blue) interface  def>> {
+}
+comp def "JobImportExportInterfacePort" as E405  <<(T,blue) port  def>> {
+}
+comp def "JobImportExportInterface" as E406  <<(T,blue) interface  def>> {
+}
+comp def "IntegrationStatusAndDataFlowMonitoringInterfacePort" as E407  <<(T,blue) port  def>> {
+}
+comp def "IntegrationStatusAndDataFlowMonitoringInterface" as E408  <<(T,blue) interface  def>> {
+}
+comp def "GovernmentDatabaseIntegrationInterfacePort" as E409  <<(T,blue) port  def>> {
+}
+comp def "GovernmentDatabaseIntegrationInterface" as E410  <<(T,blue) interface  def>> {
+}
+comp def "IntegrationWithMoLDatabaseSystemPort" as E411  <<(T,blue) port  def>> {
+}
+comp def "IntegrationWithMoLDatabaseSystem" as E412  <<(T,blue) interface  def>> {
+}
+comp def "IntegrationWithPEFDatabaseSystemPort" as E413  <<(T,blue) port  def>> {
+}
+comp def "IntegrationWithPEFDatabaseSystem" as E414  <<(T,blue) interface  def>> {
+}
+comp def "EducationalCredentialVerificationInterfacePort" as E415  <<(T,blue) port  def>> {
+}
+comp def "EducationalCredentialVerificationInterface" as E416  <<(T,blue) interface  def>> {
+}
+comp def "IdentityVerificationInterfacePort" as E417  <<(T,blue) port  def>> {
+}
+comp def "IdentityVerificationInterface" as E418  <<(T,blue) interface  def>> {
+}
+comp def "AuditTrailLoggingForGovernmentDataExchangesPort" as E419  <<(T,blue) port  def>> {
+}
+comp def "AuditTrailLoggingForGovernmentDataExchanges" as E420  <<(T,blue) interface  def>> {
+}
+comp def "ExternalSystemIntegrationAPIFrameworkPort" as E421  <<(T,blue) port  def>> {
+}
+comp def "ExternalSystemIntegrationAPIFramework" as E422  <<(T,blue) interface  def>> {
+}
+comp def "RESTfulAPIIntegrationInterfacePort" as E423  <<(T,blue) port  def>> {
+}
+comp def "RESTfulAPIIntegrationInterface" as E424  <<(T,blue) interface  def>> {
+}
+comp def "APIDocumentationProvisionInterfacePort" as E425  <<(T,blue) port  def>> {
+}
+comp def "APIDocumentationProvisionInterface" as E426  <<(T,blue) interface  def>> {
+}
+comp def "APIAuthenticationAndAuthorizationInterfacePort" as E427  <<(T,blue) port  def>> {
+}
+comp def "APIAuthenticationAndAuthorizationInterface" as E428  <<(T,blue) interface  def>> {
+}
+comp def "APIAuthenticationAndAuthorizationInterfacePort" as E429  <<(T,blue) port  def>> {
+}
+comp def "APIAuthenticationAndAuthorizationInterface" as E430  <<(T,blue) interface  def>> {
+}
+comp def "APIAuthenticationAndAuthorizationInterfacePort" as E431  <<(T,blue) port  def>> {
+}
+comp def "APIAuthenticationAndAuthorizationInterface" as E432  <<(T,blue) interface  def>> {
+}
+comp def "APIAuthenticationAndAuthorizationInterfacePort" as E433  <<(T,blue) port  def>> {
+}
+comp def "APIAuthenticationAndAuthorizationInterface" as E434  <<(T,blue) interface  def>> {
+}
+comp def "APIVersioningInterfacePort" as E435  <<(T,blue) port  def>> {
+}
+comp def "APIVersioningInterface" as E436  <<(T,blue) interface  def>> {
+}
+comp def "ReportingFrameworkInterfacePort" as E437  <<(T,blue) port  def>> {
+}
+comp def "ReportingFrameworkInterface" as E438  <<(T,blue) interface  def>> {
+}
+comp def "ReportGenerationInterfacePort" as E439  <<(T,blue) port  def>> {
+}
+comp def "ReportGenerationInterface" as E440  <<(T,blue) interface  def>> {
+}
+comp def "ReportExportInterfacePort" as E441  <<(T,blue) port  def>> {
+}
+comp def "ReportExportInterface" as E442  <<(T,blue) interface  def>> {
+}
+comp def "ReportBuildingInterfacePort" as E443  <<(T,blue) port  def>> {
+}
+comp def "ReportBuildingInterface" as E444  <<(T,blue) interface  def>> {
+}
+comp def "EmailNotificationInterfacePort" as E445  <<(T,blue) port  def>> {
+}
+comp def "EmailNotificationInterface" as E446  <<(T,blue) interface  def>> {
+}
+comp def "EmailNotificationPreferenceConfigurationInterfacePort" as E447  <<(T,blue) port  def>> {
+}
+comp def "EmailNotificationPreferenceConfigurationInterface" as E448  <<(T,blue) interface  def>> {
+}
+comp def "EmailNotificationInterfacePort" as E449  <<(T,blue) port  def>> {
+}
+comp def "EmailNotificationInterface" as E450  <<(T,blue) interface  def>> {
+}
+comp def "RealTimeNotificationDeliveryInterfacePort" as E451  <<(T,blue) port  def>> {
+}
+comp def "RealTimeNotificationDeliveryInterface" as E452  <<(T,blue) interface  def>> {
+}
+comp def "NotificationPreferenceConfigurationInterfacePort" as E453  <<(T,blue) port  def>> {
+}
+comp def "NotificationPreferenceConfigurationInterface" as E454  <<(T,blue) interface  def>> {
+}
+comp def "NotificationManagementInterfacePort" as E455  <<(T,blue) port  def>> {
+}
+comp def "NotificationManagementInterface" as E456  <<(T,blue) interface  def>> {
+}
+comp def "SMSNotificationInterfacePort" as E457  <<(T,blue) port  def>> {
+}
+comp def "SMSNotificationInterface" as E458  <<(T,blue) interface  def>> {
+}
+comp def "SMSNotificationOptInAndMobileNumberProvisionPort" as E459  <<(T,blue) port  def>> {
+}
+comp def "SMSNotificationOptInAndMobileNumberProvision" as E460  <<(T,blue) interface  def>> {
+}
+comp def "DisplayRelevantNewsAndUpdatesOnUserDashboardsPort" as E461  <<(T,blue) port  def>> {
+}
+comp def "DisplayRelevantNewsAndUpdatesOnUserDashboards" as E462  <<(T,blue) interface  def>> {
+}
+comp def "ContextSensitiveHelpProvisionInterfacePort" as E463  <<(T,blue) port  def>> {
+}
+comp def "ContextSensitiveHelpProvisionInterface" as E464  <<(T,blue) interface  def>> {
+}
+comp def "ThirdPartyAuthenticationInterfacePort" as E465  <<(T,blue) port  def>> {
+}
+comp def "ThirdPartyAuthenticationInterface" as E466  <<(T,blue) interface  def>> {
+}
+comp def "DataInTransitEncryptionInterfacePort" as E467  <<(T,blue) port  def>> {
+}
+comp def "DataInTransitEncryptionInterface" as E468  <<(T,blue) interface  def>> {
+}
+comp def "PersonalDataViewingAndExportInterfacePort" as E469  <<(T,blue) port  def>> {
+}
+comp def "PersonalDataViewingAndExportInterface" as E470  <<(T,blue) interface  def>> {
+}
+comp def "PersonalDataDeletionInterfacePort" as E471  <<(T,blue) port  def>> {
+}
+comp def "PersonalDataDeletionInterface" as E472  <<(T,blue) interface  def>> {
+}
+comp def "MaintenanceNotificationInterfacePort" as E473  <<(T,blue) port  def>> {
+}
+comp def "MaintenanceNotificationInterface" as E474  <<(T,blue) interface  def>> {
+}
+comp def "InterfaceForConsistentTerminologyAndDesignPatternsPort" as E475  <<(T,blue) port  def>> {
+}
+comp def "InterfaceForConsistentTerminologyAndDesignPatterns" as E476  <<(T,blue) interface  def>> {
+}
+comp def "AccessibilityInterfacePort" as E477  <<(T,blue) port  def>> {
+}
+comp def "AccessibilityInterface" as E478  <<(T,blue) interface  def>> {
+}
+comp def "KeyboardNavigationInterfacePort" as E479  <<(T,blue) port  def>> {
+}
+comp def "KeyboardNavigationInterface" as E480  <<(T,blue) interface  def>> {
+}
+comp def "TextAlternativeProvisionInterfacePort" as E481  <<(T,blue) port  def>> {
+}
+comp def "TextAlternativeProvisionInterface" as E482  <<(T,blue) interface  def>> {
+}
+comp def "LanguageSupportInterfacePort" as E483  <<(T,blue) port  def>> {
+}
+comp def "LanguageSupportInterface" as E484  <<(T,blue) interface  def>> {
+}
+comp def "RTLTextDirectionSupportPort" as E485  <<(T,blue) port  def>> {
+}
+comp def "RTLTextDirectionSupport" as E486  <<(T,blue) interface  def>> {
+}
+comp def "LocalizationInterfaceForDataFormattingPort" as E487  <<(T,blue) port  def>> {
+}
+comp def "LocalizationInterfaceForDataFormatting" as E488  <<(T,blue) interface  def>> {
+}
+comp def "TranslationQualityConsistencyInterfacePort" as E489  <<(T,blue) port  def>> {
+}
+comp def "TranslationQualityConsistencyInterface" as E490  <<(T,blue) interface  def>> {
+}
+comp def "MultilingualContentProvisionForJobPostingsPort" as E491  <<(T,blue) port  def>> {
+}
+comp def "MultilingualContentProvisionForJobPostings" as E492  <<(T,blue) interface  def>> {
+}
+comp def "MultilingualContentProvisionForUserProfilesPort" as E493  <<(T,blue) port  def>> {
+}
+comp def "MultilingualContentProvisionForUserProfiles" as E494  <<(T,blue) interface  def>> {
+}
+comp def "LanguageDetectionInterfacePort" as E495  <<(T,blue) port  def>> {
+}
+comp def "LanguageDetectionInterface" as E496  <<(T,blue) interface  def>> {
+}
+comp def "DatabaseAbstractionInterfacePort" as E497  <<(T,blue) port  def>> {
+}
+comp def "DatabaseAbstractionInterface" as E498  <<(T,blue) interface  def>> {
+}
+comp def "DeploymentProcedureDocumentationInterfacePort" as E499  <<(T,blue) port  def>> {
+}
+comp def "DeploymentProcedureDocumentationInterface" as E500  <<(T,blue) interface  def>> {
+}
+comp def "WebBrowserCompatibilityInterfacePort" as E501  <<(T,blue) port  def>> {
+}
+comp def "WebBrowserCompatibilityInterface" as E502  <<(T,blue) interface  def>> {
+}
+comp def "BrowserCompatibilityInterfacePort" as E503  <<(T,blue) port  def>> {
+}
+comp def "BrowserCompatibilityInterface" as E504  <<(T,blue) interface  def>> {
+}
+comp def "MobileBrowserCompatibilityInterfacePort" as E505  <<(T,blue) port  def>> {
+}
+comp def "MobileBrowserCompatibilityInterface" as E506  <<(T,blue) interface  def>> {
+}
+comp def "EmailNotificationDeliveryInterfacePort" as E507  <<(T,blue) port  def>> {
+}
+comp def "EmailNotificationDeliveryInterface" as E508  <<(T,blue) interface  def>> {
+}
+comp def "DataImportExportInterfacePort" as E509  <<(T,blue) port  def>> {
+}
+comp def "DataImportExportInterface" as E510  <<(T,blue) interface  def>> {
+}
+comp def "ExternalSystemIntegrationInterfacePort" as E511  <<(T,blue) port  def>> {
+}
+comp def "ExternalSystemIntegrationInterface" as E512  <<(T,blue) interface  def>> {
+}
+comp def "ThirdPartyContentAttributionInterfacePort" as E513  <<(T,blue) port  def>> {
+}
+comp def "ThirdPartyContentAttributionInterface" as E514  <<(T,blue) interface  def>> {
+}
+comp def "APIDocumentationProvisionInterfacePort" as E515  <<(T,blue) port  def>> {
+}
+comp def "APIDocumentationProvisionInterface" as E516  <<(T,blue) interface  def>> {
+}
+comp def "ConfigurationParameterDocumentationInterfacePort" as E517  <<(T,blue) port  def>> {
+}
+comp def "ConfigurationParameterDocumentationInterface" as E518  <<(T,blue) interface  def>> {
+}
+comp def "DateAndTimeFormattingInterfacePort" as E519  <<(T,blue) port  def>> {
+}
+comp def "DateAndTimeFormattingInterface" as E520  <<(T,blue) interface  def>> {
+}
+rec def "UserAccountLifecycle" as E521  <<(T,blue) state  def>> {
 }
 
-rec usage "Disabled" as E56  <<(T,blue) state>> {
+rec def "ImplementationLifecycle" as E522  <<(T,blue) state  def>> {
 }
 
-rec usage "Deleted" as E57  <<(T,blue) state>> {
+rec def "SLAViolationEscalation" as E523  <<(T,blue) state  def>> {
 }
 
-rec usage "Recoverable" as E58  <<(T,blue) state>> {
+rec def "JobSeekerProfileRecommendation" as E524  <<(T,blue) state  def>> {
 }
 
+rec def "JobSeekerProfileVisibilityAndLifecycle" as E525  <<(T,blue) state  def>> {
 }
 
+rec def "JobPostingLifecycle" as E526  <<(T,blue) state  def>> {
 }
-E22 --:|> E14 
-E23 --:|> E15 
-E24 --:|> E16 
-E25 --:|> E17 
-E26 --:|> E18 
-E27 --:|> E19 
-E28 --:|> E20 
-E29 --:|> E21 
-E31 o-- E32 
-E32 --:|> E30 
-E31 o-- E33 
-E33 --:|> E30 
-E35 o-- E36 
-E36 --:|> E34 
-E35 o-- E37 
-E37 --:|> E34 
-E39 o-- E40 
-E40 --:|> E38 
-E39 o-- E41 
-E41 --:|> E38 
-E43 o-- E44 
-E44 --:|> E42 
-E43 o-- E45 
-E45 --:|> E42 
-E47 o-- E48 
-E48 --:|> E46 
-E47 o-- E49 
-E49 --:|> E46 
-E51 o-- E52 
-E52 --:|> E50 
-E51 o-- E53 
-E53 --:|> E50 
-E55  --> E56 
-E56  --> E55 
-E55  --> E57 
-E56  --> E58 
-E58  --> E55 
-E58  --> E57 
+
+rec def "JobPostingLifecycle" as E527  <<(T,blue) state  def>> {
+}
+
+rec def "SavedSearchLifecycle" as E528  <<(T,blue) state  def>> {
+}
+
+rec def "JobPostingLifecycle" as E529  <<(T,blue) state  def>> {
+}
+
+rec def "JobPostingRanking" as E530  <<(T,blue) state  def>> {
+}
+
+rec def "IntegrationSynchronizationLifecycle" as E531  <<(T,blue) state  def>> {
+}
+
+rec def "SynchronizationLifecycle" as E532  <<(T,blue) state  def>> {
+}
+
+rec def "APIVersioning" as E533  <<(T,blue) state  def>> {
+}
+
+rec def "SkillTrendAnalysis" as E534  <<(T,blue) state  def>> {
+}
+
+rec def "SkillTrendAnalysis" as E535  <<(T,blue) state  def>> {
+}
+
+rec def "SystemMonitoring" as E536  <<(T,blue) state  def>> {
+}
+
+rec def "AlertGenerationLifecycle" as E537  <<(T,blue) state  def>> {
+}
+
+rec def "ReportSchedulingLifecycle" as E538  <<(T,blue) state  def>> {
+}
+
+rec def "AccountLoginLifecycle" as E539  <<(T,blue) state  def>> {
+}
+
+rec def "SecurityScanLifecycle" as E540  <<(T,blue) state  def>> {
+}
+
+rec def "SecurityIncidentResponse" as E541  <<(T,blue) state  def>> {
+}
+
+rec def "SecurityIncidentResponse" as E542  <<(T,blue) state  def>> {
+}
+
+rec def "SecurityPatchManagementLifecycle" as E543  <<(T,blue) state  def>> {
+}
+
+rec def "SystemAvailability" as E544  <<(T,blue) state  def>> {
+}
+
+rec def "MaintenanceScheduling" as E545  <<(T,blue) state  def>> {
+}
+
+rec def "DatabaseReplicationStatus" as E546  <<(T,blue) state  def>> {
+}
+
+rec def "SystemResilience" as E547  <<(T,blue) state  def>> {
+}
+
+rec def "ExternalServiceDependencyHealth" as E548  <<(T,blue) state  def>> {
+}
+
+rec def "ExternalServiceDependencyHealth" as E549  <<(T,blue) state  def>> {
+}
+
+rec def "ExternalServiceDependencyHealth" as E550  <<(T,blue) state  def>> {
+}
+
+rec def "ExternalServiceDependencyHealth" as E551  <<(T,blue) state  def>> {
+}
+
+rec def "ExternalServiceDependencyHealth" as E552  <<(T,blue) state  def>> {
+}
+
+rec def "DataBackupLifecycle" as E553  <<(T,blue) state  def>> {
+}
+
+rec def "DisasterRecoveryPlanStatus" as E554  <<(T,blue) state  def>> {
+}
+
+rec def "DisasterRecoveryDrillScheduling" as E555  <<(T,blue) state  def>> {
+}
+
+rec def "UserInteractionLifecycle" as E556  <<(T,blue) state  def>> {
+}
+
+rec def "ServiceOperationLifecycle" as E557  <<(T,blue) state  def>> {
+}
+
+rec def "ServiceOperationLifecycle" as E558  <<(T,blue) state  def>> {
+}
+
+rec def "ServiceOperationLifecycle" as E559  <<(T,blue) state  def>> {
+}
+
+rec def "ServiceOperationLifecycle" as E560  <<(T,blue) state  def>> {
+}
+
+rec def "ServiceOperationLifecycle" as E561  <<(T,blue) state  def>> {
+}
+
+rec def "ServiceOperationLifecycle" as E562  <<(T,blue) state  def>> {
+}
+
+rec def "ServiceOperationLifecycle" as E563  <<(T,blue) state  def>> {
+}
+
+rec def "SystemStability" as E564  <<(T,blue) state  def>> {
+}
+
+rec def "UserActionFeedback" as E565  <<(T,blue) state  def>> {
+}
+
+rec def "HelpAndGuidanceAvailability" as E566  <<(T,blue) state  def>> {
+}
+
+rec def "MovingContentVisibilityLifecycle" as E567  <<(T,blue) state  def>> {
+}
+
+rec def "LanguageSwitching" as E568  <<(T,blue) state  def>> {
+}
+
+rec def "UserExperiencePersonalization" as E569  <<(T,blue) state  def>> {
+}
+
+rec def "FeatureVisibility" as E570  <<(T,blue) state  def>> {
+}
+
+rec def "UserFeedbackCollectionLifecycle" as E571  <<(T,blue) state  def>> {
+}
+
+rec def "DeploymentLifecycle" as E572  <<(T,blue) state  def>> {
+}
+
+rec def "AlertGenerationLifecycle" as E573  <<(T,blue) state  def>> {
+}
+
+rec def "AlertGenerationLifecycle" as E574  <<(T,blue) state  def>> {
+}
+
+rec def "BackupLifecycle" as E575  <<(T,blue) state  def>> {
+}
+
+rec def "BackupIntegrityVerification" as E576  <<(T,blue) state  def>> {
+}
+
+rec def "DataRecoveryLifecycle" as E577  <<(T,blue) state  def>> {
+}
+
+rec def "RestorationProcedureDocumentationAndTesting" as E578  <<(T,blue) state  def>> {
+}
+
+rec def "SystemModificationLifecycle" as E579  <<(T,blue) state  def>> {
+}
+
+comp def "WebBrowserAccessibility" as E580  <<(T,blue) constraint  def>> {
+}
+comp def "WCAGCompliance" as E581  <<(T,blue) constraint  def>> {
+}
+comp def "InterfaceDocumentation" as E582  <<(T,blue) constraint  def>> {
+}
+comp def "EnvironmentSeparation" as E583  <<(T,blue) constraint  def>> {
+}
+comp def "DataIsolation" as E584  <<(T,blue) constraint  def>> {
+}
+comp def "PasswordPolicyEnforcement" as E585  <<(T,blue) constraint  def>> {
+}
+comp def "RoleBasedAccessControl" as E586  <<(T,blue) constraint  def>> {
+}
+comp def "SessionTimeout" as E587  <<(T,blue) constraint  def>> {
+}
+comp def "DataCompliance" as E588  <<(T,blue) constraint  def>> {
+}
+comp def "MatchingAlgorithmPerformanceTracking" as E589  <<(T,blue) constraint  def>> {
+}
+comp def "TechnicalPerformanceTracking" as E590  <<(T,blue) constraint  def>> {
+}
+comp def "RoleBasedAccessControlForReports" as E591  <<(T,blue) constraint  def>> {
+}
+comp def "PageLoadTime" as E592  <<(T,blue) constraint  def>> {
+}
+comp def "SearchResultLatency" as E593  <<(T,blue) constraint  def>> {
+}
+comp def "AIMatchingPerformance" as E594  <<(T,blue) constraint  def>> {
+}
+comp def "BatchOperationProcessingTime" as E595  <<(T,blue) constraint  def>> {
+}
+comp def "ResponseTimeDegradation" as E596  <<(T,blue) constraint  def>> {
+}
+comp def "ConcurrentUserSupport" as E597  <<(T,blue) constraint  def>> {
+}
+comp def "JobApplicationProcessingRate" as E598  <<(T,blue) constraint  def>> {
+}
+comp def "JobPostingIngestionRate" as E599  <<(T,blue) constraint  def>> {
+}
+comp def "EmployerRegistrationThroughput" as E600  <<(T,blue) constraint  def>> {
+}
+comp def "CPUUtilization" as E601  <<(T,blue) constraint  def>> {
+}
+comp def "MemoryUtilization" as E602  <<(T,blue) constraint  def>> {
+}
+comp def "StorageCapacity" as E603  <<(T,blue) constraint  def>> {
+}
+comp def "JobSeekerCapacity" as E604  <<(T,blue) constraint  def>> {
+}
+comp def "EmployerCapacity" as E605  <<(T,blue) constraint  def>> {
+}
+comp def "JobPostingCapacity" as E606  <<(T,blue) constraint  def>> {
+}
+comp def "MFAEnforcementForAdministrators" as E607  <<(T,blue) constraint  def>> {
+}
+comp def "MFAOptionForUsers" as E608  <<(T,blue) constraint  def>> {
+}
+comp def "PasswordComplexityEnforcement" as E609  <<(T,blue) constraint  def>> {
+}
+comp def "PasswordRotationPolicy" as E610  <<(T,blue) constraint  def>> {
+}
+comp def "AccountLockout" as E611  <<(T,blue) constraint  def>> {
+}
+comp def "DataEncryptionAtRest" as E612  <<(T,blue) constraint  def>> {
+}
+comp def "DataInTransitEncryption" as E613  <<(T,blue) constraint  def>> {
+}
+comp def "DataMasking" as E614  <<(T,blue) constraint  def>> {
+}
+comp def "DatabaseEncryption" as E615  <<(T,blue) constraint  def>> {
+}
+comp def "DataProtectionCompliance" as E616  <<(T,blue) constraint  def>> {
+}
+comp def "DataSubjectRights" as E617  <<(T,blue) constraint  def>> {
+}
+comp def "AuditTrail" as E618  <<(T,blue) constraint  def>> {
+}
+comp def "SystemAvailability2" as E619  <<(T,blue) constraint  def>> {
+}
+comp def "Availability" as E620  <<(T,blue) constraint  def>> {
+}
+comp def "DataBackupFrequency" as E621  <<(T,blue) constraint  def>> {
+}
+comp def "BackupLocationSeparation" as E622  <<(T,blue) constraint  def>> {
+}
+comp def "RecoveryTimeObjectiveRTOForCriticalFunctions" as E623  <<(T,blue) constraint  def>> {
+}
+comp def "RecoveryTimeObjectiveRTOForNonCriticalFunctions" as E624  <<(T,blue) constraint  def>> {
+}
+comp def "DataLossTolerance" as E625  <<(T,blue) constraint  def>> {
+}
+comp def "DisasterRecoveryPlan" as E626  <<(T,blue) constraint  def>> {
+}
+comp def "DisasterRecoveryDrillFrequency" as E627  <<(T,blue) constraint  def>> {
+}
+comp def "ErrorMessageContent" as E628  <<(T,blue) constraint  def>> {
+}
+comp def "SensitiveInformationExposure" as E629  <<(T,blue) constraint  def>> {
+}
+comp def "LocaleFormatting" as E630  <<(T,blue) constraint  def>> {
+}
+comp def "ConfigurationChangeSupport" as E631  <<(T,blue) constraint  def>> {
+}
+comp def "CodeCoverage" as E632  <<(T,blue) constraint  def>> {
+}
+comp def "DeploymentFlexibility" as E633  <<(T,blue) constraint  def>> {
+}
+comp def "ConsistentDeployment" as E634  <<(T,blue) constraint  def>> {
+}
+comp def "BrowserCompatibility" as E635  <<(T,blue) constraint  def>> {
+}
+comp def "MobileBrowserCompatibility" as E636  <<(T,blue) constraint  def>> {
+}
+comp def "SystemAvailabilitySLA" as E637  <<(T,blue) constraint  def>> {
+}
+comp def "IncidentResponseTime" as E638  <<(T,blue) constraint  def>> {
+}
+comp def "IncidentResolutionTime" as E639  <<(T,blue) constraint  def>> {
+}
+comp def "SLADefinitionAndDocumentation" as E640  <<(T,blue) constraint  def>> {
+}
+comp def "RoleBasedAccessForAdministrativeFunctions" as E641  <<(T,blue) constraint  def>> {
+}
+}
+E182 --:|> E149 
+E183 --:|> E150 
+E184 --:|> E151 
+E185 --:|> E152 
+E186 --:|> E153 
+E187 --:|> E154 
+E188 --:|> E155 
+E189 --:|> E156 
+E190 --:|> E157 
+E191 --:|> E158 
+E192 --:|> E159 
+E193 --:|> E160 
+E194 --:|> E161 
+E195 --:|> E162 
+E196 --:|> E163 
+E197 --:|> E164 
+E198 --:|> E165 
+E199 --:|> E166 
+E200 --:|> E167 
+E201 --:|> E168 
+E202 --:|> E169 
+E203 --:|> E170 
+E204 --:|> E171 
+E205 --:|> E172 
+E206 --:|> E173 
+E207 --:|> E174 
+E208 --:|> E175 
+E209 --:|> E176 
+E210 --:|> E177 
+E211 --:|> E178 
+E212 --:|> E179 
+E213 --:|> E180 
+E214 --:|> E181 
+E216 o-- E217 
+E217 --:|> E215 
+E216 o-- E218 
+E218 --:|> E215 
+E220 o-- E221 
+E221 --:|> E219 
+E220 o-- E222 
+E222 --:|> E219 
+E224 o-- E225 
+E225 --:|> E223 
+E224 o-- E226 
+E226 --:|> E223 
+E228 o-- E229 
+E229 --:|> E227 
+E228 o-- E230 
+E230 --:|> E227 
+E232 o-- E233 
+E233 --:|> E231 
+E232 o-- E234 
+E234 --:|> E231 
+E236 o-- E237 
+E237 --:|> E235 
+E236 o-- E238 
+E238 --:|> E235 
 @enduml

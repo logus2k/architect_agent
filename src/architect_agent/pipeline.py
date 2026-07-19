@@ -133,8 +133,14 @@ def run(scorecard: str | Path | dict, out_dir: str | Path | None = None, *,
                             allocs=allocs_out, interfaces_out=interfaces_out,
                             behavior_out=behavior_out)
 
-    # Step 5 — validate (blocking).
-    result = sysml.validate(model)
+    # Step 5+6 — validate (blocking) AND render, in ONE JVM call. The Java tool
+    # only renders when the model is valid, so passing render_png here is safe and
+    # avoids a second ~1.7s standard-library load. An invalid model still writes no
+    # diagram and fails the gate below.
+    diagrams: dict[str, bytes] = {}
+    png_path = out_dir / "diagrams" / "logical_architecture.png"
+    png_path.parent.mkdir(parents=True, exist_ok=True)
+    result = sysml.validate(model, render_png=png_path)
     if not result.valid:
         # Regeneration is not implemented: with names owned by the registry and
         # emission deterministic, a failure here is a defect in the emitter or a
@@ -143,14 +149,8 @@ def run(scorecard: str | Path | dict, out_dir: str | Path | None = None, *,
         raise GateFailure(
             f"model failed validation ({len(result.errors)} errors, no partial output "
             f"written):\n" + "\n".join(f"  - {e}" for e in result.errors[:10]))
-
-    # Step 6 — render. Non-fatal: the model is already known good.
-    diagrams: dict[str, bytes] = {}
-    png_path = out_dir / "diagrams" / "logical_architecture.png"
-    png_path.parent.mkdir(parents=True, exist_ok=True)
-    render = sysml.validate(model, render_png=png_path)
-    if render.render_error:
-        open_issues.append(f"diagram render failed: {render.render_error}")
+    if result.render_error:
+        open_issues.append(f"diagram render failed: {result.render_error}")
 
     # Semantic review: the validator proved the model resolves, not that it means
     # the right thing. Judge first; anything wrong or undecided goes to a human.
