@@ -161,3 +161,18 @@ def test_resolver_strips_usage_prefix_too():
     r.mint("data management service", Kind.PART_USAGE)
     assert _resolve(r, "part usage dataManagementService", Kind.PART_USAGE) == "dataManagementService"
     assert _resolve(r, "action usage dataManagementService", Kind.PART_USAGE) == "dataManagementService"
+
+
+def test_refined_requirement_ignores_stale_pre_refinement_c7():
+    """Stale-data bug found on the first validated package: characteristic_scores
+    are PRE-refinement (== score_before_refinement) and describe the original text.
+    On the Restaurant package 56/60 scored C7<3 pre-refinement yet the package was
+    validated at mean 4.54. A refined requirement must be treated as verifiable, or
+    the constraint stage guts a signed-off package on evidence about discarded text."""
+    from architect_agent.generate import Requirement
+    stale = Requirement(req_id="R1", text="refined: response within 200 ms",
+                        characteristic_scores={"C7": 1}, text_changed=True)
+    assert stale.is_verifiable, "refined req must not be gated by pre-refinement C7"
+    unrefined = Requirement(req_id="R2", text="should be fast",
+                            characteristic_scores={"C7": 1}, text_changed=False)
+    assert not unrefined.is_verifiable, "un-refined low-C7 req is still unverifiable"

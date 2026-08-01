@@ -1,0 +1,517 @@
+@startuml
+!pragma layout smetana
+skinparam titleBorderThickness 2
+skinparam titleBorderColor red
+title EXCEEDS THE LIMIT!!!\nSince it exceeds the maximum number of model elements to be processed,\n the visualization result may be incomplete.
+skin sysmlbw
+skinparam monochrome true
+skinparam wrapWidth 300
+hide circle
+
+package "RestaurantMenuManager" as E1   {
+rec def "GenerateFoodDescription" as E2  <<(T,blue) action  def>> {
+}
+
+rec def "DisplayItemImages" as E3  <<(T,blue) action  def>> {
+}
+
+rec def "SwitchInterfaceLanguage" as E4  <<(T,blue) action  def>> {
+}
+
+rec def "DiscardContactFormSubmission" as E5  <<(T,blue) action  def>> {
+}
+
+rec def "SetRestaurantWorkingHours" as E6  <<(T,blue) action  def>> {
+}
+
+rec def "RequireGoogleAuthentication" as E7  <<(T,blue) action  def>> {
+}
+
+rec def "RenderResponsiveUserInterface" as E8  <<(T,blue) action  def>> {
+}
+
+rec def "ManageMenu" as E9  <<(T,blue) action  def>> {
+}
+
+rec def "AllowUserToUploadImage" as E10  <<(T,blue) action  def>> {
+}
+
+rec def "ConfirmReservation" as E11  <<(T,blue) action  def>> {
+}
+
+rec def "ResolveTenantIdentity" as E12  <<(T,blue) action  def>> {
+}
+
+rec def "AssociateImageIDWithPathMetadata" as E13  <<(T,blue) action  def>> {
+}
+
+rec def "DisplayContactForm" as E14  <<(T,blue) action  def>> {
+}
+
+rec def "DisplayMapInterface" as E15  <<(T,blue) action  def>> {
+}
+
+rec def "DisplayConfigurationSettingsDashboard" as E16  <<(T,blue) action  def>> {
+}
+
+comp def "Category" as E17  <<(T,blue) part  def>> {
+##//attributes//##
+description: String
+id: String
+name: String
+order: Integer
+}
+comp def "Image" as E18  <<(T,blue) part  def>> {
+##//attributes//##
+approvedFlag: Boolean
+description: String
+generatedText: String
+itemId: String
+languageElement: String
+timestamp: String
+}
+comp def "Reservation" as E19  <<(T,blue) part  def>> {
+##//attributes//##
+dateTime: String
+id: String
+notes: String
+numberOfPeople: Integer
+status: String
+tenantId: String
+timestamp: String
+userGoogleId: String
+}
+comp def "Tenant" as E20  <<(T,blue) part  def>> {
+}
+comp def "ContactForm" as E21  <<(T,blue) part  def>> {
+}
+comp usage "category: Category  " as E22  <<(T,blue) part>> {
+}
+comp usage "image: Image  " as E23  <<(T,blue) part>> {
+}
+comp usage "reservation: Reservation  " as E24  <<(T,blue) part>> {
+}
+comp usage "tenant: Tenant  " as E25  <<(T,blue) part>> {
+}
+comp usage "contactForm: ContactForm  " as E26  <<(T,blue) part>> {
+}
+comp def "LanguageSwitchingInterfacePort" as E27  <<(T,blue) port  def>> {
+##//attributes//##
+Language_code: String
+}
+comp def "LanguageSwitchingInterface" as E28  <<(T,blue) interface  def>> {
+}
+comp usage "supplier: LanguageSwitchingInterfacePort  " as E29  <<(T,blue) port>> {
+}
+comp usage "consumer: LanguageSwitchingInterfacePort  " as E30  <<(T,blue) port>> {
+}
+comp def "WorkingHoursSettingInterfacePort" as E31  <<(T,blue) port  def>> {
+##//attributes//##
+Working_hours: String
+}
+comp def "WorkingHoursSettingInterface" as E32  <<(T,blue) interface  def>> {
+}
+comp usage "supplier: WorkingHoursSettingInterfacePort  " as E33  <<(T,blue) port>> {
+}
+comp usage "consumer: WorkingHoursSettingInterfacePort  " as E34  <<(T,blue) port>> {
+}
+comp def "MapInterfacePort" as E35  <<(T,blue) port  def>> {
+##//attributes//##
+Map_data: String
+}
+comp def "MapInterface" as E36  <<(T,blue) interface  def>> {
+}
+comp usage "supplier: MapInterfacePort  " as E37  <<(T,blue) port>> {
+}
+comp usage "consumer: MapInterfacePort  " as E38  <<(T,blue) port>> {
+}
+comp def "AuthenticationInterfacePort" as E39  <<(T,blue) port  def>> {
+##//attributes//##
+Authentication_token: String
+}
+comp def "AuthenticationInterface" as E40  <<(T,blue) interface  def>> {
+}
+comp usage "supplier: AuthenticationInterfacePort  " as E41  <<(T,blue) port>> {
+}
+comp usage "consumer: AuthenticationInterfacePort  " as E42  <<(T,blue) port>> {
+}
+comp def "UserInterfaceRenderingInterfacePort" as E43  <<(T,blue) port  def>> {
+##//attributes//##
+Layout_Size: String
+}
+comp def "UserInterfaceRenderingInterface" as E44  <<(T,blue) interface  def>> {
+}
+comp usage "supplier: UserInterfaceRenderingInterfacePort  " as E45  <<(T,blue) port>> {
+}
+comp usage "consumer: UserInterfaceRenderingInterfacePort  " as E46  <<(T,blue) port>> {
+}
+comp def "UserAuthenticationInterfacePort" as E47  <<(T,blue) port  def>> {
+##//attributes//##
+Authentication_token: String
+}
+comp def "UserAuthenticationInterface" as E48  <<(T,blue) interface  def>> {
+}
+comp usage "supplier: UserAuthenticationInterfacePort  " as E49  <<(T,blue) port>> {
+}
+comp usage "consumer: UserAuthenticationInterfacePort  " as E50  <<(T,blue) port>> {
+}
+comp def "TenantConfigurationManagementInterfacePort" as E51  <<(T,blue) port  def>> {
+##//attributes//##
+Configuration_data: String
+}
+comp def "TenantConfigurationManagementInterface" as E52  <<(T,blue) interface  def>> {
+}
+comp usage "supplier: TenantConfigurationManagementInterfacePort  " as E53  <<(T,blue) port>> {
+}
+comp usage "consumer: TenantConfigurationManagementInterfacePort  " as E54  <<(T,blue) port>> {
+}
+comp def "ImageUploadInterfacePort" as E55  <<(T,blue) port  def>> {
+##//attributes//##
+image_file: String
+}
+comp def "ImageUploadInterface" as E56  <<(T,blue) interface  def>> {
+}
+comp usage "supplier: ImageUploadInterfacePort  " as E57  <<(T,blue) port>> {
+}
+comp usage "consumer: ImageUploadInterfacePort  " as E58  <<(T,blue) port>> {
+}
+comp def "AIDescriptionGenerationInterfacePort" as E59  <<(T,blue) port  def>> {
+##//attributes//##
+specified_language: String
+}
+comp def "AIDescriptionGenerationInterface" as E60  <<(T,blue) interface  def>> {
+}
+comp usage "supplier: AIDescriptionGenerationInterfacePort  " as E61  <<(T,blue) port>> {
+}
+comp usage "consumer: AIDescriptionGenerationInterfacePort  " as E62  <<(T,blue) port>> {
+}
+comp def "TenantIdentityResolutionInterfacePort" as E63  <<(T,blue) port  def>> {
+##//attributes//##
+Path_prefix: String
+}
+comp def "TenantIdentityResolutionInterface" as E64  <<(T,blue) interface  def>> {
+}
+comp usage "supplier: TenantIdentityResolutionInterfacePort  " as E65  <<(T,blue) port>> {
+}
+comp usage "consumer: TenantIdentityResolutionInterfacePort  " as E66  <<(T,blue) port>> {
+}
+comp def "RequestRoutingInterfacePort" as E67  <<(T,blue) port  def>> {
+##//attributes//##
+Request_data: String
+}
+comp def "RequestRoutingInterface" as E68  <<(T,blue) interface  def>> {
+}
+comp usage "supplier: RequestRoutingInterfacePort  " as E69  <<(T,blue) port>> {
+}
+comp usage "consumer: RequestRoutingInterfacePort  " as E70  <<(T,blue) port>> {
+}
+comp def "OAuth2AuthenticationInterfacePort" as E71  <<(T,blue) port  def>> {
+##//attributes//##
+authentication_token: String
+}
+comp def "OAuth2AuthenticationInterface" as E72  <<(T,blue) interface  def>> {
+}
+comp usage "supplier: OAuth2AuthenticationInterfacePort  " as E73  <<(T,blue) port>> {
+}
+comp usage "consumer: OAuth2AuthenticationInterfacePort  " as E74  <<(T,blue) port>> {
+}
+comp def "LanguageSelectionInterfacePort" as E75  <<(T,blue) port  def>> {
+##//attributes//##
+Language_code: String
+}
+comp def "LanguageSelectionInterface" as E76  <<(T,blue) interface  def>> {
+}
+comp usage "supplier: LanguageSelectionInterfacePort  " as E77  <<(T,blue) port>> {
+}
+comp usage "consumer: LanguageSelectionInterfacePort  " as E78  <<(T,blue) port>> {
+}
+comp def "HTTPSEnforcementInterfacePort" as E79  <<(T,blue) port  def>> {
+##//attributes//##
+Protocol: String
+}
+comp def "HTTPSEnforcementInterface" as E80  <<(T,blue) interface  def>> {
+}
+comp usage "supplier: HTTPSEnforcementInterfacePort  " as E81  <<(T,blue) port>> {
+}
+comp usage "consumer: HTTPSEnforcementInterfacePort  " as E82  <<(T,blue) port>> {
+}
+comp def "ReservationInitiationInterfacePort" as E83  <<(T,blue) port  def>> {
+##//attributes//##
+authentication_status: Boolean
+}
+comp def "ReservationInitiationInterface" as E84  <<(T,blue) interface  def>> {
+}
+comp usage "supplier: ReservationInitiationInterfacePort  " as E85  <<(T,blue) port>> {
+}
+comp usage "consumer: ReservationInitiationInterfacePort  " as E86  <<(T,blue) port>> {
+}
+comp def "AuthenticationInterfacePort" as E87  <<(T,blue) port  def>> {
+##//attributes//##
+Authentication_credentials: String
+}
+comp def "AuthenticationInterface" as E88  <<(T,blue) interface  def>> {
+}
+comp usage "supplier: AuthenticationInterfacePort  " as E89  <<(T,blue) port>> {
+}
+comp usage "consumer: AuthenticationInterfacePort  " as E90  <<(T,blue) port>> {
+}
+comp def "RestaurantNameManagementInterfacePort" as E91  <<(T,blue) port  def>> {
+##//attributes//##
+restaurant_name: String
+}
+comp def "RestaurantNameManagementInterface" as E92  <<(T,blue) interface  def>> {
+}
+comp usage "supplier: RestaurantNameManagementInterfacePort  " as E93  <<(T,blue) port>> {
+}
+comp usage "consumer: RestaurantNameManagementInterfacePort  " as E94  <<(T,blue) port>> {
+}
+comp def "LogoManagementInterfacePort" as E95  <<(T,blue) port  def>> {
+##//attributes//##
+logo: String
+}
+comp def "LogoManagementInterface" as E96  <<(T,blue) interface  def>> {
+}
+comp usage "supplier: LogoManagementInterfacePort  " as E97  <<(T,blue) port>> {
+}
+comp usage "consumer: LogoManagementInterfacePort  " as E98  <<(T,blue) port>> {
+}
+comp def "ContactInformationManagementInterfacePort" as E99  <<(T,blue) port  def>> {
+}
+comp def "ContactInformationManagementInterface" as E100  <<(T,blue) interface  def>> {
+}
+comp usage "supplier: ContactInformationManagementInterfacePort  " as E101  <<(T,blue) port>> {
+}
+comp usage "consumer: ContactInformationManagementInterfacePort  " as E102  <<(T,blue) port>> {
+}
+comp def "WorkhoursManagementInterfacePort" as E103  <<(T,blue) port  def>> {
+}
+comp def "WorkhoursManagementInterface" as E104  <<(T,blue) interface  def>> {
+}
+comp usage "supplier: WorkhoursManagementInterfacePort  " as E105  <<(T,blue) port>> {
+}
+comp usage "consumer: WorkhoursManagementInterfacePort  " as E106  <<(T,blue) port>> {
+}
+comp def "CategoryDataProvisionInterfacePort" as E107  <<(T,blue) port  def>> {
+##//attributes//##
+description: String
+id: String
+name: String
+order: Integer
+}
+comp def "CategoryDataProvisionInterface" as E108  <<(T,blue) interface  def>> {
+}
+comp usage "supplier: CategoryDataProvisionInterfacePort  " as E109  <<(T,blue) port>> {
+}
+comp usage "consumer: CategoryDataProvisionInterfacePort  " as E110  <<(T,blue) port>> {
+}
+comp def "MenuDisplayInterfacePort" as E111  <<(T,blue) port  def>> {
+##//attributes//##
+tenant_id: String
+}
+comp def "MenuDisplayInterface" as E112  <<(T,blue) interface  def>> {
+}
+comp usage "supplier: MenuDisplayInterfacePort  " as E113  <<(T,blue) port>> {
+}
+comp usage "consumer: MenuDisplayInterfacePort  " as E114  <<(T,blue) port>> {
+}
+comp def "LanguageSwitchingInterfacePort" as E115  <<(T,blue) port  def>> {
+##//attributes//##
+Target_Language: String
+}
+comp def "LanguageSwitchingInterface" as E116  <<(T,blue) interface  def>> {
+}
+comp usage "supplier: LanguageSwitchingInterfacePort  " as E117  <<(T,blue) port>> {
+}
+comp usage "consumer: LanguageSwitchingInterfacePort  " as E118  <<(T,blue) port>> {
+}
+comp def "MapDisplayInterfacePort" as E119  <<(T,blue) port  def>> {
+##//attributes//##
+Map_data_source: String
+}
+comp def "MapDisplayInterface" as E120  <<(T,blue) interface  def>> {
+}
+comp usage "supplier: MapDisplayInterfacePort  " as E121  <<(T,blue) port>> {
+}
+comp usage "consumer: MapDisplayInterfacePort  " as E122  <<(T,blue) port>> {
+}
+comp def "ReservationSubmissionInterfacePort" as E123  <<(T,blue) port  def>> {
+##//attributes//##
+reservation_data: String
+}
+comp def "ReservationSubmissionInterface" as E124  <<(T,blue) interface  def>> {
+}
+comp usage "supplier: ReservationSubmissionInterfacePort  " as E125  <<(T,blue) port>> {
+}
+comp usage "consumer: ReservationSubmissionInterfacePort  " as E126  <<(T,blue) port>> {
+}
+comp def "GoogleOAuthAuthenticationInterfacePort" as E127  <<(T,blue) port  def>> {
+##//attributes//##
+authentication_token: String
+}
+comp def "GoogleOAuthAuthenticationInterface" as E128  <<(T,blue) interface  def>> {
+}
+comp usage "supplier: GoogleOAuthAuthenticationInterfacePort  " as E129  <<(T,blue) port>> {
+}
+comp usage "consumer: GoogleOAuthAuthenticationInterfacePort  " as E130  <<(T,blue) port>> {
+}
+comp def "ConfigurationSettingsDashboardAccessInterfacePort" as E131  <<(T,blue) port  def>> {
+##//attributes//##
+Administrator_role: Boolean
+}
+comp def "ConfigurationSettingsDashboardAccessInterface" as E132  <<(T,blue) interface  def>> {
+}
+comp usage "supplier: ConfigurationSettingsDashboardAccessInterfacePort  " as E133  <<(T,blue) port>> {
+}
+comp usage "consumer: ConfigurationSettingsDashboardAccessInterfacePort  " as E134  <<(T,blue) port>> {
+}
+comp def "MenuEntityManagementInterfacePort" as E135  <<(T,blue) port  def>> {
+}
+comp def "MenuEntityManagementInterface" as E136  <<(T,blue) interface  def>> {
+}
+comp def "ImageUploadInterfacePort" as E137  <<(T,blue) port  def>> {
+}
+comp def "ImageUploadInterface" as E138  <<(T,blue) interface  def>> {
+}
+comp def "ReservationSubmissionInterfacePort" as E139  <<(T,blue) port  def>> {
+}
+comp def "ReservationSubmissionInterface" as E140  <<(T,blue) interface  def>> {
+}
+comp def "TenantConfigurationInterfacePort" as E141  <<(T,blue) port  def>> {
+}
+comp def "TenantConfigurationInterface" as E142  <<(T,blue) interface  def>> {
+}
+comp def "UserAuthenticationInterfacePort" as E143  <<(T,blue) port  def>> {
+}
+comp def "UserAuthenticationInterface" as E144  <<(T,blue) interface  def>> {
+}
+comp def "ManualMenuImageDescriptionInputInterfacePort" as E145  <<(T,blue) port  def>> {
+}
+comp def "ManualMenuImageDescriptionInputInterface" as E146  <<(T,blue) interface  def>> {
+}
+comp def "AssetStorageLocation" as E147  <<(T,blue) constraint  def>> {
+}
+comp def "HTTPSEnforcement" as E148  <<(T,blue) constraint  def>> {
+}
+comp def "ReservationAccessControl" as E149  <<(T,blue) constraint  def>> {
+}
+comp def "UniqueIdentifier" as E150  <<(T,blue) constraint  def>> {
+}
+comp def "UniqueIdentifierStorage" as E151  <<(T,blue) constraint  def>> {
+}
+comp def "ConcurrentUsers" as E152  <<(T,blue) constraint  def>> {
+}
+}
+E22 --:|> E17 
+E23 --:|> E18 
+E24 --:|> E19 
+E25 --:|> E20 
+E26 --:|> E21 
+E28 o-- E29 
+E29 --:|> E27 
+E28 o-- E30 
+E30 --:|> E27 
+E32 o-- E33 
+E33 --:|> E31 
+E32 o-- E34 
+E34 --:|> E31 
+E36 o-- E37 
+E37 --:|> E35 
+E36 o-- E38 
+E38 --:|> E35 
+E40 o-- E41 
+E41 --:|> E39 
+E40 o-- E42 
+E42 --:|> E39 
+E44 o-- E45 
+E45 --:|> E43 
+E44 o-- E46 
+E46 --:|> E43 
+E48 o-- E49 
+E49 --:|> E47 
+E48 o-- E50 
+E50 --:|> E47 
+E52 o-- E53 
+E53 --:|> E51 
+E52 o-- E54 
+E54 --:|> E51 
+E56 o-- E57 
+E57 --:|> E55 
+E56 o-- E58 
+E58 --:|> E55 
+E60 o-- E61 
+E61 --:|> E59 
+E60 o-- E62 
+E62 --:|> E59 
+E64 o-- E65 
+E65 --:|> E63 
+E64 o-- E66 
+E66 --:|> E63 
+E68 o-- E69 
+E69 --:|> E67 
+E68 o-- E70 
+E70 --:|> E67 
+E72 o-- E73 
+E73 --:|> E71 
+E72 o-- E74 
+E74 --:|> E71 
+E76 o-- E77 
+E77 --:|> E75 
+E76 o-- E78 
+E78 --:|> E75 
+E80 o-- E81 
+E81 --:|> E79 
+E80 o-- E82 
+E82 --:|> E79 
+E84 o-- E85 
+E85 --:|> E83 
+E84 o-- E86 
+E86 --:|> E83 
+E88 o-- E89 
+E89 --:|> E39 
+E88 o-- E90 
+E90 --:|> E39 
+E92 o-- E93 
+E93 --:|> E91 
+E92 o-- E94 
+E94 --:|> E91 
+E96 o-- E97 
+E97 --:|> E95 
+E96 o-- E98 
+E98 --:|> E95 
+E100 o-- E101 
+E101 --:|> E99 
+E100 o-- E102 
+E102 --:|> E99 
+E104 o-- E105 
+E105 --:|> E103 
+E104 o-- E106 
+E106 --:|> E103 
+E108 o-- E109 
+E109 --:|> E107 
+E108 o-- E110 
+E110 --:|> E107 
+E112 o-- E113 
+E113 --:|> E111 
+E112 o-- E114 
+E114 --:|> E111 
+E116 o-- E117 
+E117 --:|> E27 
+E116 o-- E118 
+E118 --:|> E27 
+E120 o-- E121 
+E121 --:|> E119 
+E120 o-- E122 
+E122 --:|> E119 
+E124 o-- E125 
+E125 --:|> E123 
+E124 o-- E126 
+E126 --:|> E123 
+E128 o-- E129 
+E129 --:|> E127 
+E128 o-- E130 
+E130 --:|> E127 
+E132 o-- E133 
+E133 --:|> E131 
+E132 o-- E134 
+E134 --:|> E131 
+@enduml

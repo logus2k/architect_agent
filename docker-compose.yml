@@ -13,9 +13,11 @@ services:
     environment:
       # agent_server owns prompts and profiles; llama-vision does inference.
       AGENT_SERVER_URL: http://agent_server:7701
+      # Analyst service — the package (glossary/tags/tree) is fetched from here.
+      ANALYST_URL: http://analyst-agent:7803
       ARCHITECT_DATA_DIR: /app/data
     volumes:
-      # Toolchain (jar + SysML standard library) and generated output persist here.
+      # Generated architecture packages persist here.
       - ./data:/app/data
     networks:
       - logus2k_network

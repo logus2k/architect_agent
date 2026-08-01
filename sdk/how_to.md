@@ -3,9 +3,27 @@
 **Audience:** the Planner Agent (and any other consumer of a validated architecture).
 **Service:** none — the Architect is a **batch job**, not a server. Output is published to
 disk (§2).
-**Status of this document:** written 2026-07-18 against a working implementation and
-verified by running it on live Analyst packages. Where something is designed-but-not-built
-it says so explicitly — do not infer capability from silence.
+
+> **Contract 2.0 (2026-08) — read this first; it supersedes the SysML-centric parts below.**
+> The Architect now designs **per aspect** (per feature branch of the Analyst's requirement
+> tree), not per requirement, and **SysML v2 is dropped** (no `.sysml`, no 127MB jar). Output:
+> - `planner_handover.json` — **aspect-structured, `contract_version: "2.0"`**. Keyed by
+>   `req_id` under `by_requirement` (join unchanged) AND grouped under `by_aspect`
+>   (components / interfaces / functions / consumes per aspect — the natural unit for Planner
+>   epics). `components[]` carry `owner_aspect` + `suggested_module`. `open_issues[]` from the
+>   built-in critique (near-duplicate interfaces, ownership violations, unowned entities).
+> - `diagrams/*.mmd` — **Mermaid** source, one per aspect + a `_system_overview.mmd`, rendered
+>   client-side by reqoach (no server renderer, no jar).
+> - `artifacts/*.md` — human-readable per-aspect summary + open issues.
+>
+> Correctness comes from the Architect's **built-in critique + refine loop** (reranker
+> near-duplicate detection, single-owner reconciliation), not a SysML validator. §2 (files)
+> and §7 (regenerating) below are updated for 2.0. §3's `by_requirement` join is unchanged;
+> its `model.sysml`/registry guarantees and §§4–5,8 SysML-validation claims are retired 1.0
+> history — the gate is now the critique/refine loop, not the OMG validator.
+
+**Status of this document:** 2.0 section written 2026-08; the 1.0 body written 2026-07-18.
+Where something is designed-but-not-built it says so — do not infer capability from silence.
 
 ---
 
@@ -50,12 +68,13 @@ Everything else in the package is optional context:
 
 ```
 data/architecture/<project_id>/
-  planner_handover.json     ← the contract, §3
-  model.sysml               SysML v2 source (you should not need to parse this)
-  symbols.json              element registry, with requirement trace ids
-  artifacts/                ADD.md, traceability.md, and a table per artifact
-  diagrams/                 rendered PNG + PlantUML source
+  planner_handover.json     ← the contract (2.0, §3)
+  diagrams/                 one <aspect>.mmd (Mermaid) per aspect + _system_overview.mmd
+  artifacts/                architecture.md (per-aspect summary) + open_issues.md
 ```
+
+> **2.0:** there is no `model.sysml` and no `symbols.json` — SysML v2 is dropped. Diagrams
+> are **Mermaid source**, rendered client-side by reqoach; there is no baked PNG.
 
 There is no HTTP endpoint. If one would be materially easier on your side, ask — it is a
 small addition, but nothing needs it today.
@@ -215,18 +234,26 @@ Related, and visible in the ADD's traceability table:
 
 ## 7. Regenerating
 
+The Architect is a batch job (`aspect_pipeline`), not a server. Give it either an Analyst
+project id (fetched over HTTP) or a local `package.json`:
+
 ```bash
-curl -s http://analyst-agent:7803/projects/<PID>/package -o package.json
-python -m architect_agent.pipeline package.json -p <PackageName> [--limit N]
-#   -> data/architecture/<project_id>/
+# in the deployed container — fetch the package from the Analyst and publish:
+docker compose run --rm architect-agent \
+  python3 -m architect_agent.aspect_pipeline <PID>
+#   -> data/architecture/<PID>/  (planner_handover.json + diagrams/*.mmd + artifacts/)
+
+# or from a saved package file, to a chosen output dir:
+python3 -m architect_agent.aspect_pipeline package.json -o out/
 ```
 
-Deterministic given the same package: element names come from the registry, and emission is
-plain code, so reruns diff cleanly. The *content* the model proposes is not bit-reproducible,
-but the naming is.
+Naming is stable across reruns — entities are anchored to the Analyst **glossary**, and
+emission is plain code, so diagrams and handover diff cleanly. The *content* the design model
+proposes is not bit-reproducible; the built-in critique/refine loop converges it (near-dup,
+single-owner) rather than a validator gating it.
 
-A full run is slow — one local model slot, one LLM call per requirement per applicable stage.
-`--limit` exists for development.
+A full run is slow — one local model slot, one design call per aspect (branch) plus the
+refine rounds.
 
 ---
 

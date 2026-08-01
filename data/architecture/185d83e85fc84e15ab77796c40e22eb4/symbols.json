@@ -1,0 +1,1086 @@
+{
+  "symbols": [
+    {
+      "name": "AIDescriptionGenerationInterface",
+      "kind": "interface def",
+      "req_ids": [
+        "REQ-0013"
+      ],
+      "description": "The system needs to provide a specified language to the AI description generation service.",
+      "parent": null,
+      "intent_key": "ai description generation interface"
+    },
+    {
+      "name": "AIDescriptionGenerationInterfacePort",
+      "kind": "port def",
+      "req_ids": [
+        "REQ-0013"
+      ],
+      "description": "",
+      "parent": null,
+      "intent_key": "ai description generation interface port"
+    },
+    {
+      "name": "AllowUserToUploadImage",
+      "kind": "action def",
+      "req_ids": [
+        "REQ-0012",
+        "REQ-0052",
+        "REQ-0063"
+      ],
+      "description": "The system permits an authorized user to upload an image file.",
+      "parent": null,
+      "intent_key": "allow user to upload image"
+    },
+    {
+      "name": "AssetStorageLocation",
+      "kind": "constraint def",
+      "req_ids": [
+        "REQ-0017"
+      ],
+      "description": "Tenant assets must be stored locally.",
+      "parent": null,
+      "intent_key": "asset storage location"
+    },
+    {
+      "name": "AssociateImageIDWithPathMetadata",
+      "kind": "action def",
+      "req_ids": [
+        "REQ-0036"
+      ],
+      "description": "The system links an image ID to its corresponding path metadata.",
+      "parent": null,
+      "intent_key": "associate image id with path metadata"
+    },
+    {
+      "name": "AuthenticationInterface",
+      "kind": "interface def",
+      "req_ids": [
+        "REQ-0007",
+        "REQ-0027"
+      ],
+      "description": "The system requires a user to authenticate via Google login to access reservation functionality.",
+      "parent": null,
+      "intent_key": "authentication interface"
+    },
+    {
+      "name": "AuthenticationInterfacePort",
+      "kind": "port def",
+      "req_ids": [
+        "REQ-0007",
+        "REQ-0027"
+      ],
+      "description": "",
+      "parent": null,
+      "intent_key": "authentication interface port"
+    },
+    {
+      "name": "Category",
+      "kind": "part def",
+      "req_ids": [
+        "REQ-0034"
+      ],
+      "description": "Represents a distinct grouping entity within the system.",
+      "parent": null,
+      "intent_key": "category"
+    },
+    {
+      "name": "CategoryDataProvisionInterface",
+      "kind": "interface def",
+      "req_ids": [
+        "REQ-0034"
+      ],
+      "description": "Provides identification, naming, description, and ordering information for a Category.",
+      "parent": null,
+      "intent_key": "category data provision interface"
+    },
+    {
+      "name": "CategoryDataProvisionInterfacePort",
+      "kind": "port def",
+      "req_ids": [
+        "REQ-0034"
+      ],
+      "description": "",
+      "parent": null,
+      "intent_key": "category data provision interface port"
+    },
+    {
+      "name": "ConcurrentUsers",
+      "kind": "constraint def",
+      "req_ids": [
+        "REQ-0060"
+      ],
+      "description": "The system shall support at least 5 concurrent users.",
+      "parent": null,
+      "intent_key": "concurrent user"
+    },
+    {
+      "name": "ConfigurationSettingsDashboardAccessInterface",
+      "kind": "interface def",
+      "req_ids": [
+        "REQ-0050"
+      ],
+      "description": "Provides access to the configuration settings dashboard for a specific tenant's administrator.",
+      "parent": null,
+      "intent_key": "configuration setting dashboard access interface"
+    },
+    {
+      "name": "ConfigurationSettingsDashboardAccessInterfacePort",
+      "kind": "port def",
+      "req_ids": [
+        "REQ-0050"
+      ],
+      "description": "",
+      "parent": null,
+      "intent_key": "configuration setting dashboard access interface port"
+    },
+    {
+      "name": "ConfirmReservation",
+      "kind": "action def",
+      "req_ids": [
+        "REQ-0014",
+        "REQ-0019",
+        "REQ-0026",
+        "REQ-0031",
+        "REQ-0039",
+        "REQ-0059"
+      ],
+      "description": "Allows an administrator to manually confirm a reservation.",
+      "parent": null,
+      "intent_key": "confirm reservation"
+    },
+    {
+      "name": "ContactForm",
+      "kind": "part def",
+      "req_ids": [
+        "REQ-0045"
+      ],
+      "description": "Provides the interface and mechanism for users to submit contact information for a tenant.",
+      "parent": null,
+      "intent_key": "contact form"
+    },
+    {
+      "name": "ContactInformationManagementInterface",
+      "kind": "interface def",
+      "req_ids": [
+        "REQ-0029"
+      ],
+      "description": "Allows the Tenant Administrator to manage the restaurant contacts.",
+      "parent": null,
+      "intent_key": "contact information management interface"
+    },
+    {
+      "name": "ContactInformationManagementInterfacePort",
+      "kind": "port def",
+      "req_ids": [
+        "REQ-0029"
+      ],
+      "description": "",
+      "parent": null,
+      "intent_key": "contact information management interface port"
+    },
+    {
+      "name": "DiscardContactFormSubmission",
+      "kind": "action def",
+      "req_ids": [
+        "REQ-0004"
+      ],
+      "description": "The system discards the contact form submission after processing.",
+      "parent": null,
+      "intent_key": "discard contact form submission"
+    },
+    {
+      "name": "DisplayConfigurationSettingsDashboard",
+      "kind": "action def",
+      "req_ids": [
+        "REQ-0050",
+        "REQ-0055"
+      ],
+      "description": "The system presents a dashboard containing configuration settings for the tenant administrator.",
+      "parent": null,
+      "intent_key": "display configuration setting dashboard"
+    },
+    {
+      "name": "DisplayContactForm",
+      "kind": "action def",
+      "req_ids": [
+        "REQ-0045",
+        "REQ-0048",
+        "REQ-0054"
+      ],
+      "description": "The system presents a contact form to the user for a specific tenant.",
+      "parent": null,
+      "intent_key": "display contact form"
+    },
+    {
+      "name": "DisplayItemImages",
+      "kind": "action def",
+      "req_ids": [
+        "REQ-0002",
+        "REQ-0024",
+        "REQ-0030",
+        "REQ-0042",
+        "REQ-0043"
+      ],
+      "description": "Shows the images of the items to the user.",
+      "parent": null,
+      "intent_key": "display item image"
+    },
+    {
+      "name": "DisplayMapInterface",
+      "kind": "action def",
+      "req_ids": [
+        "REQ-0047"
+      ],
+      "description": "The system displays a map interface using OpenStreetMap data.",
+      "parent": null,
+      "intent_key": "display map interface"
+    },
+    {
+      "name": "GenerateFoodDescription",
+      "kind": "action def",
+      "req_ids": [
+        "REQ-0001",
+        "REQ-0013",
+        "REQ-0020",
+        "REQ-0043",
+        "REQ-0053",
+        "REQ-0058",
+        "REQ-0063"
+      ],
+      "description": "Creates a textual description based on an input food image.",
+      "parent": null,
+      "intent_key": "generate food description"
+    },
+    {
+      "name": "GoogleOAuthAuthenticationInterface",
+      "kind": "interface def",
+      "req_ids": [
+        "REQ-0049"
+      ],
+      "description": "Allows the system to authenticate a user via Google OAuth.",
+      "parent": null,
+      "intent_key": "google o auth authentication interface"
+    },
+    {
+      "name": "GoogleOAuthAuthenticationInterfacePort",
+      "kind": "port def",
+      "req_ids": [
+        "REQ-0049"
+      ],
+      "description": "",
+      "parent": null,
+      "intent_key": "google o auth authentication interface port"
+    },
+    {
+      "name": "HTTPSEnforcement",
+      "kind": "constraint def",
+      "req_ids": [
+        "REQ-0023"
+      ],
+      "description": "All public endpoints must use HTTPS.",
+      "parent": null,
+      "intent_key": "http enforcement"
+    },
+    {
+      "name": "HTTPSEnforcementInterface",
+      "kind": "interface def",
+      "req_ids": [
+        "REQ-0023"
+      ],
+      "description": "Enforces that all public endpoints use HTTPS for secure communication.",
+      "parent": null,
+      "intent_key": "http enforcement interface"
+    },
+    {
+      "name": "HTTPSEnforcementInterfacePort",
+      "kind": "port def",
+      "req_ids": [
+        "REQ-0023"
+      ],
+      "description": "",
+      "parent": null,
+      "intent_key": "http enforcement interface port"
+    },
+    {
+      "name": "Image",
+      "kind": "part def",
+      "req_ids": [
+        "REQ-0037"
+      ],
+      "description": "Stores the metadata and content associated with an image.",
+      "parent": null,
+      "intent_key": "image"
+    },
+    {
+      "name": "ImageUploadInterface",
+      "kind": "interface def",
+      "req_ids": [
+        "REQ-0012",
+        "REQ-0052"
+      ],
+      "description": "Allows an authorized user to upload an image file to the system.",
+      "parent": null,
+      "intent_key": "image upload interface"
+    },
+    {
+      "name": "ImageUploadInterfacePort",
+      "kind": "port def",
+      "req_ids": [
+        "REQ-0012",
+        "REQ-0052"
+      ],
+      "description": "",
+      "parent": null,
+      "intent_key": "image upload interface port"
+    },
+    {
+      "name": "LanguageSelectionInterface",
+      "kind": "interface def",
+      "req_ids": [
+        "REQ-0022"
+      ],
+      "description": "The system needs to receive a language selection to determine the output language.",
+      "parent": null,
+      "intent_key": "language selection interface"
+    },
+    {
+      "name": "LanguageSelectionInterfacePort",
+      "kind": "port def",
+      "req_ids": [
+        "REQ-0022"
+      ],
+      "description": "",
+      "parent": null,
+      "intent_key": "language selection interface port"
+    },
+    {
+      "name": "LanguageSwitchingInterface",
+      "kind": "interface def",
+      "req_ids": [
+        "REQ-0003",
+        "REQ-0044"
+      ],
+      "description": "Allows the user to change the interface language between Portuguese and English.",
+      "parent": null,
+      "intent_key": "language switching interface"
+    },
+    {
+      "name": "LanguageSwitchingInterfacePort",
+      "kind": "port def",
+      "req_ids": [
+        "REQ-0003",
+        "REQ-0044"
+      ],
+      "description": "",
+      "parent": null,
+      "intent_key": "language switching interface port"
+    },
+    {
+      "name": "LogoManagementInterface",
+      "kind": "interface def",
+      "req_ids": [
+        "REQ-0029"
+      ],
+      "description": "Allows the Tenant Administrator to manage the restaurant logo.",
+      "parent": null,
+      "intent_key": "logo management interface"
+    },
+    {
+      "name": "LogoManagementInterfacePort",
+      "kind": "port def",
+      "req_ids": [
+        "REQ-0029"
+      ],
+      "description": "",
+      "parent": null,
+      "intent_key": "logo management interface port"
+    },
+    {
+      "name": "ManageMenu",
+      "kind": "action def",
+      "req_ids": [
+        "REQ-0011",
+        "REQ-0024",
+        "REQ-0028",
+        "REQ-0029",
+        "REQ-0030",
+        "REQ-0032",
+        "REQ-0042",
+        "REQ-0051"
+      ],
+      "description": "Allows an authorized user to create, update, or delete a menu.",
+      "parent": null,
+      "intent_key": "manage menu"
+    },
+    {
+      "name": "ManualMenuImageDescriptionInputInterface",
+      "kind": "interface def",
+      "req_ids": [
+        "REQ-0063"
+      ],
+      "description": "Allows manual text input for menu image descriptions when the LLM service is unavailable.",
+      "parent": null,
+      "intent_key": "manual menu image description input interface"
+    },
+    {
+      "name": "ManualMenuImageDescriptionInputInterfacePort",
+      "kind": "port def",
+      "req_ids": [
+        "REQ-0063"
+      ],
+      "description": "",
+      "parent": null,
+      "intent_key": "manual menu image description input interface port"
+    },
+    {
+      "name": "MapDisplayInterface",
+      "kind": "interface def",
+      "req_ids": [
+        "REQ-0047"
+      ],
+      "description": "The system needs to display a map using external OpenStreetMap data.",
+      "parent": null,
+      "intent_key": "map display interface"
+    },
+    {
+      "name": "MapDisplayInterfacePort",
+      "kind": "port def",
+      "req_ids": [
+        "REQ-0047"
+      ],
+      "description": "",
+      "parent": null,
+      "intent_key": "map display interface port"
+    },
+    {
+      "name": "MapInterface",
+      "kind": "interface def",
+      "req_ids": [
+        "REQ-0006"
+      ],
+      "description": "Provides access to an open-source mapping solution for visualization.",
+      "parent": null,
+      "intent_key": "map interface"
+    },
+    {
+      "name": "MapInterfacePort",
+      "kind": "port def",
+      "req_ids": [
+        "REQ-0006"
+      ],
+      "description": "",
+      "parent": null,
+      "intent_key": "map interface port"
+    },
+    {
+      "name": "MenuDisplayInterface",
+      "kind": "interface def",
+      "req_ids": [
+        "REQ-0042"
+      ],
+      "description": "The system needs to retrieve the menu associated with a specific tenant.",
+      "parent": null,
+      "intent_key": "menu display interface"
+    },
+    {
+      "name": "MenuDisplayInterfacePort",
+      "kind": "port def",
+      "req_ids": [
+        "REQ-0042"
+      ],
+      "description": "",
+      "parent": null,
+      "intent_key": "menu display interface port"
+    },
+    {
+      "name": "MenuEntityManagementInterface",
+      "kind": "interface def",
+      "req_ids": [
+        "REQ-0051"
+      ],
+      "description": "Allows the tenant administrator to perform CRUD operations on restaurant menu entities.",
+      "parent": null,
+      "intent_key": "menu entity management interface"
+    },
+    {
+      "name": "MenuEntityManagementInterfacePort",
+      "kind": "port def",
+      "req_ids": [
+        "REQ-0051"
+      ],
+      "description": "",
+      "parent": null,
+      "intent_key": "menu entity management interface port"
+    },
+    {
+      "name": "OAuth2AuthenticationInterface",
+      "kind": "interface def",
+      "req_ids": [
+        "REQ-0018"
+      ],
+      "description": "Interface for handling Google OAuth2 authentication flow.",
+      "parent": null,
+      "intent_key": "o auth2 authentication interface"
+    },
+    {
+      "name": "OAuth2AuthenticationInterfacePort",
+      "kind": "port def",
+      "req_ids": [
+        "REQ-0018"
+      ],
+      "description": "",
+      "parent": null,
+      "intent_key": "o auth2 authentication interface port"
+    },
+    {
+      "name": "RenderResponsiveUserInterface",
+      "kind": "action def",
+      "req_ids": [
+        "REQ-0008",
+        "REQ-0010",
+        "REQ-0024"
+      ],
+      "description": "The system displays the user interface adapting to different screen sizes.",
+      "parent": null,
+      "intent_key": "render responsive user interface"
+    },
+    {
+      "name": "RequestRoutingInterface",
+      "kind": "interface def",
+      "req_ids": [
+        "REQ-0016"
+      ],
+      "description": "Routes incoming requests to the correct tenant's SQLite instance.",
+      "parent": null,
+      "intent_key": "request routing interface"
+    },
+    {
+      "name": "RequestRoutingInterfacePort",
+      "kind": "port def",
+      "req_ids": [
+        "REQ-0016"
+      ],
+      "description": "",
+      "parent": null,
+      "intent_key": "request routing interface port"
+    },
+    {
+      "name": "RequireGoogleAuthentication",
+      "kind": "action def",
+      "req_ids": [
+        "REQ-0007",
+        "REQ-0009",
+        "REQ-0018",
+        "REQ-0025",
+        "REQ-0026",
+        "REQ-0027",
+        "REQ-0048",
+        "REQ-0049",
+        "REQ-0054",
+        "REQ-0062"
+      ],
+      "description": "The system must enforce Google login before granting access to reservation features.",
+      "parent": null,
+      "intent_key": "require google authentication"
+    },
+    {
+      "name": "Reservation",
+      "kind": "part def",
+      "req_ids": [
+        "REQ-0038"
+      ],
+      "description": "Stores the details and state of a booking.",
+      "parent": null,
+      "intent_key": "reservation"
+    },
+    {
+      "name": "ReservationAccessControl",
+      "kind": "constraint def",
+      "req_ids": [
+        "REQ-0025"
+      ],
+      "description": "Anonymous users must be prevented from making reservations.",
+      "parent": null,
+      "intent_key": "reservation access control"
+    },
+    {
+      "name": "ReservationInitiationInterface",
+      "kind": "interface def",
+      "req_ids": [
+        "REQ-0026"
+      ],
+      "description": "Allows a user to initiate a reservation process.",
+      "parent": null,
+      "intent_key": "reservation initiation interface"
+    },
+    {
+      "name": "ReservationInitiationInterfacePort",
+      "kind": "port def",
+      "req_ids": [
+        "REQ-0026"
+      ],
+      "description": "",
+      "parent": null,
+      "intent_key": "reservation initiation interface port"
+    },
+    {
+      "name": "ReservationSubmissionInterface",
+      "kind": "interface def",
+      "req_ids": [
+        "REQ-0048",
+        "REQ-0054"
+      ],
+      "description": "Allows the system to submit a reservation form to Google's authenticated users.",
+      "parent": null,
+      "intent_key": "reservation submission interface"
+    },
+    {
+      "name": "ReservationSubmissionInterfacePort",
+      "kind": "port def",
+      "req_ids": [
+        "REQ-0048",
+        "REQ-0054"
+      ],
+      "description": "",
+      "parent": null,
+      "intent_key": "reservation submission interface port"
+    },
+    {
+      "name": "ResolveTenantIdentity",
+      "kind": "action def",
+      "req_ids": [
+        "REQ-0015",
+        "REQ-0016",
+        "REQ-0042",
+        "REQ-0056",
+        "REQ-0057",
+        "REQ-0059"
+      ],
+      "description": "The system determines the tenant identity based on the provided path prefix.",
+      "parent": null,
+      "intent_key": "resolve tenant identity"
+    },
+    {
+      "name": "RestaurantNameManagementInterface",
+      "kind": "interface def",
+      "req_ids": [
+        "REQ-0029"
+      ],
+      "description": "Allows the Tenant Administrator to manage the restaurant name.",
+      "parent": null,
+      "intent_key": "restaurant name management interface"
+    },
+    {
+      "name": "RestaurantNameManagementInterfacePort",
+      "kind": "port def",
+      "req_ids": [
+        "REQ-0029"
+      ],
+      "description": "",
+      "parent": null,
+      "intent_key": "restaurant name management interface port"
+    },
+    {
+      "name": "SetRestaurantWorkingHours",
+      "kind": "action def",
+      "req_ids": [
+        "REQ-0005",
+        "REQ-0029",
+        "REQ-0046"
+      ],
+      "description": "Allows a tenant restaurant to define its operating hours.",
+      "parent": null,
+      "intent_key": "set restaurant working hour"
+    },
+    {
+      "name": "SwitchInterfaceLanguage",
+      "kind": "action def",
+      "req_ids": [
+        "REQ-0003",
+        "REQ-0013",
+        "REQ-0022",
+        "REQ-0044",
+        "REQ-0065"
+      ],
+      "description": "Allows the user to change the display language between Portuguese and English.",
+      "parent": null,
+      "intent_key": "switch interface language"
+    },
+    {
+      "name": "Tenant",
+      "kind": "part def",
+      "req_ids": [
+        "REQ-0045"
+      ],
+      "description": "Represents an entity that requires a contact form.",
+      "parent": null,
+      "intent_key": "tenant"
+    },
+    {
+      "name": "TenantConfigurationInterface",
+      "kind": "interface def",
+      "req_ids": [
+        "REQ-0055"
+      ],
+      "description": "Allows a tenant administrator to configure the settings specific to a tenant.",
+      "parent": null,
+      "intent_key": "tenant configuration interface"
+    },
+    {
+      "name": "TenantConfigurationInterfacePort",
+      "kind": "port def",
+      "req_ids": [
+        "REQ-0055"
+      ],
+      "description": "",
+      "parent": null,
+      "intent_key": "tenant configuration interface port"
+    },
+    {
+      "name": "TenantConfigurationManagementInterface",
+      "kind": "interface def",
+      "req_ids": [
+        "REQ-0010"
+      ],
+      "description": "Allows the Tenant administrator to view and modify the tenant's specific configurations.",
+      "parent": null,
+      "intent_key": "tenant configuration management interface"
+    },
+    {
+      "name": "TenantConfigurationManagementInterfacePort",
+      "kind": "port def",
+      "req_ids": [
+        "REQ-0010"
+      ],
+      "description": "",
+      "parent": null,
+      "intent_key": "tenant configuration management interface port"
+    },
+    {
+      "name": "TenantIdentityResolutionInterface",
+      "kind": "interface def",
+      "req_ids": [
+        "REQ-0015"
+      ],
+      "description": "The system resolves tenant identity based on the path prefix.",
+      "parent": null,
+      "intent_key": "tenant identity resolution interface"
+    },
+    {
+      "name": "TenantIdentityResolutionInterfacePort",
+      "kind": "port def",
+      "req_ids": [
+        "REQ-0015"
+      ],
+      "description": "",
+      "parent": null,
+      "intent_key": "tenant identity resolution interface port"
+    },
+    {
+      "name": "UniqueIdentifier",
+      "kind": "constraint def",
+      "req_ids": [
+        "REQ-0033"
+      ],
+      "description": "Each menu item must have a unique identifier stored by the system.",
+      "parent": null,
+      "intent_key": "unique identifier"
+    },
+    {
+      "name": "UniqueIdentifierStorage",
+      "kind": "constraint def",
+      "req_ids": [
+        "REQ-0035"
+      ],
+      "description": "The system shall store a unique identifier for each item.",
+      "parent": null,
+      "intent_key": "unique identifier storage"
+    },
+    {
+      "name": "UserAuthenticationInterface",
+      "kind": "interface def",
+      "req_ids": [
+        "REQ-0009",
+        "REQ-0062"
+      ],
+      "description": "Allows the system to authenticate users using Google OAuth.",
+      "parent": null,
+      "intent_key": "user authentication interface"
+    },
+    {
+      "name": "UserAuthenticationInterfacePort",
+      "kind": "port def",
+      "req_ids": [
+        "REQ-0009",
+        "REQ-0062"
+      ],
+      "description": "",
+      "parent": null,
+      "intent_key": "user authentication interface port"
+    },
+    {
+      "name": "UserInterfaceRenderingInterface",
+      "kind": "interface def",
+      "req_ids": [
+        "REQ-0008"
+      ],
+      "description": "Defines the contract for rendering the user interface across different device layouts.",
+      "parent": null,
+      "intent_key": "user interface rendering interface"
+    },
+    {
+      "name": "UserInterfaceRenderingInterfacePort",
+      "kind": "port def",
+      "req_ids": [
+        "REQ-0008"
+      ],
+      "description": "",
+      "parent": null,
+      "intent_key": "user interface rendering interface port"
+    },
+    {
+      "name": "WorkhoursManagementInterface",
+      "kind": "interface def",
+      "req_ids": [
+        "REQ-0029"
+      ],
+      "description": "Allows the Tenant Administrator to manage the restaurant workhours.",
+      "parent": null,
+      "intent_key": "workhour management interface"
+    },
+    {
+      "name": "WorkhoursManagementInterfacePort",
+      "kind": "port def",
+      "req_ids": [
+        "REQ-0029"
+      ],
+      "description": "",
+      "parent": null,
+      "intent_key": "workhour management interface port"
+    },
+    {
+      "name": "WorkingHoursSettingInterface",
+      "kind": "interface def",
+      "req_ids": [
+        "REQ-0005"
+      ],
+      "description": "Allows a tenant to define its operational hours.",
+      "parent": null,
+      "intent_key": "working hour setting interface"
+    },
+    {
+      "name": "WorkingHoursSettingInterfacePort",
+      "kind": "port def",
+      "req_ids": [
+        "REQ-0005"
+      ],
+      "description": "",
+      "parent": null,
+      "intent_key": "working hour setting interface port"
+    },
+    {
+      "name": "approvedFlag",
+      "kind": "attribute",
+      "req_ids": [
+        "REQ-0037"
+      ],
+      "description": "",
+      "parent": "Image",
+      "intent_key": "approved flag"
+    },
+    {
+      "name": "category",
+      "kind": "part",
+      "req_ids": [
+        "REQ-0034"
+      ],
+      "description": "",
+      "parent": null,
+      "intent_key": "category"
+    },
+    {
+      "name": "contactForm",
+      "kind": "part",
+      "req_ids": [
+        "REQ-0045"
+      ],
+      "description": "",
+      "parent": null,
+      "intent_key": "contact form"
+    },
+    {
+      "name": "dateTime",
+      "kind": "attribute",
+      "req_ids": [
+        "REQ-0038"
+      ],
+      "description": "",
+      "parent": "Reservation",
+      "intent_key": "date time"
+    },
+    {
+      "name": "description",
+      "kind": "attribute",
+      "req_ids": [
+        "REQ-0034",
+        "REQ-0037"
+      ],
+      "description": "",
+      "parent": "Category",
+      "intent_key": "description"
+    },
+    {
+      "name": "generatedText",
+      "kind": "attribute",
+      "req_ids": [
+        "REQ-0037"
+      ],
+      "description": "",
+      "parent": "Image",
+      "intent_key": "generated text"
+    },
+    {
+      "name": "id",
+      "kind": "attribute",
+      "req_ids": [
+        "REQ-0034",
+        "REQ-0038"
+      ],
+      "description": "",
+      "parent": "Category",
+      "intent_key": "id"
+    },
+    {
+      "name": "image",
+      "kind": "part",
+      "req_ids": [
+        "REQ-0037"
+      ],
+      "description": "",
+      "parent": null,
+      "intent_key": "image"
+    },
+    {
+      "name": "itemId",
+      "kind": "attribute",
+      "req_ids": [
+        "REQ-0037"
+      ],
+      "description": "",
+      "parent": "Image",
+      "intent_key": "item id"
+    },
+    {
+      "name": "languageElement",
+      "kind": "attribute",
+      "req_ids": [
+        "REQ-0037"
+      ],
+      "description": "",
+      "parent": "Image",
+      "intent_key": "language"
+    },
+    {
+      "name": "name",
+      "kind": "attribute",
+      "req_ids": [
+        "REQ-0034"
+      ],
+      "description": "",
+      "parent": "Category",
+      "intent_key": "name"
+    },
+    {
+      "name": "notes",
+      "kind": "attribute",
+      "req_ids": [
+        "REQ-0038"
+      ],
+      "description": "",
+      "parent": "Reservation",
+      "intent_key": "note"
+    },
+    {
+      "name": "numberOfPeople",
+      "kind": "attribute",
+      "req_ids": [
+        "REQ-0038"
+      ],
+      "description": "",
+      "parent": "Reservation",
+      "intent_key": "number of people"
+    },
+    {
+      "name": "order",
+      "kind": "attribute",
+      "req_ids": [
+        "REQ-0034"
+      ],
+      "description": "",
+      "parent": "Category",
+      "intent_key": "order"
+    },
+    {
+      "name": "reservation",
+      "kind": "part",
+      "req_ids": [
+        "REQ-0038"
+      ],
+      "description": "",
+      "parent": null,
+      "intent_key": "reservation"
+    },
+    {
+      "name": "status",
+      "kind": "attribute",
+      "req_ids": [
+        "REQ-0038"
+      ],
+      "description": "",
+      "parent": "Reservation",
+      "intent_key": "statu"
+    },
+    {
+      "name": "tenant",
+      "kind": "part",
+      "req_ids": [
+        "REQ-0045"
+      ],
+      "description": "",
+      "parent": null,
+      "intent_key": "tenant"
+    },
+    {
+      "name": "tenantId",
+      "kind": "attribute",
+      "req_ids": [
+        "REQ-0038"
+      ],
+      "description": "",
+      "parent": "Reservation",
+      "intent_key": "tenant id"
+    },
+    {
+      "name": "timestamp",
+      "kind": "attribute",
+      "req_ids": [
+        "REQ-0037",
+        "REQ-0038"
+      ],
+      "description": "",
+      "parent": "Image",
+      "intent_key": "timestamp"
+    },
+    {
+      "name": "userGoogleId",
+      "kind": "attribute",
+      "req_ids": [
+        "REQ-0038"
+      ],
+      "description": "",
+      "parent": "Reservation",
+      "intent_key": "user google id"
+    }
+  ]
+}

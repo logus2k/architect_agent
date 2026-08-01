@@ -75,7 +75,20 @@ class Requirement:
     def is_verifiable(self) -> bool:
         """C7 (Verifiable) below 3 means the requirement states no measurable bound.
         Modelling a constraint from such text invents a number the stakeholder never
-        gave — the Analyst calls this out explicitly."""
+        gave — the Analyst calls this out explicitly.
+
+        CRUCIAL: `characteristic_scores` are *pre-refinement* — they equal
+        `score_before_refinement` and describe the ORIGINAL text. When the Analyst's
+        refinement loop rewrote the requirement (`text_changed`), that C7 no longer
+        describes the current text, so it is not evidence about it. Verified on the
+        first validated package: 56/60 requirements scored C7<3 pre-refinement yet
+        the package validated at mean 4.54 with human sign-off. Suppressing their
+        constraints on a stale score would gut a signed-off package. So a refined
+        requirement is treated as verifiable; the post-refinement `score` and the
+        human validation are the current evidence, not the old per-characteristic
+        breakdown."""
+        if self.text_changed:
+            return True
         c7 = self.characteristic_scores.get("C7")
         return c7 is None or c7 >= 3
 

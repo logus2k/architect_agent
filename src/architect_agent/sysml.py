@@ -97,7 +97,13 @@ def validate(
     tmp.write_text(model_text)
     try:
         cmd = [
-            "java", "-cp", f"{jar}:{classes}", "ArchitectTool",
+            # -Djava.awt.headless=true is REQUIRED: PlantUML rendering calls
+            # BufferedImage.createGraphics(), which initialises AWT. Without this
+            # the JVM tries to reach an X display and dies with a
+            # GraphicsEnvironment error where no display exists — every container,
+            # every CI runner, and any host whose X connection has dropped. Earlier
+            # runs only rendered because a display happened to be reachable.
+            "java", "-Djava.awt.headless=true", "-cp", f"{jar}:{classes}", "ArchitectTool",
             # MUST be absolute — a relative path makes loadLibrary() fail on the
             # spaces in its hardcoded subdirectory names.
             str(library.resolve()),
