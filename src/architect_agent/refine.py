@@ -24,6 +24,7 @@ from .aspect_design import (AspectDesign, components_by_aspect, consumes_by_aspe
 from .client import AgentClient, LLMError
 
 ADJUDICATOR_AGENT = "architect_ownership_adjudicator"
+INTERFACE_ADJUDICATOR_AGENT = "architect_interface_adjudicator"
 MAX_ROUNDS = 2
 
 
@@ -73,6 +74,61 @@ def reconcile_ownership(designs: list[AspectDesign], package: dict,
     return fixed
 
 
+def _iface_purpose(designs: list[AspectDesign], name: str) -> str:
+    for d in designs:
+        for i in d.interfaces:
+            if i.get("name") == name:
+                return i.get("purpose", "")
+    return ""
+
+
+def _merge_interface(designs: list[AspectDesign], keep: str, drop: str) -> None:
+    """Rename `drop` -> `keep` across all designs; union operations (by name) and consumers."""
+    for d in designs:
+        kept = next((i for i in d.interfaces if i.get("name") == keep), None)
+        rest: list[dict] = []
+        for i in d.interfaces:
+            if i.get("name") == drop:
+                if kept is None:
+                    i["name"] = keep
+                    kept = i
+                    rest.append(i)
+                else:
+                    ops = {o.get("name"): o for o in kept.get("operations", [])}
+                    for o in i.get("operations", []):
+                        ops.setdefault(o.get("name"), o)
+                    kept["operations"] = list(ops.values())
+                    kept["consumers"] = sorted(set(kept.get("consumers", [])) | set(i.get("consumers", [])))
+            else:
+                rest.append(i)
+        d.interfaces = rest
+
+
+def reconcile_interfaces(designs: list[AspectDesign], package: dict,
+                         client: AgentClient) -> set[tuple[str, str]]:
+    """Adjudicate each near-duplicate interface pair by PURPOSE. Merge the true duplicates
+    (Auth vs Auth) into one; record the false positives (Authentication vs Authorization) so
+    they are NOT reported to a human. Returns the set of pairs confirmed DISTINCT."""
+    crit = _run_critique(designs, package)
+    dups = [f for f in crit.findings if f.kind == "near_duplicate_interface"]
+    distinct: set[tuple[str, str]] = set()
+    for f in dups:
+        a, b = f.subjects
+        payload = json.dumps({"a": {"name": a, "purpose": _iface_purpose(designs, a)},
+                              "b": {"name": b, "purpose": _iface_purpose(designs, b)}})
+        try:
+            out = client.complete_json(INTERFACE_ADJUDICATOR_AGENT, payload)
+        except LLMError:
+            distinct.add(tuple(sorted((a, b))))   # can't confirm a merge -> don't force one
+            continue
+        if out.get("same") is True:
+            keep = out.get("canonical") if out.get("canonical") in (a, b) else a
+            _merge_interface(designs, keep, b if keep == a else a)
+        else:
+            distinct.add(tuple(sorted((a, b))))
+    return distinct
+
+
 def _run_critique(designs: list[AspectDesign], package: dict) -> critique_mod.Critique:
     glossary = [t["name"] for t in package.get("glossary", [])]
     return critique_mod.critique_design(
@@ -96,5 +152,12 @@ def refine(package: dict, client: AgentClient | None = None,
         rounds += 1
         crit = _run_critique(designs, package)
 
-    open_issues = [f.reason for f in crit.findings if f.severity == "error"]
+    # Adjudicate near-duplicate interfaces: merge true dups, drop false positives (so a pair
+    # like Authentication/Authorization never dead-ends as an open issue).
+    distinct = reconcile_interfaces(designs, package, client)
+    crit = _run_critique(designs, package)
+    open_issues = [f.reason for f in crit.findings
+                   if f.severity == "error"
+                   and not (f.kind == "near_duplicate_interface"
+                            and tuple(sorted(f.subjects)) in distinct)]
     return RefineResult(designs=designs, rounds=rounds, open_issues=open_issues, critique=crit)

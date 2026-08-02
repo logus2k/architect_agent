@@ -45,7 +45,8 @@ def design_branch(branch: dict, package: dict, client: AgentClient) -> AspectDes
         "branch": branch["name"],
         "scope": branch.get("scope", ""),
         "requirements": reqs,
-        "glossary": [{"name": t["name"], "definition": t.get("definition", "")}
+        "glossary": [{"name": t["name"], "definition": t.get("definition", ""),
+                      "kind": t.get("kind", "entity")}
                      for t in package.get("glossary", [])],
         "tags": [t["name"] for t in package.get("tags", [])],
     })
