@@ -37,8 +37,46 @@
 ## Phase C — reqoach + infra (authorized)
 - [ ] C1. Wire local repo creation into project creation (reqoach intercepts create).
       *Verify:* create a project → repo exists at `~/env/project-repos/<pid>` with layout.
-- [ ] C2. nginx per-agent edge routes (`/analyst/`, `/architect/`, …) + retire the bff proxy.
-      *Verify:* `curl logus2k.com/analyst/health` (or equivalent) routes to the Analyst.
+- [~] C2. nginx per-agent edge routes. **DONE (additive) + VERIFIED LIVE 2026-08-02:** added
+      `location ^~ /analyst/` + `@analyst_write` to `proxy_server/conf/nginx.conf` (mirrors the
+      `/reqoach/` public-read/gated-write pattern), straight to Analyst `:7803`, bypassing the
+      bff hop. Validated with `nginx -c /etc/nginx/conf-host/nginx.conf -t` (the ACTUAL active
+      config — the running master uses `-c`, not the default path), reloaded via SIGHUP.
+      Verified on `https://logus2k.com`: `/analyst/health`→200 (`service:analyst-agent`, i.e.
+      the Analyst's own health, not the bff's `role:bff`); `/analyst/projects/x/package`→404
+      (reached Analyst, not 502); `POST …/structure:run` unauth→401 (gated). `/reqoach/`,
+      `/bus/`, root all still 200/302 (no regression). NOT retired: the bff stays until the
+      frontend migrates its fetches to `/analyst/` (needs the frontend rewire). NO `/architect/`
+      route — the Architect is a batch job with no HTTP server (nothing to proxy to).
+- [~] C2b. **Frontend rewired to `/analyst/` + DEPLOYED + VERIFIED LIVE 2026-08-02.** Moved
+      all owner-enforced REST fetches (`projects`/`jobs`/`rules`/`catalog`, 40 call sites across
+      coverage/documents/overview/projects/review/editor.html + js/app.js) from relative
+      `/reqoach/…` to absolute `/analyst/…`. Auth PRESERVED: `/analyst/` writes hit
+      `@analyst_write` (`/oauth2/auth` + owner-enforcement), identical to the old `@reqoach_write`.
+      Deliberately NOT moved (would loosen gating / break assets): socket.io (gated, stays
+      `/reqoach/socket.io/`), admin doc-upload in ingest.html (auth-admin), static `data/`.
+      reqoach bakes `frontend/` into the image → rebuilt `reqqa-orchestration:latest` +
+      `docker compose up -d reqoach`. Verified on logus2k.com: all pages 200 (editor 302 =
+      correct admin sign-in redirect) carrying their `/analyst/` calls; `GET /analyst/projects`
+      returns real data; `/reqoach/socket.io/`→401 (still gated, not loosened). The bff's
+      API-proxy role is now BYPASSED; it remains only the static server + admin upload.
+      Follow-up: strip the dead proxy routes from `bff.py` (cleanup, not urgent). Could NOT
+      verify headless: authenticated UI write flows (need a Google login) — structurally
+      identical gate to reads, unauth 401 confirmed.
+- [x] C2c. **bff cleanup DONE + VERIFIED LIVE 2026-08-02.** `bff.py` PROXIED changed
+      `(projects,jobs,rules,catalog,documents,socket.io)` → `(analyst,documents,socket.io)`;
+      `_forward` strips a leading `/analyst` prefix. Dead bare API routes removed; `/analyst/*`
+      proxy KEPT for local-dev parity (no nginx locally, frontend calls `/analyst/…` in both
+      envs); `documents` (admin upload) + `socket.io` (local transport) retained. Rebuilt
+      `reqqa-orchestration:latest` + restarted. Verified: prod `/reqoach/`+`/analyst/projects`
+      200; bff-direct `/analyst/projects` 200 (prefix-stripped to :7803), bff `/projects` now
+      404 (dead route gone), bff `/documents`+`/overview.html` 200.
+- [x] C2d. **Write path de-risked (headless max) 2026-08-02.** Against Analyst :7803 with the
+      forwarded identity: POST /projects no-header→401; with `X-Auth-Request-Email`→200
+      (owner=caller); DELETE as owner→200; GET→404. Proves the Analyst honors exactly what
+      `@analyst_write` forwards + owner enforcement. UNVERIFIED (needs a browser Google login,
+      cannot do headless): the oauth2-proxy cookie step inside `@analyst_write` for a signed-in
+      user — but it is the IDENTICAL, already-working pattern as the pre-existing `@reqoach_write`.
 - [ ] C3. Agents write outputs into the project repo (Analyst `requirements/`, Architect
       `architecture/`). *Verify:* run each, read the committed files under the repo.
 - [ ] C4. GitHub remote pending-action surfaced in the UI (token via use-once paste).
