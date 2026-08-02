@@ -1,0 +1,11 @@
+flowchart LR
+  n_Tenant_Administration["Tenant Administration"]
+  n_Menu___Item_Catalog["Menu & Item Catalog"]
+  n_Reservations["Reservations"]
+  n_User___Access_Control["User & Access Control"]
+  n_AI_Content_Generation["AI Content Generation"]
+  n_System_Infrastructure["System Infrastructure"]
+  n_Tenant_Administration -.-> n_Menu___Item_Catalog
+  n_Tenant_Administration -.-> n_Reservations
+  n_AI_Content_Generation -.-> n_Menu___Item_Catalog
+  n_System_Infrastructure -.-> n_Tenant_Administration

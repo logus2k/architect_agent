@@ -1,0 +1,30 @@
+flowchart TB
+  %% Tenant Administration
+  subgraph OWN["Tenant Administration"]
+    direction TB
+    n_Tenant["Tenant<br/>TenantID: String"]
+    n_TenantConfiguration["TenantConfiguration<br/>ConfigurationID: String<br/>OpeningHours: String"]
+    n_TenantAsset["TenantAsset<br/>AssetID: String"]
+  end
+  n_TenantAdminInterface(["TenantAdminInterface"])
+  n_Tenant --> n_TenantAdminInterface
+  n_ReservationManagementInterface(["ReservationManagementInterface"])
+  n_Tenant --> n_ReservationManagementInterface
+  n_ext_authentication[/"authentication"/]
+  n_Tenant -.consumes.-> n_ext_authentication
+  n_ext_data_management[/"data-management"/]
+  n_Tenant -.consumes.-> n_ext_data_management
+  n_ext_media[/"media"/]
+  n_Tenant -.consumes.-> n_ext_media
+  n_ext_multi_tenancy[/"multi-tenancy"/]
+  n_Tenant -.consumes.-> n_ext_multi_tenancy
+  n_ext_FoodImage[/"FoodImage"/]
+  n_Tenant -.consumes.-> n_ext_FoodImage
+  n_ext_Item[/"Item"/]
+  n_Tenant -.consumes.-> n_ext_Item
+  n_ext_Menu[/"Menu"/]
+  n_Tenant -.consumes.-> n_ext_Menu
+  n_ext_Reservation[/"Reservation"/]
+  n_Tenant -.consumes.-> n_ext_Reservation
+  classDef ext fill:#eee,stroke:#999,stroke-dasharray:3 3;
+  class n_ext_authentication,n_ext_data_management,n_ext_media,n_ext_multi_tenancy,n_ext_FoodImage,n_ext_Item,n_ext_Menu,n_ext_Reservation ext;

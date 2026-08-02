@@ -18,6 +18,7 @@ RUN groupadd -g "$APP_GID" app 2>/dev/null || true \
 USER $APP_UID:$APP_GID
 # data/ is bind-mounted: generated architecture packages persist on the host.
 VOLUME ["/app/data"]
-# Batch job, not a server. Override the arg with a project id or package.json path:
-#   docker compose run --rm architect-agent python3 -m architect_agent.aspect_pipeline <PID>
-CMD ["python3", "-m", "architect_agent.aspect_pipeline", "--help"]
+# HTTP service (mirrors the Analyst): reqoach triggers `architect:run` and polls `/jobs/{id}`.
+# The batch CLI still works: docker compose run --rm architect-agent \
+#   python3 -m architect_agent.aspect_pipeline <PID> --repo
+CMD ["python3", "-m", "uvicorn", "architect_agent.api:api", "--host", "0.0.0.0", "--port", "7804"]

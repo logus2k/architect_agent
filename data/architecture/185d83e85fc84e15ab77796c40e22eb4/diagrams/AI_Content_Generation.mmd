@@ -1,0 +1,26 @@
+flowchart TB
+  %% AI Content Generation
+  subgraph OWN["AI Content Generation"]
+    direction TB
+    n_AiDescription["AiDescription<br/>generated_text: String<br/>language: String<br/>approved_flag: Boolean<br/>timestamp: Timestamp"]
+  end
+  n_DescriptionGenerationInterface(["DescriptionGenerationInterface"])
+  n_AiDescription --> n_DescriptionGenerationInterface
+  n_DescriptionPersistenceInterface(["DescriptionPersistenceInterface"])
+  n_AiDescription --> n_DescriptionPersistenceInterface
+  n_ext_LLM[/"LLM"/]
+  n_AiDescription -.consumes.-> n_ext_LLM
+  n_ext_Language[/"Language"/]
+  n_AiDescription -.consumes.-> n_ext_Language
+  n_ext_Timestamp[/"Timestamp"/]
+  n_AiDescription -.consumes.-> n_ext_Timestamp
+  n_ext_data_management[/"data-management"/]
+  n_AiDescription -.consumes.-> n_ext_data_management
+  n_ext_vision[/"vision"/]
+  n_AiDescription -.consumes.-> n_ext_vision
+  n_ext_FoodImage[/"FoodImage"/]
+  n_AiDescription -.consumes.-> n_ext_FoodImage
+  n_ext_Item[/"Item"/]
+  n_AiDescription -.consumes.-> n_ext_Item
+  classDef ext fill:#eee,stroke:#999,stroke-dasharray:3 3;
+  class n_ext_LLM,n_ext_Language,n_ext_Timestamp,n_ext_data_management,n_ext_vision,n_ext_FoodImage,n_ext_Item ext;

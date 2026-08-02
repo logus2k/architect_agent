@@ -1,0 +1,23 @@
+flowchart TB
+  %% Menu & Item Catalog
+  subgraph OWN["Menu & Item Catalog"]
+    direction TB
+    n_Menu["Menu<br/>id: String"]
+    n_Category["Category<br/>id: String<br/>name: String<br/>description: String<br/>order: Integer"]
+    n_Item["Item<br/>id: String<br/>name: String<br/>description: String<br/>price: Price<br/>availability: Availability"]
+    n_FoodImage["FoodImage<br/>id: String<br/>path_metadata: String"]
+  end
+  n_MenuDisplayInterface(["MenuDisplayInterface"])
+  n_Menu --> n_MenuDisplayInterface
+  n_MenuManagementInterface(["MenuManagementInterface"])
+  n_Menu --> n_MenuManagementInterface
+  n_AssetUploadInterface(["AssetUploadInterface"])
+  n_Menu --> n_AssetUploadInterface
+  n_ext_multi_tenancy[/"multi-tenancy"/]
+  n_Menu -.consumes.-> n_ext_multi_tenancy
+  n_ext_authentication[/"authentication"/]
+  n_Menu -.consumes.-> n_ext_authentication
+  n_ext_data_model[/"data-model"/]
+  n_Menu -.consumes.-> n_ext_data_model
+  classDef ext fill:#eee,stroke:#999,stroke-dasharray:3 3;
+  class n_ext_multi_tenancy,n_ext_authentication,n_ext_data_model ext;

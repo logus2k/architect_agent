@@ -10,15 +10,30 @@ services:
     image: architect_agent:0.1
     container_name: architect-agent
     restart: unless-stopped
+    # HTTP service on :7804 (published to host so the edge nginx can route /architect/ to it).
+    ports:
+      - "7804:7804"
     environment:
       # agent_server owns prompts and profiles; llama-vision does inference.
       AGENT_SERVER_URL: http://agent_server:7701
-      # Analyst service — the package (glossary/tags/tree) is fetched from here.
-      ANALYST_URL: http://analyst-agent:7803
+      # Analyst service — the package (glossary/tags/tree) is fetched from here. The Analyst
+      # runs network_mode:host (no bridge DNS name), so it is reached via the host gateway.
+      ANALYST_URL: http://host.docker.internal:7803
       ARCHITECT_DATA_DIR: /app/data
+      # Per-project git repo (--repo mode): write architecture/ here and ask reqoach to commit.
+      PROJECT_REPOS_ROOT: /app/project-repos
+      # reqoach owns git; it is host-networked on :7802, reached via the host gateway.
+      REQOACH_URL: http://host.docker.internal:7802
+      # Reranker (critique near-dup) — embeddings-server is on noted-network, not reachable by
+      # name from here; it publishes to host :8601, so reach it via the host gateway.
+      EMBEDDINGS_URL: http://host.docker.internal:8601
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     volumes:
       # Generated architecture packages persist here.
       - ./data:/app/data
+      # Per-project git repositories (shared with reqoach + the other agents).
+      - ${HOME}/env/project-repos:/app/project-repos
     networks:
       - logus2k_network
 

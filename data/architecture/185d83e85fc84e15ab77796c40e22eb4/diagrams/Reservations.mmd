@@ -1,0 +1,20 @@
+flowchart TB
+  %% Reservations
+  subgraph OWN["Reservations"]
+    direction TB
+    n_Reservation["Reservation<br/>id: String<br/>user_google_id: String<br/>tenant_id: String<br/>date_time: String<br/>number_of_people: Integer<br/>status: ReservationStatus"]
+  end
+  n_ReservationSubmissionInterface(["ReservationSubmissionInterface"])
+  n_Reservation --> n_ReservationSubmissionInterface
+  n_ReservationManagementInterface(["ReservationManagementInterface"])
+  n_Reservation --> n_ReservationManagementInterface
+  n_ext_authentication[/"authentication"/]
+  n_Reservation -.consumes.-> n_ext_authentication
+  n_ext_user_input[/"user-input"/]
+  n_Reservation -.consumes.-> n_ext_user_input
+  n_ext_data_model[/"data-model"/]
+  n_Reservation -.consumes.-> n_ext_data_model
+  n_ext_multi_tenancy[/"multi-tenancy"/]
+  n_Reservation -.consumes.-> n_ext_multi_tenancy
+  classDef ext fill:#eee,stroke:#999,stroke-dasharray:3 3;
+  class n_ext_authentication,n_ext_user_input,n_ext_data_model,n_ext_multi_tenancy ext;

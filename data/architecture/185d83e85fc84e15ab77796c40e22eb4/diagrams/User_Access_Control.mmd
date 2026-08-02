@@ -1,0 +1,19 @@
+flowchart TB
+  %% User & Access Control
+  subgraph OWN["User & Access Control"]
+    direction TB
+    n_User["User<br/>UserGoogleId: String"]
+    n_UserGoogleId["UserGoogleId<br/>Id: String"]
+  end
+  n_AuthenticationInterface(["AuthenticationInterface"])
+  n_User --> n_AuthenticationInterface
+  n_AccessControlInterface(["AccessControlInterface"])
+  n_User --> n_AccessControlInterface
+  n_ext_authentication[/"authentication"/]
+  n_User -.consumes.-> n_ext_authentication
+  n_ext_security[/"security"/]
+  n_User -.consumes.-> n_ext_security
+  n_ext_anonymous[/"anonymous"/]
+  n_User -.consumes.-> n_ext_anonymous
+  classDef ext fill:#eee,stroke:#999,stroke-dasharray:3 3;
+  class n_ext_authentication,n_ext_security,n_ext_anonymous ext;

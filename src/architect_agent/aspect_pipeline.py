@@ -43,9 +43,48 @@ def _artifacts_md(designs: list[AspectDesign], handover: dict) -> dict[str, str]
     return {"architecture.md": add, "open_issues.md": issues}
 
 
+#: When set, the Architect publishes into the per-project git repo instead of its private
+#: data dir, and asks reqoach to commit (reqoach owns git — the Architect just writes files).
+REPOS_ROOT = os.environ.get("PROJECT_REPOS_ROOT")
+REQOACH_URL = os.environ.get("REQOACH_URL", "http://localhost:7802").rstrip("/")
+
+
+def publish_to_repo(pid: str, out_dir: str | Path, *, repos_root: str | None = None,
+                    reqoach_url: str | None = None) -> dict:
+    """Copy an architecture output dir into the project repo's `architecture/` area and ask
+    reqoach to commit it (reqoach owns git). Returns reqoach's commit result."""
+    import shutil
+    import httpx
+    repos_root = repos_root or REPOS_ROOT
+    reqoach_url = (reqoach_url or REQOACH_URL).rstrip("/")
+    if not repos_root:
+        raise ValueError("PROJECT_REPOS_ROOT is not set — nowhere to publish")
+    dest = Path(repos_root) / pid / "architecture"
+    dest.mkdir(parents=True, exist_ok=True)
+    # Clear prior contents (keep .gitkeep) so renamed/removed artifacts from an earlier run do
+    # not linger — the commit then reflects exactly this run's output.
+    for item in dest.iterdir():
+        if item.name == ".gitkeep":
+            continue
+        shutil.rmtree(item) if item.is_dir() else item.unlink()
+    for item in Path(out_dir).iterdir():
+        target = dest / item.name
+        if item.is_dir():
+            shutil.copytree(item, target, dirs_exist_ok=True)
+        else:
+            shutil.copy2(item, target)
+    r = httpx.post(f"{reqoach_url}/repos/{pid}/commit",
+                   json={"area": "architecture", "agent": "architect",
+                         "message": "Architect: publish architecture package"}, timeout=60)
+    r.raise_for_status()
+    return r.json()
+
+
 def run(package: dict | str | Path, out_dir: str | Path | None = None,
-        client: AgentClient | None = None) -> Result:
-    """Execute the per-aspect pipeline and publish the package."""
+        client: AgentClient | None = None, to_repo: bool = False) -> Result:
+    """Execute the per-aspect pipeline and publish the package. When `to_repo` is set (and
+    PROJECT_REPOS_ROOT is configured), also copy the output into the project repo's
+    `architecture/` area and ask reqoach to commit it."""
     if not isinstance(package, dict):
         package = json.loads(Path(package).read_text())
     client = client or AgentClient()
@@ -56,7 +95,15 @@ def run(package: dict | str | Path, out_dir: str | Path | None = None,
     handover = aspect_handover.build(designs, package=package, open_issues=ref.open_issues)
 
     pid = package.get("manifest", {}).get("project_id") or "unknown"
-    out_dir = Path(out_dir) if out_dir else PUBLISH_ROOT / pid
+    if out_dir:
+        out_dir = Path(out_dir)
+    elif to_repo:
+        # Publish from a FRESH dir so stale files from a previous (e.g. SysML-era) run in
+        # PUBLISH_ROOT/<pid> are never copied into the repo.
+        import tempfile
+        out_dir = Path(tempfile.mkdtemp(prefix=f"arch_{pid[:8]}_"))
+    else:
+        out_dir = PUBLISH_ROOT / pid
     (out_dir / "diagrams").mkdir(parents=True, exist_ok=True)
     (out_dir / "artifacts").mkdir(parents=True, exist_ok=True)
 
@@ -65,6 +112,9 @@ def run(package: dict | str | Path, out_dir: str | Path | None = None,
         (out_dir / "diagrams" / fname).write_text(src)
     for fname, text in _artifacts_md(designs, handover).items():
         (out_dir / "artifacts" / fname).write_text(text)
+
+    if to_repo:
+        publish_to_repo(pid, out_dir)
 
     return Result(package_dir=out_dir, designs=designs, handover=handover,
                   open_issues=ref.open_issues, rounds=ref.rounds)
@@ -110,10 +160,13 @@ def main() -> int:
     ap.add_argument("--analyst-url", default=None,
                     help="Analyst base URL when PACKAGE is a project id "
                          "(default $ANALYST_URL or http://analyst-agent:7803)")
+    ap.add_argument("--repo", action="store_true",
+                    help="also publish into the project git repo's architecture/ area and ask "
+                         "reqoach to commit (needs $PROJECT_REPOS_ROOT + $REQOACH_URL)")
     args = ap.parse_args()
 
     package = load_package(args.package, analyst_url=args.analyst_url)
-    result = run(package, out_dir=args.out)
+    result = run(package, out_dir=args.out, to_repo=args.repo)
     print(f"published: {result.package_dir}")
     print(f"aspects: {len(result.designs)}  refine_rounds: {result.rounds}  "
           f"open_issues: {len(result.open_issues)}")
