@@ -1,2210 +1,5462 @@
 {
-  "contract_version": "2.0",
-  "source_package": {
-    "project_id": "185d83e85fc84e15ab77796c40e22eb4",
-    "project_name": "Restaurant Menu Manager",
-    "architect_ready": false,
-    "requirements_received": 60,
-    "aspects": 6
-  },
-  "by_aspect": {
-    "Tenant Administration": {
-      "scope": "Manages tenant-specific configurations, menus, items, images, and reservations via a dedicated admin dashboard.",
-      "req_ids": [
-        "REQ-0005",
-        "REQ-0010",
-        "REQ-0027",
-        "REQ-0028",
-        "REQ-0029",
-        "REQ-0030",
-        "REQ-0031",
-        "REQ-0032",
-        "REQ-0045",
-        "REQ-0046",
-        "REQ-0050",
-        "REQ-0055"
-      ],
-      "components": [
-        {
-          "name": "Tenant",
-          "responsibility": "Represents a distinct organizational unit whose data and resources are isolated within the system.",
-          "attributes": [
-            {
-              "name": "TenantID",
-              "type": "String"
-            }
-          ]
-        },
-        {
-          "name": "TenantConfiguration",
-          "responsibility": "Stores the specific settings and parameters that define how a Tenant operates within the system, including working hours.",
-          "attributes": [
-            {
-              "name": "ConfigurationID",
-              "type": "String"
-            },
-            {
-              "name": "OpeningHours",
-              "type": "String"
-            }
-          ]
-        },
-        {
-          "name": "TenantAsset",
-          "responsibility": "Stores tenant-specific assets such as restaurant name, logo, contacts, and menu items.",
-          "attributes": [
-            {
-              "name": "AssetID",
-              "type": "String"
-            }
-          ]
-        }
-      ],
-      "functions": [
-        {
-          "name": "ManageTenantConfiguration",
-          "description": "Allows the Tenant Administrator to configure the Tenant's settings, including opening hours and general parameters."
-        },
-        {
-          "name": "ManageTenantAssets",
-          "description": "Allows the Tenant Administrator to manage core tenant assets such as restaurant name, logo, and contact information."
-        },
-        {
-          "name": "ManageMenu",
-          "description": "Allows the Tenant Administrator to create, update, and manage the restaurant's menu and its constituent Items."
-        },
-        {
-          "name": "ManageMenuItem",
-          "description": "Allows the Tenant Administrator to manage individual Item details, including descriptions, images, and pricing."
-        },
-        {
-          "name": "ProcessReservation",
-          "description": "Allows the Tenant Administrator to accept or refuse incoming Reservation requests."
-        },
-        {
-          "name": "ProvideTenantDashboard",
-          "description": "Serves the dedicated administrative interface for the Tenant Administrator to manage all tenant-specific resources."
-        }
-      ],
-      "interfaces": [
-        {
-          "name": "TenantAdminInterface",
-          "purpose": "Provides the boundary for the Tenant Administrator to interact with and manage all tenant-specific data and configurations.",
-          "consumers": [
-            "TenantAdministrator"
-          ]
-        },
-        {
-          "name": "ReservationManagementInterface",
-          "purpose": "Exposes the functionality for the Tenant Administrator to review and change the status of incoming reservations.",
-          "consumers": [
-            "TenantAdministrator"
-          ]
-        }
-      ],
-      "consumes": [
-        {
-          "concern": "authentication",
-          "why": "The Tenant Administrator must authenticate using Google credentials."
-        },
-        {
-          "concern": "data-management",
-          "why": "The aspect manages and persists TenantConfiguration, Menu, Item, and Reservation data."
-        },
-        {
-          "concern": "media",
-          "why": "The aspect manages FoodImage assets associated with Items."
-        },
-        {
-          "concern": "multi-tenancy",
-          "why": "All managed entities (TenantConfiguration, Menu, Item, Reservation) must be isolated per Tenant."
-        },
-        {
-          "concern": "FoodImage",
-          "why": "owned by Menu & Item Catalog"
-        },
-        {
-          "concern": "Item",
-          "why": "owned by Menu & Item Catalog"
-        },
-        {
-          "concern": "Menu",
-          "why": "owned by Menu & Item Catalog"
-        },
-        {
-          "concern": "Reservation",
-          "why": "owned by Reservations"
-        }
-      ]
+ "contract_version": "2.0",
+ "source_package": {
+  "project_id": "185d83e85fc84e15ab77796c40e22eb4",
+  "project_name": "Restaurant Menu Manager",
+  "architect_ready": false,
+  "requirements_received": 60,
+  "aspects": 6
+ },
+ "by_aspect": {
+  "Tenant Administration": {
+   "scope": "Manages tenant-specific configurations, menus, items, images, and reservations via a dedicated admin dashboard.",
+   "req_ids": [
+    "REQ-0005",
+    "REQ-0010",
+    "REQ-0027",
+    "REQ-0028",
+    "REQ-0029",
+    "REQ-0030",
+    "REQ-0031",
+    "REQ-0032",
+    "REQ-0045",
+    "REQ-0046",
+    "REQ-0050",
+    "REQ-0055"
+   ],
+   "components": [
+    {
+     "name": "Tenant",
+     "responsibility": "Represents a distinct organizational unit whose data and resources are isolated within the system.",
+     "attributes": [
+      {
+       "name": "TenantID",
+       "type": "String"
+      }
+     ]
     },
-    "Menu & Item Catalog": {
-      "scope": "Handles the structure and display of food items, categories, and menus, including image and description presentation.",
-      "req_ids": [
-        "REQ-0002",
-        "REQ-0011",
-        "REQ-0012",
-        "REQ-0024",
-        "REQ-0033",
-        "REQ-0034",
-        "REQ-0035",
-        "REQ-0036",
-        "REQ-0042",
-        "REQ-0043",
-        "REQ-0051",
-        "REQ-0052"
-      ],
-      "components": [
-        {
-          "name": "Menu",
-          "responsibility": "Manages the collection of food or drink offerings for a Tenant.",
-          "attributes": [
-            {
-              "name": "id",
-              "type": "String"
-            }
-          ]
-        },
-        {
-          "name": "Category",
-          "responsibility": "Groups menu items and holds organizational data.",
-          "attributes": [
-            {
-              "name": "id",
-              "type": "String"
-            },
-            {
-              "name": "name",
-              "type": "String"
-            },
-            {
-              "name": "description",
-              "type": "String"
-            },
-            {
-              "name": "order",
-              "type": "Integer"
-            }
-          ]
-        },
-        {
-          "name": "Item",
-          "responsibility": "Represents a specific product offered on the menu.",
-          "attributes": [
-            {
-              "name": "id",
-              "type": "String"
-            },
-            {
-              "name": "name",
-              "type": "String"
-            },
-            {
-              "name": "description",
-              "type": "String"
-            },
-            {
-              "name": "price",
-              "type": "Price"
-            },
-            {
-              "name": "availability",
-              "type": "Availability"
-            }
-          ]
-        },
-        {
-          "name": "FoodImage",
-          "responsibility": "Stores metadata and references for uploaded visual media.",
-          "attributes": [
-            {
-              "name": "id",
-              "type": "String"
-            },
-            {
-              "name": "path_metadata",
-              "type": "String"
-            }
-          ]
-        }
-      ],
-      "functions": [
-        {
-          "name": "BrowseMenu",
-          "description": "Allows anonymous users to view the menu structure and items for a specific Tenant."
-        },
-        {
-          "name": "ManageMenu",
-          "description": "Allows authorized Tenant Administrators to create, update, or delete Menu entities."
-        },
-        {
-          "name": "ManageItem",
-          "description": "Allows authorized users to create, update, or delete Item entities within a Menu."
-        },
-        {
-          "name": "UploadMedia",
-          "description": "Allows authorized users (Tenant Administrator) to upload and register image files."
-        },
-        {
-          "name": "RetrieveMenuDisplayData",
-          "description": "Retrieves all necessary data (items, categories, images) to render the menu for a given Tenant."
-        }
-      ],
-      "interfaces": [
-        {
-          "name": "MenuDisplayInterface",
-          "purpose": "Provides endpoints for both anonymous browsing and authenticated viewing of the menu structure and item details.",
-          "consumers": [
-            "anonymous",
-            "display"
-          ]
-        },
-        {
-          "name": "MenuManagementInterface",
-          "purpose": "Provides CRUD operations for Menu and Item entities, restricted to Tenant Administrators.",
-          "consumers": [
-            "management",
-            "data-management"
-          ]
-        },
-        {
-          "name": "AssetUploadInterface",
-          "purpose": "Handles the secure upload and registration of media assets (FoodImage).",
-          "consumers": [
-            "file-upload",
-            "media"
-          ]
-        }
-      ],
-      "consumes": [
-        {
-          "concern": "multi-tenancy",
-          "why": "All menu operations must be scoped and isolated per Tenant."
-        },
-        {
-          "concern": "authentication",
-          "why": "Operations like creating/updating menus require user authorization checks."
-        },
-        {
-          "concern": "data-model",
-          "why": "Relies on the canonical definitions of Tenant, Item, Category, etc."
-        }
-      ]
+    {
+     "name": "TenantConfiguration",
+     "responsibility": "Stores the specific settings and parameters that define how a Tenant operates within the system, including working hours.",
+     "attributes": [
+      {
+       "name": "ConfigurationID",
+       "type": "String"
+      },
+      {
+       "name": "OpeningHours",
+       "type": "String"
+      }
+     ]
     },
-    "Reservations": {
-      "scope": "Manages the process of booking tables, from user submission through to manual administrative confirmation.",
-      "req_ids": [
-        "REQ-0007",
-        "REQ-0014",
-        "REQ-0019",
-        "REQ-0026",
-        "REQ-0038",
-        "REQ-0039",
-        "REQ-0048",
-        "REQ-0054",
-        "REQ-0059"
-      ],
-      "components": [
-        {
-          "name": "Reservation",
-          "responsibility": "Stores the details of a booking request.",
-          "attributes": [
-            {
-              "name": "id",
-              "type": "String"
-            },
-            {
-              "name": "user_google_id",
-              "type": "String"
-            },
-            {
-              "name": "tenant_id",
-              "type": "String"
-            },
-            {
-              "name": "date_time",
-              "type": "String"
-            },
-            {
-              "name": "number_of_people",
-              "type": "Integer"
-            },
-            {
-              "name": "status",
-              "type": "ReservationStatus"
-            },
-            {
-              "name": "timestamp",
-              "type": "Timestamp"
-            },
-            {
-              "name": "notes",
-              "type": "String"
-            }
-          ]
-        }
-      ],
-      "functions": [
-        {
-          "name": "SubmitReservation",
-          "description": "Allows a Google-authenticated User to submit a new Reservation request via the ReservationForm."
-        },
-        {
-          "name": "ConfirmReservation",
-          "description": "Allows an Admin or TenantAdministrator to manually change the status of a Reservation to confirmed."
-        },
-        {
-          "name": "GenerateReservationAddress",
-          "description": "Produces a stable address representation for a specific Reservation."
-        }
-      ],
-      "interfaces": [
-        {
-          "name": "ReservationSubmissionInterface",
-          "purpose": "Provides the mechanism for authenticated users to submit reservation requests.",
-          "consumers": [
-            "User"
-          ]
-        },
-        {
-          "name": "ReservationManagementInterface",
-          "purpose": "Provides endpoints for administrative roles to view and manually update the status of Reservations.",
-          "consumers": [
-            "Admin",
-            "TenantAdministrator"
-          ]
-        }
-      ],
-      "consumes": [
-        {
-          "concern": "authentication",
-          "why": "To ensure only authenticated users can access reservation functionality."
-        },
-        {
-          "concern": "user-input",
-          "why": "To handle data submitted via the ReservationForm."
-        },
-        {
-          "concern": "data-model",
-          "why": "To manage the state and persistence of the Reservation entity."
-        },
-        {
-          "concern": "multi-tenancy",
-          "why": "To ensure reservations are correctly scoped to a specific Tenant."
-        }
-      ]
-    },
-    "User & Access Control": {
-      "scope": "Implements user authentication via Google OAuth and manages access levels for anonymous and authenticated users.",
-      "req_ids": [
-        "REQ-0009",
-        "REQ-0018",
-        "REQ-0025",
-        "REQ-0049",
-        "REQ-0062"
-      ],
-      "components": [
-        {
-          "name": "User",
-          "responsibility": "Represents an individual interacting with the system.",
-          "attributes": [
-            {
-              "name": "UserGoogleId",
-              "type": "String"
-            }
-          ]
-        },
-        {
-          "name": "UserGoogleId",
-          "responsibility": "Stores the unique identifier provided by Google for user authentication.",
-          "attributes": [
-            {
-              "name": "Id",
-              "type": "String"
-            }
-          ]
-        }
-      ],
-      "functions": [
-        {
-          "name": "AuthenticateUser",
-          "description": "Handles the process of authenticating a user via Google OAuth2 flow."
-        },
-        {
-          "name": "CheckUserAccess",
-          "description": "Determines if a user has sufficient privileges to perform an action, specifically preventing anonymous users from making reservations."
-        }
-      ],
-      "interfaces": [
-        {
-          "name": "AuthenticationInterface",
-          "purpose": "Provides endpoints for initiating and completing Google OAuth2 authentication.",
-          "consumers": [
-            "User"
-          ]
-        },
-        {
-          "name": "AccessControlInterface",
-          "purpose": "Exposes methods to verify user identity and check permissions before allowing state-changing operations like making a reservation.",
-          "consumers": [
-            "User"
-          ]
-        }
-      ],
-      "consumes": [
-        {
-          "concern": "authentication",
-          "why": "The core functionality relies on the 'authentication' tag for managing user identity via Google OAuth."
-        },
-        {
-          "concern": "security",
-          "why": "Access control mechanisms inherently relate to system security."
-        },
-        {
-          "concern": "anonymous",
-          "why": "The requirement specifically addresses the restriction placed on anonymous users."
-        }
-      ]
-    },
-    "AI Content Generation": {
-      "scope": "Integrates LLM vision capabilities to generate and manage localized descriptions for food items from images.",
-      "req_ids": [
-        "REQ-0001",
-        "REQ-0013",
-        "REQ-0020",
-        "REQ-0022",
-        "REQ-0037",
-        "REQ-0053",
-        "REQ-0058",
-        "REQ-0063"
-      ],
-      "components": [
-        {
-          "name": "AiDescription",
-          "responsibility": "Stores the generated textual description of a food item.",
-          "attributes": [
-            {
-              "name": "generated_text",
-              "type": "String"
-            },
-            {
-              "name": "language",
-              "type": "String"
-            },
-            {
-              "name": "approved_flag",
-              "type": "Boolean"
-            },
-            {
-              "name": "timestamp",
-              "type": "Timestamp"
-            }
-          ]
-        }
-      ],
-      "functions": [
-        {
-          "name": "GenerateDescriptionFromImage",
-          "description": "Generates an AI description for a FoodImage using a vision-capable LLM, respecting the requested Language."
-        },
-        {
-          "name": "StoreDescriptionRecord",
-          "description": "Persists the generated or manually provided description, along with metadata (item_id, language, approval status, timestamp)."
-        },
-        {
-          "name": "ProvideManualDescription",
-          "description": "Allows manual input of a description for an Item when the LLM service is unavailable."
-        }
-      ],
-      "interfaces": [
-        {
-          "name": "DescriptionGenerationInterface",
-          "purpose": "Exposes the capability to request an AI-generated description from an image, specifying the target language.",
-          "consumers": [
-            "Item"
-          ]
-        },
-        {
-          "name": "DescriptionPersistenceInterface",
-          "purpose": "Provides the mechanism to save or update the description record for an Item.",
-          "consumers": [
-            "Item"
-          ]
-        }
-      ],
-      "consumes": [
-        {
-          "concern": "LLM",
-          "why": "The core service providing vision-capable AI processing."
-        },
-        {
-          "concern": "Language",
-          "why": "To specify the target language (PT or EN) for the generated description."
-        },
-        {
-          "concern": "Timestamp",
-          "why": "To record when the description was created or updated."
-        },
-        {
-          "concern": "data-management",
-          "why": "For persistence and storage operations."
-        },
-        {
-          "concern": "vision",
-          "why": "The capability required to process FoodImage input."
-        },
-        {
-          "concern": "FoodImage",
-          "why": "owned by Menu & Item Catalog"
-        },
-        {
-          "concern": "Item",
-          "why": "owned by Menu & Item Catalog"
-        }
-      ]
-    },
-    "System Infrastructure": {
-      "scope": "Manages cross-cutting concerns like multi-tenancy routing, storage, localization, and responsive design.",
-      "req_ids": [
-        "REQ-0003",
-        "REQ-0004",
-        "REQ-0006",
-        "REQ-0008",
-        "REQ-0015",
-        "REQ-0016",
-        "REQ-0017",
-        "REQ-0023",
-        "REQ-0044",
-        "REQ-0047",
-        "REQ-0056",
-        "REQ-0057",
-        "REQ-0060",
-        "REQ-0065"
-      ],
-      "components": [
-        {
-          "name": "SQLiteInstance",
-          "responsibility": "Manages the isolated database for a single Tenant.",
-          "attributes": [
-            {
-              "name": "InstanceID",
-              "type": "String"
-            }
-          ]
-        }
-      ],
-      "functions": [
-        {
-          "name": "ResolveTenantIdentity",
-          "description": "Determines the Tenant based on the request path prefix."
-        },
-        {
-          "name": "RouteRequest",
-          "description": "Directs incoming requests to the correct Tenant's SQLiteInstance."
-        },
-        {
-          "name": "ManageTenantData",
-          "description": "Handles all CRUD operations for a specific Tenant's records within its SQLiteInstance."
-        },
-        {
-          "name": "ServeLocalizedContent",
-          "description": "Retrieves and serves content based on the current Language setting (PT or EN)."
-        },
-        {
-          "name": "RenderResponsiveUI",
-          "description": "Generates the user interface optimized for various screen sizes (web/mobile)."
-        },
-        {
-          "name": "HandleContactSubmission",
-          "description": "Processes and discards the data submitted via the ContactForm."
-        },
-        {
-          "name": "DisplayMapInterface",
-          "description": "Renders the geographical map using OpenStreetMap data."
-        }
-      ],
-      "interfaces": [
-        {
-          "name": "TenantRoutingInterface",
-          "purpose": "Provides the mechanism to resolve Tenant identity from the request context and route to the correct SQLiteInstance.",
-          "consumers": [
-            "Endpoint"
-          ]
-        },
-        {
-          "name": "LocalizationInterface",
-          "purpose": "Allows the system to switch and retrieve content based on the active Language.",
-          "consumers": [
-            "User"
-          ]
-        },
-        {
-          "name": "AssetStorageInterface",
-          "purpose": "Defines the boundary for storing and retrieving TenantAsset data locally.",
-          "consumers": [
-            "Tenant"
-          ]
-        },
-        {
-          "name": "MapDisplayInterface",
-          "purpose": "Exposes the functionality to render the Map interface using external data sources.",
-          "consumers": [
-            "User"
-          ]
-        }
-      ],
-      "consumes": [
-        {
-          "concern": "multi-tenancy",
-          "why": "To resolve tenant identity using the path prefix and isolate data."
-        },
-        {
-          "concern": "localization",
-          "why": "To support switching and displaying content in Portuguese (PT) and English (EN)."
-        },
-        {
-          "concern": "storage",
-          "why": "To store TenantAsset data locally."
-        },
-        {
-          "concern": "responsiveness",
-          "why": "To render the user interface for web and mobile standard layout sizes."
-        },
-        {
-          "concern": "security",
-          "why": "To enforce HTTPS for all public endpoints."
-        },
-        {
-          "concern": "data-management",
-          "why": "To manage Tenant's corresponding SQLite records."
-        },
-        {
-          "concern": "api",
-          "why": "To define public access points (Endpoints) that require routing and security."
-        },
-        {
-          "concern": "TenantAsset",
-          "why": "owned by Tenant Administration"
-        },
-        {
-          "concern": "TenantConfiguration",
-          "why": "owned by Tenant Administration"
-        }
-      ]
+    {
+     "name": "TenantAsset",
+     "responsibility": "Stores tenant-specific assets such as restaurant name, logo, contacts, and menu items.",
+     "attributes": [
+      {
+       "name": "AssetID",
+       "type": "String"
+      }
+     ]
     }
-  },
-  "by_requirement": {
-    "REQ-0001": {
-      "aspect": "AI Content Generation",
-      "tags": [
-        "ai",
-        "vision"
-      ],
-      "components": [
-        "AiDescription"
-      ],
-      "interfaces": [
-        "DescriptionGenerationInterface",
-        "DescriptionPersistenceInterface"
-      ],
-      "functions": [
-        "GenerateDescriptionFromImage",
-        "StoreDescriptionRecord",
-        "ProvideManualDescription"
-      ]
+   ],
+   "functions": [
+    {
+     "name": "ManageTenantConfiguration",
+     "description": "Allows the Tenant Administrator to configure the Tenant's settings, including opening hours and general parameters."
     },
-    "REQ-0002": {
-      "aspect": "Menu & Item Catalog",
-      "tags": [
-        "content"
-      ],
-      "components": [
-        "Menu",
-        "Category",
-        "Item",
-        "FoodImage"
-      ],
-      "interfaces": [
-        "MenuDisplayInterface",
-        "MenuManagementInterface",
-        "AssetUploadInterface"
-      ],
-      "functions": [
-        "BrowseMenu",
-        "ManageMenu",
-        "ManageItem",
-        "UploadMedia",
-        "RetrieveMenuDisplayData"
-      ]
+    {
+     "name": "ManageTenantAssets",
+     "description": "Allows the Tenant Administrator to manage core tenant assets such as restaurant name, logo, and contact information."
     },
-    "REQ-0003": {
-      "aspect": "System Infrastructure",
-      "tags": [
-        "localization"
-      ],
-      "components": [
-        "SQLiteInstance"
-      ],
-      "interfaces": [
-        "TenantRoutingInterface",
-        "LocalizationInterface",
-        "AssetStorageInterface",
-        "MapDisplayInterface"
-      ],
-      "functions": [
-        "ResolveTenantIdentity",
-        "RouteRequest",
-        "ManageTenantData",
-        "ServeLocalizedContent",
-        "RenderResponsiveUI",
-        "HandleContactSubmission",
-        "DisplayMapInterface"
-      ]
+    {
+     "name": "ManageMenu",
+     "description": "Allows the Tenant Administrator to create, update, and manage the restaurant's menu and its constituent Items."
     },
-    "REQ-0004": {
-      "aspect": "System Infrastructure",
-      "tags": [
-        "processing"
-      ],
-      "components": [
-        "SQLiteInstance"
-      ],
-      "interfaces": [
-        "TenantRoutingInterface",
-        "LocalizationInterface",
-        "AssetStorageInterface",
-        "MapDisplayInterface"
-      ],
-      "functions": [
-        "ResolveTenantIdentity",
-        "RouteRequest",
-        "ManageTenantData",
-        "ServeLocalizedContent",
-        "RenderResponsiveUI",
-        "HandleContactSubmission",
-        "DisplayMapInterface"
-      ]
+    {
+     "name": "ManageMenuItem",
+     "description": "Allows the Tenant Administrator to manage individual Item details, including descriptions, images, and pricing."
     },
-    "REQ-0005": {
-      "aspect": "Tenant Administration",
-      "tags": [
-        "scheduling"
-      ],
-      "components": [
-        "Tenant",
-        "TenantConfiguration",
-        "TenantAsset"
-      ],
-      "interfaces": [
-        "TenantAdminInterface",
-        "ReservationManagementInterface"
-      ],
-      "functions": [
-        "ManageTenantConfiguration",
-        "ManageTenantAssets",
-        "ManageMenu",
-        "ManageMenuItem",
-        "ProcessReservation",
-        "ProvideTenantDashboard"
-      ]
+    {
+     "name": "ProcessReservation",
+     "description": "Allows the Tenant Administrator to accept or refuse incoming Reservation requests."
     },
-    "REQ-0006": {
-      "aspect": "System Infrastructure",
-      "tags": [
-        "localization"
-      ],
-      "components": [
-        "SQLiteInstance"
-      ],
-      "interfaces": [
-        "TenantRoutingInterface",
-        "LocalizationInterface",
-        "AssetStorageInterface",
-        "MapDisplayInterface"
-      ],
-      "functions": [
-        "ResolveTenantIdentity",
-        "RouteRequest",
-        "ManageTenantData",
-        "ServeLocalizedContent",
-        "RenderResponsiveUI",
-        "HandleContactSubmission",
-        "DisplayMapInterface"
-      ]
-    },
-    "REQ-0007": {
-      "aspect": "Reservations",
-      "tags": [
-        "authentication"
-      ],
-      "components": [
-        "Reservation"
-      ],
-      "interfaces": [
-        "ReservationSubmissionInterface",
-        "ReservationManagementInterface"
-      ],
-      "functions": [
-        "SubmitReservation",
-        "ConfirmReservation",
-        "GenerateReservationAddress"
-      ]
-    },
-    "REQ-0008": {
-      "aspect": "System Infrastructure",
-      "tags": [
-        "responsiveness"
-      ],
-      "components": [
-        "SQLiteInstance"
-      ],
-      "interfaces": [
-        "TenantRoutingInterface",
-        "LocalizationInterface",
-        "AssetStorageInterface",
-        "MapDisplayInterface"
-      ],
-      "functions": [
-        "ResolveTenantIdentity",
-        "RouteRequest",
-        "ManageTenantData",
-        "ServeLocalizedContent",
-        "RenderResponsiveUI",
-        "HandleContactSubmission",
-        "DisplayMapInterface"
-      ]
-    },
-    "REQ-0009": {
-      "aspect": "User & Access Control",
-      "tags": [
-        "authentication"
-      ],
-      "components": [
-        "User",
-        "UserGoogleId"
-      ],
-      "interfaces": [
-        "AuthenticationInterface",
-        "AccessControlInterface"
-      ],
-      "functions": [
-        "AuthenticateUser",
-        "CheckUserAccess"
-      ]
-    },
-    "REQ-0010": {
-      "aspect": "Tenant Administration",
-      "tags": [
-        "multi-tenancy"
-      ],
-      "components": [
-        "Tenant",
-        "TenantConfiguration",
-        "TenantAsset"
-      ],
-      "interfaces": [
-        "TenantAdminInterface",
-        "ReservationManagementInterface"
-      ],
-      "functions": [
-        "ManageTenantConfiguration",
-        "ManageTenantAssets",
-        "ManageMenu",
-        "ManageMenuItem",
-        "ProcessReservation",
-        "ProvideTenantDashboard"
-      ]
-    },
-    "REQ-0011": {
-      "aspect": "Menu & Item Catalog",
-      "tags": [
-        "data-management"
-      ],
-      "components": [
-        "Menu",
-        "Category",
-        "Item",
-        "FoodImage"
-      ],
-      "interfaces": [
-        "MenuDisplayInterface",
-        "MenuManagementInterface",
-        "AssetUploadInterface"
-      ],
-      "functions": [
-        "BrowseMenu",
-        "ManageMenu",
-        "ManageItem",
-        "UploadMedia",
-        "RetrieveMenuDisplayData"
-      ]
-    },
-    "REQ-0012": {
-      "aspect": "Menu & Item Catalog",
-      "tags": [
-        "file-upload"
-      ],
-      "components": [
-        "Menu",
-        "Category",
-        "Item",
-        "FoodImage"
-      ],
-      "interfaces": [
-        "MenuDisplayInterface",
-        "MenuManagementInterface",
-        "AssetUploadInterface"
-      ],
-      "functions": [
-        "BrowseMenu",
-        "ManageMenu",
-        "ManageItem",
-        "UploadMedia",
-        "RetrieveMenuDisplayData"
-      ]
-    },
-    "REQ-0013": {
-      "aspect": "AI Content Generation",
-      "tags": [
-        "localization"
-      ],
-      "components": [
-        "AiDescription"
-      ],
-      "interfaces": [
-        "DescriptionGenerationInterface",
-        "DescriptionPersistenceInterface"
-      ],
-      "functions": [
-        "GenerateDescriptionFromImage",
-        "StoreDescriptionRecord",
-        "ProvideManualDescription"
-      ]
-    },
-    "REQ-0014": {
-      "aspect": "Reservations",
-      "tags": [
-        "management"
-      ],
-      "components": [
-        "Reservation"
-      ],
-      "interfaces": [
-        "ReservationSubmissionInterface",
-        "ReservationManagementInterface"
-      ],
-      "functions": [
-        "SubmitReservation",
-        "ConfirmReservation",
-        "GenerateReservationAddress"
-      ]
-    },
-    "REQ-0015": {
-      "aspect": "System Infrastructure",
-      "tags": [
-        "multi-tenancy"
-      ],
-      "components": [
-        "SQLiteInstance"
-      ],
-      "interfaces": [
-        "TenantRoutingInterface",
-        "LocalizationInterface",
-        "AssetStorageInterface",
-        "MapDisplayInterface"
-      ],
-      "functions": [
-        "ResolveTenantIdentity",
-        "RouteRequest",
-        "ManageTenantData",
-        "ServeLocalizedContent",
-        "RenderResponsiveUI",
-        "HandleContactSubmission",
-        "DisplayMapInterface"
-      ]
-    },
-    "REQ-0016": {
-      "aspect": "System Infrastructure",
-      "tags": [
-        "multi-tenancy"
-      ],
-      "components": [
-        "SQLiteInstance"
-      ],
-      "interfaces": [
-        "TenantRoutingInterface",
-        "LocalizationInterface",
-        "AssetStorageInterface",
-        "MapDisplayInterface"
-      ],
-      "functions": [
-        "ResolveTenantIdentity",
-        "RouteRequest",
-        "ManageTenantData",
-        "ServeLocalizedContent",
-        "RenderResponsiveUI",
-        "HandleContactSubmission",
-        "DisplayMapInterface"
-      ]
-    },
-    "REQ-0017": {
-      "aspect": "System Infrastructure",
-      "tags": [
-        "multi-tenancy",
-        "storage"
-      ],
-      "components": [
-        "SQLiteInstance"
-      ],
-      "interfaces": [
-        "TenantRoutingInterface",
-        "LocalizationInterface",
-        "AssetStorageInterface",
-        "MapDisplayInterface"
-      ],
-      "functions": [
-        "ResolveTenantIdentity",
-        "RouteRequest",
-        "ManageTenantData",
-        "ServeLocalizedContent",
-        "RenderResponsiveUI",
-        "HandleContactSubmission",
-        "DisplayMapInterface"
-      ]
-    },
-    "REQ-0018": {
-      "aspect": "User & Access Control",
-      "tags": [
-        "authentication"
-      ],
-      "components": [
-        "User",
-        "UserGoogleId"
-      ],
-      "interfaces": [
-        "AuthenticationInterface",
-        "AccessControlInterface"
-      ],
-      "functions": [
-        "AuthenticateUser",
-        "CheckUserAccess"
-      ]
-    },
-    "REQ-0019": {
-      "aspect": "Reservations",
-      "tags": [
-        "management"
-      ],
-      "components": [
-        "Reservation"
-      ],
-      "interfaces": [
-        "ReservationSubmissionInterface",
-        "ReservationManagementInterface"
-      ],
-      "functions": [
-        "SubmitReservation",
-        "ConfirmReservation",
-        "GenerateReservationAddress"
-      ]
-    },
-    "REQ-0020": {
-      "aspect": "AI Content Generation",
-      "tags": [
-        "ai"
-      ],
-      "components": [
-        "AiDescription"
-      ],
-      "interfaces": [
-        "DescriptionGenerationInterface",
-        "DescriptionPersistenceInterface"
-      ],
-      "functions": [
-        "GenerateDescriptionFromImage",
-        "StoreDescriptionRecord",
-        "ProvideManualDescription"
-      ]
-    },
-    "REQ-0022": {
-      "aspect": "AI Content Generation",
-      "tags": [
-        "localization"
-      ],
-      "components": [
-        "AiDescription"
-      ],
-      "interfaces": [
-        "DescriptionGenerationInterface",
-        "DescriptionPersistenceInterface"
-      ],
-      "functions": [
-        "GenerateDescriptionFromImage",
-        "StoreDescriptionRecord",
-        "ProvideManualDescription"
-      ]
-    },
-    "REQ-0023": {
-      "aspect": "System Infrastructure",
-      "tags": [
-        "security"
-      ],
-      "components": [
-        "SQLiteInstance"
-      ],
-      "interfaces": [
-        "TenantRoutingInterface",
-        "LocalizationInterface",
-        "AssetStorageInterface",
-        "MapDisplayInterface"
-      ],
-      "functions": [
-        "ResolveTenantIdentity",
-        "RouteRequest",
-        "ManageTenantData",
-        "ServeLocalizedContent",
-        "RenderResponsiveUI",
-        "HandleContactSubmission",
-        "DisplayMapInterface"
-      ]
-    },
-    "REQ-0024": {
-      "aspect": "Menu & Item Catalog",
-      "tags": [
-        "anonymous"
-      ],
-      "components": [
-        "Menu",
-        "Category",
-        "Item",
-        "FoodImage"
-      ],
-      "interfaces": [
-        "MenuDisplayInterface",
-        "MenuManagementInterface",
-        "AssetUploadInterface"
-      ],
-      "functions": [
-        "BrowseMenu",
-        "ManageMenu",
-        "ManageItem",
-        "UploadMedia",
-        "RetrieveMenuDisplayData"
-      ]
-    },
-    "REQ-0025": {
-      "aspect": "User & Access Control",
-      "tags": [
-        "authentication"
-      ],
-      "components": [
-        "User",
-        "UserGoogleId"
-      ],
-      "interfaces": [
-        "AuthenticationInterface",
-        "AccessControlInterface"
-      ],
-      "functions": [
-        "AuthenticateUser",
-        "CheckUserAccess"
-      ]
-    },
-    "REQ-0026": {
-      "aspect": "Reservations",
-      "tags": [
-        "authentication"
-      ],
-      "components": [
-        "Reservation"
-      ],
-      "interfaces": [
-        "ReservationSubmissionInterface",
-        "ReservationManagementInterface"
-      ],
-      "functions": [
-        "SubmitReservation",
-        "ConfirmReservation",
-        "GenerateReservationAddress"
-      ]
-    },
-    "REQ-0027": {
-      "aspect": "Tenant Administration",
-      "tags": [
-        "authentication",
-        "multi-tenancy"
-      ],
-      "components": [
-        "Tenant",
-        "TenantConfiguration",
-        "TenantAsset"
-      ],
-      "interfaces": [
-        "TenantAdminInterface",
-        "ReservationManagementInterface"
-      ],
-      "functions": [
-        "ManageTenantConfiguration",
-        "ManageTenantAssets",
-        "ManageMenu",
-        "ManageMenuItem",
-        "ProcessReservation",
-        "ProvideTenantDashboard"
-      ]
-    },
-    "REQ-0028": {
-      "aspect": "Tenant Administration",
-      "tags": [
-        "multi-tenancy"
-      ],
-      "components": [
-        "Tenant",
-        "TenantConfiguration",
-        "TenantAsset"
-      ],
-      "interfaces": [
-        "TenantAdminInterface",
-        "ReservationManagementInterface"
-      ],
-      "functions": [
-        "ManageTenantConfiguration",
-        "ManageTenantAssets",
-        "ManageMenu",
-        "ManageMenuItem",
-        "ProcessReservation",
-        "ProvideTenantDashboard"
-      ]
-    },
-    "REQ-0029": {
-      "aspect": "Tenant Administration",
-      "tags": [
-        "multi-tenancy"
-      ],
-      "components": [
-        "Tenant",
-        "TenantConfiguration",
-        "TenantAsset"
-      ],
-      "interfaces": [
-        "TenantAdminInterface",
-        "ReservationManagementInterface"
-      ],
-      "functions": [
-        "ManageTenantConfiguration",
-        "ManageTenantAssets",
-        "ManageMenu",
-        "ManageMenuItem",
-        "ProcessReservation",
-        "ProvideTenantDashboard"
-      ]
-    },
-    "REQ-0030": {
-      "aspect": "Tenant Administration",
-      "tags": [
-        "multi-tenancy"
-      ],
-      "components": [
-        "Tenant",
-        "TenantConfiguration",
-        "TenantAsset"
-      ],
-      "interfaces": [
-        "TenantAdminInterface",
-        "ReservationManagementInterface"
-      ],
-      "functions": [
-        "ManageTenantConfiguration",
-        "ManageTenantAssets",
-        "ManageMenu",
-        "ManageMenuItem",
-        "ProcessReservation",
-        "ProvideTenantDashboard"
-      ]
-    },
-    "REQ-0031": {
-      "aspect": "Tenant Administration",
-      "tags": [
-        "multi-tenancy"
-      ],
-      "components": [
-        "Tenant",
-        "TenantConfiguration",
-        "TenantAsset"
-      ],
-      "interfaces": [
-        "TenantAdminInterface",
-        "ReservationManagementInterface"
-      ],
-      "functions": [
-        "ManageTenantConfiguration",
-        "ManageTenantAssets",
-        "ManageMenu",
-        "ManageMenuItem",
-        "ProcessReservation",
-        "ProvideTenantDashboard"
-      ]
-    },
-    "REQ-0032": {
-      "aspect": "Tenant Administration",
-      "tags": [
-        "multi-tenancy"
-      ],
-      "components": [
-        "Tenant",
-        "TenantConfiguration",
-        "TenantAsset"
-      ],
-      "interfaces": [
-        "TenantAdminInterface",
-        "ReservationManagementInterface"
-      ],
-      "functions": [
-        "ManageTenantConfiguration",
-        "ManageTenantAssets",
-        "ManageMenu",
-        "ManageMenuItem",
-        "ProcessReservation",
-        "ProvideTenantDashboard"
-      ]
-    },
-    "REQ-0033": {
-      "aspect": "Menu & Item Catalog",
-      "tags": [
-        "data-model"
-      ],
-      "components": [
-        "Menu",
-        "Category",
-        "Item",
-        "FoodImage"
-      ],
-      "interfaces": [
-        "MenuDisplayInterface",
-        "MenuManagementInterface",
-        "AssetUploadInterface"
-      ],
-      "functions": [
-        "BrowseMenu",
-        "ManageMenu",
-        "ManageItem",
-        "UploadMedia",
-        "RetrieveMenuDisplayData"
-      ]
-    },
-    "REQ-0034": {
-      "aspect": "Menu & Item Catalog",
-      "tags": [
-        "data-model"
-      ],
-      "components": [
-        "Menu",
-        "Category",
-        "Item",
-        "FoodImage"
-      ],
-      "interfaces": [
-        "MenuDisplayInterface",
-        "MenuManagementInterface",
-        "AssetUploadInterface"
-      ],
-      "functions": [
-        "BrowseMenu",
-        "ManageMenu",
-        "ManageItem",
-        "UploadMedia",
-        "RetrieveMenuDisplayData"
-      ]
-    },
-    "REQ-0035": {
-      "aspect": "Menu & Item Catalog",
-      "tags": [
-        "dietary-restrictions",
-        "localization"
-      ],
-      "components": [
-        "Menu",
-        "Category",
-        "Item",
-        "FoodImage"
-      ],
-      "interfaces": [
-        "MenuDisplayInterface",
-        "MenuManagementInterface",
-        "AssetUploadInterface"
-      ],
-      "functions": [
-        "BrowseMenu",
-        "ManageMenu",
-        "ManageItem",
-        "UploadMedia",
-        "RetrieveMenuDisplayData"
-      ]
-    },
-    "REQ-0036": {
-      "aspect": "Menu & Item Catalog",
-      "tags": [
-        "storage"
-      ],
-      "components": [
-        "Menu",
-        "Category",
-        "Item",
-        "FoodImage"
-      ],
-      "interfaces": [
-        "MenuDisplayInterface",
-        "MenuManagementInterface",
-        "AssetUploadInterface"
-      ],
-      "functions": [
-        "BrowseMenu",
-        "ManageMenu",
-        "ManageItem",
-        "UploadMedia",
-        "RetrieveMenuDisplayData"
-      ]
-    },
-    "REQ-0037": {
-      "aspect": "AI Content Generation",
-      "tags": [
-        "ai",
-        "localization"
-      ],
-      "components": [
-        "AiDescription"
-      ],
-      "interfaces": [
-        "DescriptionGenerationInterface",
-        "DescriptionPersistenceInterface"
-      ],
-      "functions": [
-        "GenerateDescriptionFromImage",
-        "StoreDescriptionRecord",
-        "ProvideManualDescription"
-      ]
-    },
-    "REQ-0038": {
-      "aspect": "Reservations",
-      "tags": [
-        "multi-tenancy"
-      ],
-      "components": [
-        "Reservation"
-      ],
-      "interfaces": [
-        "ReservationSubmissionInterface",
-        "ReservationManagementInterface"
-      ],
-      "functions": [
-        "SubmitReservation",
-        "ConfirmReservation",
-        "GenerateReservationAddress"
-      ]
-    },
-    "REQ-0039": {
-      "aspect": "Reservations",
-      "tags": [
-        "manual-process"
-      ],
-      "components": [
-        "Reservation"
-      ],
-      "interfaces": [
-        "ReservationSubmissionInterface",
-        "ReservationManagementInterface"
-      ],
-      "functions": [
-        "SubmitReservation",
-        "ConfirmReservation",
-        "GenerateReservationAddress"
-      ]
-    },
-    "REQ-0042": {
-      "aspect": "Menu & Item Catalog",
-      "tags": [
-        "display"
-      ],
-      "components": [
-        "Menu",
-        "Category",
-        "Item",
-        "FoodImage"
-      ],
-      "interfaces": [
-        "MenuDisplayInterface",
-        "MenuManagementInterface",
-        "AssetUploadInterface"
-      ],
-      "functions": [
-        "BrowseMenu",
-        "ManageMenu",
-        "ManageItem",
-        "UploadMedia",
-        "RetrieveMenuDisplayData"
-      ]
-    },
-    "REQ-0043": {
-      "aspect": "Menu & Item Catalog",
-      "tags": [
-        "display"
-      ],
-      "components": [
-        "Menu",
-        "Category",
-        "Item",
-        "FoodImage"
-      ],
-      "interfaces": [
-        "MenuDisplayInterface",
-        "MenuManagementInterface",
-        "AssetUploadInterface"
-      ],
-      "functions": [
-        "BrowseMenu",
-        "ManageMenu",
-        "ManageItem",
-        "UploadMedia",
-        "RetrieveMenuDisplayData"
-      ]
-    },
-    "REQ-0044": {
-      "aspect": "System Infrastructure",
-      "tags": [
-        "localization"
-      ],
-      "components": [
-        "SQLiteInstance"
-      ],
-      "interfaces": [
-        "TenantRoutingInterface",
-        "LocalizationInterface",
-        "AssetStorageInterface",
-        "MapDisplayInterface"
-      ],
-      "functions": [
-        "ResolveTenantIdentity",
-        "RouteRequest",
-        "ManageTenantData",
-        "ServeLocalizedContent",
-        "RenderResponsiveUI",
-        "HandleContactSubmission",
-        "DisplayMapInterface"
-      ]
-    },
-    "REQ-0045": {
-      "aspect": "Tenant Administration",
-      "tags": [
-        "user-input"
-      ],
-      "components": [
-        "Tenant",
-        "TenantConfiguration",
-        "TenantAsset"
-      ],
-      "interfaces": [
-        "TenantAdminInterface",
-        "ReservationManagementInterface"
-      ],
-      "functions": [
-        "ManageTenantConfiguration",
-        "ManageTenantAssets",
-        "ManageMenu",
-        "ManageMenuItem",
-        "ProcessReservation",
-        "ProvideTenantDashboard"
-      ]
-    },
-    "REQ-0046": {
-      "aspect": "Tenant Administration",
-      "tags": [
-        "scheduling"
-      ],
-      "components": [
-        "Tenant",
-        "TenantConfiguration",
-        "TenantAsset"
-      ],
-      "interfaces": [
-        "TenantAdminInterface",
-        "ReservationManagementInterface"
-      ],
-      "functions": [
-        "ManageTenantConfiguration",
-        "ManageTenantAssets",
-        "ManageMenu",
-        "ManageMenuItem",
-        "ProcessReservation",
-        "ProvideTenantDashboard"
-      ]
-    },
-    "REQ-0047": {
-      "aspect": "System Infrastructure",
-      "tags": [
-        "localization"
-      ],
-      "components": [
-        "SQLiteInstance"
-      ],
-      "interfaces": [
-        "TenantRoutingInterface",
-        "LocalizationInterface",
-        "AssetStorageInterface",
-        "MapDisplayInterface"
-      ],
-      "functions": [
-        "ResolveTenantIdentity",
-        "RouteRequest",
-        "ManageTenantData",
-        "ServeLocalizedContent",
-        "RenderResponsiveUI",
-        "HandleContactSubmission",
-        "DisplayMapInterface"
-      ]
-    },
-    "REQ-0048": {
-      "aspect": "Reservations",
-      "tags": [
-        "authentication"
-      ],
-      "components": [
-        "Reservation"
-      ],
-      "interfaces": [
-        "ReservationSubmissionInterface",
-        "ReservationManagementInterface"
-      ],
-      "functions": [
-        "SubmitReservation",
-        "ConfirmReservation",
-        "GenerateReservationAddress"
-      ]
-    },
-    "REQ-0049": {
-      "aspect": "User & Access Control",
-      "tags": [
-        "authentication"
-      ],
-      "components": [
-        "User",
-        "UserGoogleId"
-      ],
-      "interfaces": [
-        "AuthenticationInterface",
-        "AccessControlInterface"
-      ],
-      "functions": [
-        "AuthenticateUser",
-        "CheckUserAccess"
-      ]
-    },
-    "REQ-0050": {
-      "aspect": "Tenant Administration",
-      "tags": [
-        "multi-tenancy"
-      ],
-      "components": [
-        "Tenant",
-        "TenantConfiguration",
-        "TenantAsset"
-      ],
-      "interfaces": [
-        "TenantAdminInterface",
-        "ReservationManagementInterface"
-      ],
-      "functions": [
-        "ManageTenantConfiguration",
-        "ManageTenantAssets",
-        "ManageMenu",
-        "ManageMenuItem",
-        "ProcessReservation",
-        "ProvideTenantDashboard"
-      ]
-    },
-    "REQ-0051": {
-      "aspect": "Menu & Item Catalog",
-      "tags": [
-        "data-management"
-      ],
-      "components": [
-        "Menu",
-        "Category",
-        "Item",
-        "FoodImage"
-      ],
-      "interfaces": [
-        "MenuDisplayInterface",
-        "MenuManagementInterface",
-        "AssetUploadInterface"
-      ],
-      "functions": [
-        "BrowseMenu",
-        "ManageMenu",
-        "ManageItem",
-        "UploadMedia",
-        "RetrieveMenuDisplayData"
-      ]
-    },
-    "REQ-0052": {
-      "aspect": "Menu & Item Catalog",
-      "tags": [
-        "media"
-      ],
-      "components": [
-        "Menu",
-        "Category",
-        "Item",
-        "FoodImage"
-      ],
-      "interfaces": [
-        "MenuDisplayInterface",
-        "MenuManagementInterface",
-        "AssetUploadInterface"
-      ],
-      "functions": [
-        "BrowseMenu",
-        "ManageMenu",
-        "ManageItem",
-        "UploadMedia",
-        "RetrieveMenuDisplayData"
-      ]
-    },
-    "REQ-0053": {
-      "aspect": "AI Content Generation",
-      "tags": [
-        "ai"
-      ],
-      "components": [
-        "AiDescription"
-      ],
-      "interfaces": [
-        "DescriptionGenerationInterface",
-        "DescriptionPersistenceInterface"
-      ],
-      "functions": [
-        "GenerateDescriptionFromImage",
-        "StoreDescriptionRecord",
-        "ProvideManualDescription"
-      ]
-    },
-    "REQ-0054": {
-      "aspect": "Reservations",
-      "tags": [
-        "management"
-      ],
-      "components": [
-        "Reservation"
-      ],
-      "interfaces": [
-        "ReservationSubmissionInterface",
-        "ReservationManagementInterface"
-      ],
-      "functions": [
-        "SubmitReservation",
-        "ConfirmReservation",
-        "GenerateReservationAddress"
-      ]
-    },
-    "REQ-0055": {
-      "aspect": "Tenant Administration",
-      "tags": [
-        "multi-tenancy"
-      ],
-      "components": [
-        "Tenant",
-        "TenantConfiguration",
-        "TenantAsset"
-      ],
-      "interfaces": [
-        "TenantAdminInterface",
-        "ReservationManagementInterface"
-      ],
-      "functions": [
-        "ManageTenantConfiguration",
-        "ManageTenantAssets",
-        "ManageMenu",
-        "ManageMenuItem",
-        "ProcessReservation",
-        "ProvideTenantDashboard"
-      ]
-    },
-    "REQ-0056": {
-      "aspect": "System Infrastructure",
-      "tags": [
-        "multi-tenancy"
-      ],
-      "components": [
-        "SQLiteInstance"
-      ],
-      "interfaces": [
-        "TenantRoutingInterface",
-        "LocalizationInterface",
-        "AssetStorageInterface",
-        "MapDisplayInterface"
-      ],
-      "functions": [
-        "ResolveTenantIdentity",
-        "RouteRequest",
-        "ManageTenantData",
-        "ServeLocalizedContent",
-        "RenderResponsiveUI",
-        "HandleContactSubmission",
-        "DisplayMapInterface"
-      ]
-    },
-    "REQ-0057": {
-      "aspect": "System Infrastructure",
-      "tags": [
-        "storage"
-      ],
-      "components": [
-        "SQLiteInstance"
-      ],
-      "interfaces": [
-        "TenantRoutingInterface",
-        "LocalizationInterface",
-        "AssetStorageInterface",
-        "MapDisplayInterface"
-      ],
-      "functions": [
-        "ResolveTenantIdentity",
-        "RouteRequest",
-        "ManageTenantData",
-        "ServeLocalizedContent",
-        "RenderResponsiveUI",
-        "HandleContactSubmission",
-        "DisplayMapInterface"
-      ]
-    },
-    "REQ-0058": {
-      "aspect": "AI Content Generation",
-      "tags": [
-        "ai"
-      ],
-      "components": [
-        "AiDescription"
-      ],
-      "interfaces": [
-        "DescriptionGenerationInterface",
-        "DescriptionPersistenceInterface"
-      ],
-      "functions": [
-        "GenerateDescriptionFromImage",
-        "StoreDescriptionRecord",
-        "ProvideManualDescription"
-      ]
-    },
-    "REQ-0059": {
-      "aspect": "Reservations",
-      "tags": [
-        "api"
-      ],
-      "components": [
-        "Reservation"
-      ],
-      "interfaces": [
-        "ReservationSubmissionInterface",
-        "ReservationManagementInterface"
-      ],
-      "functions": [
-        "SubmitReservation",
-        "ConfirmReservation",
-        "GenerateReservationAddress"
-      ]
-    },
-    "REQ-0060": {
-      "aspect": "System Infrastructure",
-      "tags": [
-        "concurrency"
-      ],
-      "components": [
-        "SQLiteInstance"
-      ],
-      "interfaces": [
-        "TenantRoutingInterface",
-        "LocalizationInterface",
-        "AssetStorageInterface",
-        "MapDisplayInterface"
-      ],
-      "functions": [
-        "ResolveTenantIdentity",
-        "RouteRequest",
-        "ManageTenantData",
-        "ServeLocalizedContent",
-        "RenderResponsiveUI",
-        "HandleContactSubmission",
-        "DisplayMapInterface"
-      ]
-    },
-    "REQ-0062": {
-      "aspect": "User & Access Control",
-      "tags": [
-        "authentication",
-        "multi-tenancy"
-      ],
-      "components": [
-        "User",
-        "UserGoogleId"
-      ],
-      "interfaces": [
-        "AuthenticationInterface",
-        "AccessControlInterface"
-      ],
-      "functions": [
-        "AuthenticateUser",
-        "CheckUserAccess"
-      ]
-    },
-    "REQ-0063": {
-      "aspect": "AI Content Generation",
-      "tags": [
-        "error-handling"
-      ],
-      "components": [
-        "AiDescription"
-      ],
-      "interfaces": [
-        "DescriptionGenerationInterface",
-        "DescriptionPersistenceInterface"
-      ],
-      "functions": [
-        "GenerateDescriptionFromImage",
-        "StoreDescriptionRecord",
-        "ProvideManualDescription"
-      ]
-    },
-    "REQ-0065": {
-      "aspect": "System Infrastructure",
-      "tags": [
-        "localization"
-      ],
-      "components": [
-        "SQLiteInstance"
-      ],
-      "interfaces": [
-        "TenantRoutingInterface",
-        "LocalizationInterface",
-        "AssetStorageInterface",
-        "MapDisplayInterface"
-      ],
-      "functions": [
-        "ResolveTenantIdentity",
-        "RouteRequest",
-        "ManageTenantData",
-        "ServeLocalizedContent",
-        "RenderResponsiveUI",
-        "HandleContactSubmission",
-        "DisplayMapInterface"
-      ]
+    {
+     "name": "ProvideTenantDashboard",
+     "description": "Serves the dedicated administrative interface for the Tenant Administrator to manage all tenant-specific resources."
     }
-  },
-  "components": [
+   ],
+   "interfaces": [
     {
-      "name": "Tenant",
-      "owner_aspect": "Tenant Administration",
-      "suggested_module": "tenant",
-      "attributes": [
-        {
-          "name": "TenantID",
-          "type": "String"
-        }
-      ]
+     "name": "TenantAdminInterface",
+     "purpose": "Provides the boundary for the Tenant Administrator to interact with and manage all tenant-specific data and configurations.",
+     "consumers": [
+      "TenantAdministrator"
+     ]
     },
     {
-      "name": "TenantConfiguration",
-      "owner_aspect": "Tenant Administration",
-      "suggested_module": "tenant_configuration",
-      "attributes": [
-        {
-          "name": "ConfigurationID",
-          "type": "String"
-        },
-        {
-          "name": "OpeningHours",
-          "type": "String"
-        }
-      ]
-    },
-    {
-      "name": "TenantAsset",
-      "owner_aspect": "Tenant Administration",
-      "suggested_module": "tenant_asset",
-      "attributes": [
-        {
-          "name": "AssetID",
-          "type": "String"
-        }
-      ]
-    },
-    {
-      "name": "Menu",
-      "owner_aspect": "Menu & Item Catalog",
-      "suggested_module": "menu",
-      "attributes": [
-        {
-          "name": "id",
-          "type": "String"
-        }
-      ]
-    },
-    {
-      "name": "Category",
-      "owner_aspect": "Menu & Item Catalog",
-      "suggested_module": "category",
-      "attributes": [
-        {
-          "name": "id",
-          "type": "String"
-        },
-        {
-          "name": "name",
-          "type": "String"
-        },
-        {
-          "name": "description",
-          "type": "String"
-        },
-        {
-          "name": "order",
-          "type": "Integer"
-        }
-      ]
-    },
-    {
-      "name": "Item",
-      "owner_aspect": "Menu & Item Catalog",
-      "suggested_module": "item",
-      "attributes": [
-        {
-          "name": "id",
-          "type": "String"
-        },
-        {
-          "name": "name",
-          "type": "String"
-        },
-        {
-          "name": "description",
-          "type": "String"
-        },
-        {
-          "name": "price",
-          "type": "Price"
-        },
-        {
-          "name": "availability",
-          "type": "Availability"
-        }
-      ]
-    },
-    {
-      "name": "FoodImage",
-      "owner_aspect": "Menu & Item Catalog",
-      "suggested_module": "food_image",
-      "attributes": [
-        {
-          "name": "id",
-          "type": "String"
-        },
-        {
-          "name": "path_metadata",
-          "type": "String"
-        }
-      ]
-    },
-    {
-      "name": "Reservation",
-      "owner_aspect": "Reservations",
-      "suggested_module": "reservation",
-      "attributes": [
-        {
-          "name": "id",
-          "type": "String"
-        },
-        {
-          "name": "user_google_id",
-          "type": "String"
-        },
-        {
-          "name": "tenant_id",
-          "type": "String"
-        },
-        {
-          "name": "date_time",
-          "type": "String"
-        },
-        {
-          "name": "number_of_people",
-          "type": "Integer"
-        },
-        {
-          "name": "status",
-          "type": "ReservationStatus"
-        },
-        {
-          "name": "timestamp",
-          "type": "Timestamp"
-        },
-        {
-          "name": "notes",
-          "type": "String"
-        }
-      ]
-    },
-    {
-      "name": "User",
-      "owner_aspect": "User & Access Control",
-      "suggested_module": "user",
-      "attributes": [
-        {
-          "name": "UserGoogleId",
-          "type": "String"
-        }
-      ]
-    },
-    {
-      "name": "UserGoogleId",
-      "owner_aspect": "User & Access Control",
-      "suggested_module": "user_google_id",
-      "attributes": [
-        {
-          "name": "Id",
-          "type": "String"
-        }
-      ]
-    },
-    {
-      "name": "AiDescription",
-      "owner_aspect": "AI Content Generation",
-      "suggested_module": "ai_description",
-      "attributes": [
-        {
-          "name": "generated_text",
-          "type": "String"
-        },
-        {
-          "name": "language",
-          "type": "String"
-        },
-        {
-          "name": "approved_flag",
-          "type": "Boolean"
-        },
-        {
-          "name": "timestamp",
-          "type": "Timestamp"
-        }
-      ]
-    },
-    {
-      "name": "SQLiteInstance",
-      "owner_aspect": "System Infrastructure",
-      "suggested_module": "sq_lite_instance",
-      "attributes": [
-        {
-          "name": "InstanceID",
-          "type": "String"
-        }
-      ]
+     "name": "ReservationManagementInterface",
+     "purpose": "Exposes the functionality for the Tenant Administrator to review and change the status of incoming reservations.",
+     "consumers": [
+      "TenantAdministrator"
+     ]
     }
-  ],
-  "open_issues": []
+   ],
+   "consumes": [
+    {
+     "concern": "authentication",
+     "why": "The Tenant Administrator must authenticate using Google credentials."
+    },
+    {
+     "concern": "data-management",
+     "why": "The aspect manages and persists TenantConfiguration, Menu, Item, and Reservation data."
+    },
+    {
+     "concern": "media",
+     "why": "The aspect manages FoodImage assets associated with Items."
+    },
+    {
+     "concern": "multi-tenancy",
+     "why": "All managed entities (TenantConfiguration, Menu, Item, Reservation) must be isolated per Tenant."
+    },
+    {
+     "concern": "FoodImage",
+     "why": "owned by Menu & Item Catalog"
+    },
+    {
+     "concern": "Item",
+     "why": "owned by Menu & Item Catalog"
+    },
+    {
+     "concern": "Menu",
+     "why": "owned by Menu & Item Catalog"
+    },
+    {
+     "concern": "Reservation",
+     "why": "owned by Reservations"
+    }
+   ]
+  },
+  "Menu & Item Catalog": {
+   "scope": "Handles the structure and display of food items, categories, and menus, including image and description presentation.",
+   "req_ids": [
+    "REQ-0002",
+    "REQ-0011",
+    "REQ-0012",
+    "REQ-0024",
+    "REQ-0033",
+    "REQ-0034",
+    "REQ-0035",
+    "REQ-0036",
+    "REQ-0042",
+    "REQ-0043",
+    "REQ-0051",
+    "REQ-0052"
+   ],
+   "components": [
+    {
+     "name": "Menu",
+     "responsibility": "Manages the collection of food or drink offerings for a Tenant.",
+     "attributes": [
+      {
+       "name": "id",
+       "type": "String"
+      }
+     ]
+    },
+    {
+     "name": "Category",
+     "responsibility": "Groups menu items and holds organizational data.",
+     "attributes": [
+      {
+       "name": "id",
+       "type": "String"
+      },
+      {
+       "name": "name",
+       "type": "String"
+      },
+      {
+       "name": "description",
+       "type": "String"
+      },
+      {
+       "name": "order",
+       "type": "Integer"
+      }
+     ]
+    },
+    {
+     "name": "Item",
+     "responsibility": "Represents a specific product offered on the menu.",
+     "attributes": [
+      {
+       "name": "id",
+       "type": "String"
+      },
+      {
+       "name": "name",
+       "type": "String"
+      },
+      {
+       "name": "description",
+       "type": "String"
+      },
+      {
+       "name": "price",
+       "type": "Price"
+      },
+      {
+       "name": "availability",
+       "type": "Availability"
+      }
+     ]
+    },
+    {
+     "name": "FoodImage",
+     "responsibility": "Stores metadata and references for uploaded visual media.",
+     "attributes": [
+      {
+       "name": "id",
+       "type": "String"
+      },
+      {
+       "name": "path_metadata",
+       "type": "String"
+      }
+     ]
+    }
+   ],
+   "functions": [
+    {
+     "name": "BrowseMenu",
+     "description": "Allows anonymous users to view the menu structure and items for a specific Tenant."
+    },
+    {
+     "name": "ManageMenu",
+     "description": "Allows authorized Tenant Administrators to create, update, or delete Menu entities."
+    },
+    {
+     "name": "ManageItem",
+     "description": "Allows authorized users to create, update, or delete Item entities within a Menu."
+    },
+    {
+     "name": "UploadMedia",
+     "description": "Allows authorized users (Tenant Administrator) to upload and register image files."
+    },
+    {
+     "name": "RetrieveMenuDisplayData",
+     "description": "Retrieves all necessary data (items, categories, images) to render the menu for a given Tenant."
+    }
+   ],
+   "interfaces": [
+    {
+     "name": "MenuDisplayInterface",
+     "purpose": "Provides endpoints for both anonymous browsing and authenticated viewing of the menu structure and item details.",
+     "consumers": [
+      "anonymous",
+      "display"
+     ]
+    },
+    {
+     "name": "MenuManagementInterface",
+     "purpose": "Provides CRUD operations for Menu and Item entities, restricted to Tenant Administrators.",
+     "consumers": [
+      "management",
+      "data-management"
+     ]
+    },
+    {
+     "name": "AssetUploadInterface",
+     "purpose": "Handles the secure upload and registration of media assets (FoodImage).",
+     "consumers": [
+      "file-upload",
+      "media"
+     ]
+    }
+   ],
+   "consumes": [
+    {
+     "concern": "multi-tenancy",
+     "why": "All menu operations must be scoped and isolated per Tenant."
+    },
+    {
+     "concern": "authentication",
+     "why": "Operations like creating/updating menus require user authorization checks."
+    },
+    {
+     "concern": "data-model",
+     "why": "Relies on the canonical definitions of Tenant, Item, Category, etc."
+    }
+   ]
+  },
+  "Reservations": {
+   "scope": "Manages the process of booking tables, from user submission through to manual administrative confirmation.",
+   "req_ids": [
+    "REQ-0007",
+    "REQ-0014",
+    "REQ-0019",
+    "REQ-0026",
+    "REQ-0038",
+    "REQ-0039",
+    "REQ-0048",
+    "REQ-0054",
+    "REQ-0059"
+   ],
+   "components": [
+    {
+     "name": "Reservation",
+     "responsibility": "Stores the details of a booking request.",
+     "attributes": [
+      {
+       "name": "id",
+       "type": "String"
+      },
+      {
+       "name": "user_google_id",
+       "type": "String"
+      },
+      {
+       "name": "tenant_id",
+       "type": "String"
+      },
+      {
+       "name": "date_time",
+       "type": "String"
+      },
+      {
+       "name": "number_of_people",
+       "type": "Integer"
+      },
+      {
+       "name": "status",
+       "type": "ReservationStatus"
+      },
+      {
+       "name": "timestamp",
+       "type": "Timestamp"
+      },
+      {
+       "name": "notes",
+       "type": "String"
+      }
+     ]
+    }
+   ],
+   "functions": [
+    {
+     "name": "SubmitReservation",
+     "description": "Allows a Google-authenticated User to submit a new Reservation request via the ReservationForm."
+    },
+    {
+     "name": "ConfirmReservation",
+     "description": "Allows an Admin or TenantAdministrator to manually change the status of a Reservation to confirmed."
+    },
+    {
+     "name": "GenerateReservationAddress",
+     "description": "Produces a stable address representation for a specific Reservation."
+    }
+   ],
+   "interfaces": [
+    {
+     "name": "ReservationSubmissionInterface",
+     "purpose": "Provides the mechanism for authenticated users to submit reservation requests.",
+     "consumers": [
+      "User"
+     ]
+    },
+    {
+     "name": "ReservationManagementInterface",
+     "purpose": "Provides endpoints for administrative roles to view and manually update the status of Reservations.",
+     "consumers": [
+      "Admin",
+      "TenantAdministrator"
+     ]
+    }
+   ],
+   "consumes": [
+    {
+     "concern": "authentication",
+     "why": "To ensure only authenticated users can access reservation functionality."
+    },
+    {
+     "concern": "user-input",
+     "why": "To handle data submitted via the ReservationForm."
+    },
+    {
+     "concern": "data-model",
+     "why": "To manage the state and persistence of the Reservation entity."
+    },
+    {
+     "concern": "multi-tenancy",
+     "why": "To ensure reservations are correctly scoped to a specific Tenant."
+    }
+   ]
+  },
+  "User & Access Control": {
+   "scope": "Implements user authentication via Google OAuth and manages access levels for anonymous and authenticated users.",
+   "req_ids": [
+    "REQ-0009",
+    "REQ-0018",
+    "REQ-0025",
+    "REQ-0049",
+    "REQ-0062"
+   ],
+   "components": [
+    {
+     "name": "User",
+     "responsibility": "Represents an individual interacting with the system.",
+     "attributes": [
+      {
+       "name": "UserGoogleId",
+       "type": "String"
+      }
+     ]
+    },
+    {
+     "name": "UserGoogleId",
+     "responsibility": "Stores the unique identifier provided by Google for user authentication.",
+     "attributes": [
+      {
+       "name": "Id",
+       "type": "String"
+      }
+     ]
+    }
+   ],
+   "functions": [
+    {
+     "name": "AuthenticateUser",
+     "description": "Handles the process of authenticating a user via Google OAuth2 flow."
+    },
+    {
+     "name": "CheckUserAccess",
+     "description": "Determines if a user has sufficient privileges to perform an action, specifically preventing anonymous users from making reservations."
+    }
+   ],
+   "interfaces": [
+    {
+     "name": "AuthenticationInterface",
+     "purpose": "Provides endpoints for initiating and completing Google OAuth2 authentication.",
+     "consumers": [
+      "User"
+     ]
+    },
+    {
+     "name": "AccessControlInterface",
+     "purpose": "Exposes methods to verify user identity and check permissions before allowing state-changing operations like making a reservation.",
+     "consumers": [
+      "User"
+     ]
+    }
+   ],
+   "consumes": [
+    {
+     "concern": "authentication",
+     "why": "The core functionality relies on the 'authentication' tag for managing user identity via Google OAuth."
+    },
+    {
+     "concern": "security",
+     "why": "Access control mechanisms inherently relate to system security."
+    },
+    {
+     "concern": "anonymous",
+     "why": "The requirement specifically addresses the restriction placed on anonymous users."
+    }
+   ]
+  },
+  "AI Content Generation": {
+   "scope": "Integrates LLM vision capabilities to generate and manage localized descriptions for food items from images.",
+   "req_ids": [
+    "REQ-0001",
+    "REQ-0013",
+    "REQ-0020",
+    "REQ-0022",
+    "REQ-0037",
+    "REQ-0053",
+    "REQ-0058",
+    "REQ-0063"
+   ],
+   "components": [
+    {
+     "name": "AiDescription",
+     "responsibility": "Stores the generated textual description of a food item.",
+     "attributes": [
+      {
+       "name": "generated_text",
+       "type": "String"
+      },
+      {
+       "name": "language",
+       "type": "String"
+      },
+      {
+       "name": "approved_flag",
+       "type": "Boolean"
+      },
+      {
+       "name": "timestamp",
+       "type": "Timestamp"
+      }
+     ]
+    }
+   ],
+   "functions": [
+    {
+     "name": "GenerateDescriptionFromImage",
+     "description": "Generates an AI description for a FoodImage using a vision-capable LLM, respecting the requested Language."
+    },
+    {
+     "name": "StoreDescriptionRecord",
+     "description": "Persists the generated or manually provided description, along with metadata (item_id, language, approval status, timestamp)."
+    },
+    {
+     "name": "ProvideManualDescription",
+     "description": "Allows manual input of a description for an Item when the LLM service is unavailable."
+    }
+   ],
+   "interfaces": [
+    {
+     "name": "DescriptionGenerationInterface",
+     "purpose": "Exposes the capability to request an AI-generated description from an image, specifying the target language.",
+     "consumers": [
+      "Item"
+     ]
+    },
+    {
+     "name": "DescriptionPersistenceInterface",
+     "purpose": "Provides the mechanism to save or update the description record for an Item.",
+     "consumers": [
+      "Item"
+     ]
+    }
+   ],
+   "consumes": [
+    {
+     "concern": "LLM",
+     "why": "The core service providing vision-capable AI processing."
+    },
+    {
+     "concern": "Language",
+     "why": "To specify the target language (PT or EN) for the generated description."
+    },
+    {
+     "concern": "Timestamp",
+     "why": "To record when the description was created or updated."
+    },
+    {
+     "concern": "data-management",
+     "why": "For persistence and storage operations."
+    },
+    {
+     "concern": "vision",
+     "why": "The capability required to process FoodImage input."
+    },
+    {
+     "concern": "FoodImage",
+     "why": "owned by Menu & Item Catalog"
+    },
+    {
+     "concern": "Item",
+     "why": "owned by Menu & Item Catalog"
+    }
+   ]
+  },
+  "System Infrastructure": {
+   "scope": "Manages cross-cutting concerns like multi-tenancy routing, storage, localization, and responsive design.",
+   "req_ids": [
+    "REQ-0003",
+    "REQ-0004",
+    "REQ-0006",
+    "REQ-0008",
+    "REQ-0015",
+    "REQ-0016",
+    "REQ-0017",
+    "REQ-0023",
+    "REQ-0044",
+    "REQ-0047",
+    "REQ-0056",
+    "REQ-0057",
+    "REQ-0060",
+    "REQ-0065"
+   ],
+   "components": [
+    {
+     "name": "SQLiteInstance",
+     "responsibility": "Manages the isolated database for a single Tenant.",
+     "attributes": [
+      {
+       "name": "InstanceID",
+       "type": "String"
+      }
+     ]
+    }
+   ],
+   "functions": [
+    {
+     "name": "ResolveTenantIdentity",
+     "description": "Determines the Tenant based on the request path prefix."
+    },
+    {
+     "name": "RouteRequest",
+     "description": "Directs incoming requests to the correct Tenant's SQLiteInstance."
+    },
+    {
+     "name": "ManageTenantData",
+     "description": "Handles all CRUD operations for a specific Tenant's records within its SQLiteInstance."
+    },
+    {
+     "name": "ServeLocalizedContent",
+     "description": "Retrieves and serves content based on the current Language setting (PT or EN)."
+    },
+    {
+     "name": "RenderResponsiveUI",
+     "description": "Generates the user interface optimized for various screen sizes (web/mobile)."
+    },
+    {
+     "name": "HandleContactSubmission",
+     "description": "Processes and discards the data submitted via the ContactForm."
+    },
+    {
+     "name": "DisplayMapInterface",
+     "description": "Renders the geographical map using OpenStreetMap data."
+    }
+   ],
+   "interfaces": [
+    {
+     "name": "TenantRoutingInterface",
+     "purpose": "Provides the mechanism to resolve Tenant identity from the request context and route to the correct SQLiteInstance.",
+     "consumers": [
+      "Endpoint"
+     ]
+    },
+    {
+     "name": "LocalizationInterface",
+     "purpose": "Allows the system to switch and retrieve content based on the active Language.",
+     "consumers": [
+      "User"
+     ]
+    },
+    {
+     "name": "AssetStorageInterface",
+     "purpose": "Defines the boundary for storing and retrieving TenantAsset data locally.",
+     "consumers": [
+      "Tenant"
+     ]
+    },
+    {
+     "name": "MapDisplayInterface",
+     "purpose": "Exposes the functionality to render the Map interface using external data sources.",
+     "consumers": [
+      "User"
+     ]
+    }
+   ],
+   "consumes": [
+    {
+     "concern": "multi-tenancy",
+     "why": "To resolve tenant identity using the path prefix and isolate data."
+    },
+    {
+     "concern": "localization",
+     "why": "To support switching and displaying content in Portuguese (PT) and English (EN)."
+    },
+    {
+     "concern": "storage",
+     "why": "To store TenantAsset data locally."
+    },
+    {
+     "concern": "responsiveness",
+     "why": "To render the user interface for web and mobile standard layout sizes."
+    },
+    {
+     "concern": "security",
+     "why": "To enforce HTTPS for all public endpoints."
+    },
+    {
+     "concern": "data-management",
+     "why": "To manage Tenant's corresponding SQLite records."
+    },
+    {
+     "concern": "api",
+     "why": "To define public access points (Endpoints) that require routing and security."
+    },
+    {
+     "concern": "TenantAsset",
+     "why": "owned by Tenant Administration"
+    },
+    {
+     "concern": "TenantConfiguration",
+     "why": "owned by Tenant Administration"
+    }
+   ]
+  }
+ },
+ "by_requirement": {
+  "REQ-0001": {
+   "aspect": "AI Content Generation",
+   "tags": [
+    "ai",
+    "vision"
+   ],
+   "components": [
+    {
+     "name": "AiDescription",
+     "suggested_module": "ai_description",
+     "responsibility": "Stores the generated textual description of a food item.",
+     "attributes": [
+      {
+       "name": "generated_text",
+       "type": "String"
+      },
+      {
+       "name": "language",
+       "type": "String"
+      },
+      {
+       "name": "approved_flag",
+       "type": "Boolean"
+      },
+      {
+       "name": "timestamp",
+       "type": "Timestamp"
+      }
+     ]
+    }
+   ],
+   "interfaces": [
+    {
+     "name": "DescriptionGenerationInterface",
+     "supplier": "AI Content Generation",
+     "consumer": "Item"
+    },
+    {
+     "name": "DescriptionPersistenceInterface",
+     "supplier": "AI Content Generation",
+     "consumer": "Item"
+    }
+   ],
+   "functions": [
+    {
+     "name": "GenerateDescriptionFromImage"
+    },
+    {
+     "name": "StoreDescriptionRecord"
+    },
+    {
+     "name": "ProvideManualDescription"
+    }
+   ]
+  },
+  "REQ-0002": {
+   "aspect": "Menu & Item Catalog",
+   "tags": [
+    "content"
+   ],
+   "components": [
+    {
+     "name": "Menu",
+     "suggested_module": "menu",
+     "responsibility": "Manages the collection of food or drink offerings for a Tenant.",
+     "attributes": [
+      {
+       "name": "id",
+       "type": "String"
+      }
+     ]
+    },
+    {
+     "name": "Category",
+     "suggested_module": "category",
+     "responsibility": "Groups menu items and holds organizational data.",
+     "attributes": [
+      {
+       "name": "id",
+       "type": "String"
+      },
+      {
+       "name": "name",
+       "type": "String"
+      },
+      {
+       "name": "description",
+       "type": "String"
+      },
+      {
+       "name": "order",
+       "type": "Integer"
+      }
+     ]
+    },
+    {
+     "name": "Item",
+     "suggested_module": "item",
+     "responsibility": "Represents a specific product offered on the menu.",
+     "attributes": [
+      {
+       "name": "id",
+       "type": "String"
+      },
+      {
+       "name": "name",
+       "type": "String"
+      },
+      {
+       "name": "description",
+       "type": "String"
+      },
+      {
+       "name": "price",
+       "type": "Price"
+      },
+      {
+       "name": "availability",
+       "type": "Availability"
+      }
+     ]
+    },
+    {
+     "name": "FoodImage",
+     "suggested_module": "food_image",
+     "responsibility": "Stores metadata and references for uploaded visual media.",
+     "attributes": [
+      {
+       "name": "id",
+       "type": "String"
+      },
+      {
+       "name": "path_metadata",
+       "type": "String"
+      }
+     ]
+    }
+   ],
+   "interfaces": [
+    {
+     "name": "MenuDisplayInterface",
+     "supplier": "Menu & Item Catalog",
+     "consumer": "anonymous, display"
+    },
+    {
+     "name": "MenuManagementInterface",
+     "supplier": "Menu & Item Catalog",
+     "consumer": "management, data-management"
+    },
+    {
+     "name": "AssetUploadInterface",
+     "supplier": "Menu & Item Catalog",
+     "consumer": "file-upload, media"
+    }
+   ],
+   "functions": [
+    {
+     "name": "BrowseMenu"
+    },
+    {
+     "name": "ManageMenu"
+    },
+    {
+     "name": "ManageItem"
+    },
+    {
+     "name": "UploadMedia"
+    },
+    {
+     "name": "RetrieveMenuDisplayData"
+    }
+   ]
+  },
+  "REQ-0003": {
+   "aspect": "System Infrastructure",
+   "tags": [
+    "localization"
+   ],
+   "components": [
+    {
+     "name": "SQLiteInstance",
+     "suggested_module": "sq_lite_instance",
+     "responsibility": "Manages the isolated database for a single Tenant.",
+     "attributes": [
+      {
+       "name": "InstanceID",
+       "type": "String"
+      }
+     ]
+    }
+   ],
+   "interfaces": [
+    {
+     "name": "TenantRoutingInterface",
+     "supplier": "System Infrastructure",
+     "consumer": "Endpoint"
+    },
+    {
+     "name": "LocalizationInterface",
+     "supplier": "System Infrastructure",
+     "consumer": "User"
+    },
+    {
+     "name": "AssetStorageInterface",
+     "supplier": "System Infrastructure",
+     "consumer": "Tenant"
+    },
+    {
+     "name": "MapDisplayInterface",
+     "supplier": "System Infrastructure",
+     "consumer": "User"
+    }
+   ],
+   "functions": [
+    {
+     "name": "ResolveTenantIdentity"
+    },
+    {
+     "name": "RouteRequest"
+    },
+    {
+     "name": "ManageTenantData"
+    },
+    {
+     "name": "ServeLocalizedContent"
+    },
+    {
+     "name": "RenderResponsiveUI"
+    },
+    {
+     "name": "HandleContactSubmission"
+    },
+    {
+     "name": "DisplayMapInterface"
+    }
+   ]
+  },
+  "REQ-0004": {
+   "aspect": "System Infrastructure",
+   "tags": [
+    "processing"
+   ],
+   "components": [
+    {
+     "name": "SQLiteInstance",
+     "suggested_module": "sq_lite_instance",
+     "responsibility": "Manages the isolated database for a single Tenant.",
+     "attributes": [
+      {
+       "name": "InstanceID",
+       "type": "String"
+      }
+     ]
+    }
+   ],
+   "interfaces": [
+    {
+     "name": "TenantRoutingInterface",
+     "supplier": "System Infrastructure",
+     "consumer": "Endpoint"
+    },
+    {
+     "name": "LocalizationInterface",
+     "supplier": "System Infrastructure",
+     "consumer": "User"
+    },
+    {
+     "name": "AssetStorageInterface",
+     "supplier": "System Infrastructure",
+     "consumer": "Tenant"
+    },
+    {
+     "name": "MapDisplayInterface",
+     "supplier": "System Infrastructure",
+     "consumer": "User"
+    }
+   ],
+   "functions": [
+    {
+     "name": "ResolveTenantIdentity"
+    },
+    {
+     "name": "RouteRequest"
+    },
+    {
+     "name": "ManageTenantData"
+    },
+    {
+     "name": "ServeLocalizedContent"
+    },
+    {
+     "name": "RenderResponsiveUI"
+    },
+    {
+     "name": "HandleContactSubmission"
+    },
+    {
+     "name": "DisplayMapInterface"
+    }
+   ]
+  },
+  "REQ-0005": {
+   "aspect": "Tenant Administration",
+   "tags": [
+    "scheduling"
+   ],
+   "components": [
+    {
+     "name": "Tenant",
+     "suggested_module": "tenant",
+     "responsibility": "Represents a distinct organizational unit whose data and resources are isolated within the system.",
+     "attributes": [
+      {
+       "name": "TenantID",
+       "type": "String"
+      }
+     ]
+    },
+    {
+     "name": "TenantConfiguration",
+     "suggested_module": "tenant_configuration",
+     "responsibility": "Stores the specific settings and parameters that define how a Tenant operates within the system, including working hours.",
+     "attributes": [
+      {
+       "name": "ConfigurationID",
+       "type": "String"
+      },
+      {
+       "name": "OpeningHours",
+       "type": "String"
+      }
+     ]
+    },
+    {
+     "name": "TenantAsset",
+     "suggested_module": "tenant_asset",
+     "responsibility": "Stores tenant-specific assets such as restaurant name, logo, contacts, and menu items.",
+     "attributes": [
+      {
+       "name": "AssetID",
+       "type": "String"
+      }
+     ]
+    }
+   ],
+   "interfaces": [
+    {
+     "name": "TenantAdminInterface",
+     "supplier": "Tenant Administration",
+     "consumer": "TenantAdministrator"
+    },
+    {
+     "name": "ReservationManagementInterface",
+     "supplier": "Tenant Administration",
+     "consumer": "TenantAdministrator"
+    }
+   ],
+   "functions": [
+    {
+     "name": "ManageTenantConfiguration"
+    },
+    {
+     "name": "ManageTenantAssets"
+    },
+    {
+     "name": "ManageMenu"
+    },
+    {
+     "name": "ManageMenuItem"
+    },
+    {
+     "name": "ProcessReservation"
+    },
+    {
+     "name": "ProvideTenantDashboard"
+    }
+   ]
+  },
+  "REQ-0006": {
+   "aspect": "System Infrastructure",
+   "tags": [
+    "localization"
+   ],
+   "components": [
+    {
+     "name": "SQLiteInstance",
+     "suggested_module": "sq_lite_instance",
+     "responsibility": "Manages the isolated database for a single Tenant.",
+     "attributes": [
+      {
+       "name": "InstanceID",
+       "type": "String"
+      }
+     ]
+    }
+   ],
+   "interfaces": [
+    {
+     "name": "TenantRoutingInterface",
+     "supplier": "System Infrastructure",
+     "consumer": "Endpoint"
+    },
+    {
+     "name": "LocalizationInterface",
+     "supplier": "System Infrastructure",
+     "consumer": "User"
+    },
+    {
+     "name": "AssetStorageInterface",
+     "supplier": "System Infrastructure",
+     "consumer": "Tenant"
+    },
+    {
+     "name": "MapDisplayInterface",
+     "supplier": "System Infrastructure",
+     "consumer": "User"
+    }
+   ],
+   "functions": [
+    {
+     "name": "ResolveTenantIdentity"
+    },
+    {
+     "name": "RouteRequest"
+    },
+    {
+     "name": "ManageTenantData"
+    },
+    {
+     "name": "ServeLocalizedContent"
+    },
+    {
+     "name": "RenderResponsiveUI"
+    },
+    {
+     "name": "HandleContactSubmission"
+    },
+    {
+     "name": "DisplayMapInterface"
+    }
+   ]
+  },
+  "REQ-0007": {
+   "aspect": "Reservations",
+   "tags": [
+    "authentication"
+   ],
+   "components": [
+    {
+     "name": "Reservation",
+     "suggested_module": "reservation",
+     "responsibility": "Stores the details of a booking request.",
+     "attributes": [
+      {
+       "name": "id",
+       "type": "String"
+      },
+      {
+       "name": "user_google_id",
+       "type": "String"
+      },
+      {
+       "name": "tenant_id",
+       "type": "String"
+      },
+      {
+       "name": "date_time",
+       "type": "String"
+      },
+      {
+       "name": "number_of_people",
+       "type": "Integer"
+      },
+      {
+       "name": "status",
+       "type": "ReservationStatus"
+      },
+      {
+       "name": "timestamp",
+       "type": "Timestamp"
+      },
+      {
+       "name": "notes",
+       "type": "String"
+      }
+     ]
+    }
+   ],
+   "interfaces": [
+    {
+     "name": "ReservationSubmissionInterface",
+     "supplier": "Reservations",
+     "consumer": "User"
+    },
+    {
+     "name": "ReservationManagementInterface",
+     "supplier": "Reservations",
+     "consumer": "Admin, TenantAdministrator"
+    }
+   ],
+   "functions": [
+    {
+     "name": "SubmitReservation"
+    },
+    {
+     "name": "ConfirmReservation"
+    },
+    {
+     "name": "GenerateReservationAddress"
+    }
+   ]
+  },
+  "REQ-0008": {
+   "aspect": "System Infrastructure",
+   "tags": [
+    "responsiveness"
+   ],
+   "components": [
+    {
+     "name": "SQLiteInstance",
+     "suggested_module": "sq_lite_instance",
+     "responsibility": "Manages the isolated database for a single Tenant.",
+     "attributes": [
+      {
+       "name": "InstanceID",
+       "type": "String"
+      }
+     ]
+    }
+   ],
+   "interfaces": [
+    {
+     "name": "TenantRoutingInterface",
+     "supplier": "System Infrastructure",
+     "consumer": "Endpoint"
+    },
+    {
+     "name": "LocalizationInterface",
+     "supplier": "System Infrastructure",
+     "consumer": "User"
+    },
+    {
+     "name": "AssetStorageInterface",
+     "supplier": "System Infrastructure",
+     "consumer": "Tenant"
+    },
+    {
+     "name": "MapDisplayInterface",
+     "supplier": "System Infrastructure",
+     "consumer": "User"
+    }
+   ],
+   "functions": [
+    {
+     "name": "ResolveTenantIdentity"
+    },
+    {
+     "name": "RouteRequest"
+    },
+    {
+     "name": "ManageTenantData"
+    },
+    {
+     "name": "ServeLocalizedContent"
+    },
+    {
+     "name": "RenderResponsiveUI"
+    },
+    {
+     "name": "HandleContactSubmission"
+    },
+    {
+     "name": "DisplayMapInterface"
+    }
+   ]
+  },
+  "REQ-0009": {
+   "aspect": "User & Access Control",
+   "tags": [
+    "authentication"
+   ],
+   "components": [
+    {
+     "name": "User",
+     "suggested_module": "user",
+     "responsibility": "Represents an individual interacting with the system.",
+     "attributes": [
+      {
+       "name": "UserGoogleId",
+       "type": "String"
+      }
+     ]
+    },
+    {
+     "name": "UserGoogleId",
+     "suggested_module": "user_google_id",
+     "responsibility": "Stores the unique identifier provided by Google for user authentication.",
+     "attributes": [
+      {
+       "name": "Id",
+       "type": "String"
+      }
+     ]
+    }
+   ],
+   "interfaces": [
+    {
+     "name": "AuthenticationInterface",
+     "supplier": "User & Access Control",
+     "consumer": "User"
+    },
+    {
+     "name": "AccessControlInterface",
+     "supplier": "User & Access Control",
+     "consumer": "User"
+    }
+   ],
+   "functions": [
+    {
+     "name": "AuthenticateUser"
+    },
+    {
+     "name": "CheckUserAccess"
+    }
+   ]
+  },
+  "REQ-0010": {
+   "aspect": "Tenant Administration",
+   "tags": [
+    "multi-tenancy"
+   ],
+   "components": [
+    {
+     "name": "Tenant",
+     "suggested_module": "tenant",
+     "responsibility": "Represents a distinct organizational unit whose data and resources are isolated within the system.",
+     "attributes": [
+      {
+       "name": "TenantID",
+       "type": "String"
+      }
+     ]
+    },
+    {
+     "name": "TenantConfiguration",
+     "suggested_module": "tenant_configuration",
+     "responsibility": "Stores the specific settings and parameters that define how a Tenant operates within the system, including working hours.",
+     "attributes": [
+      {
+       "name": "ConfigurationID",
+       "type": "String"
+      },
+      {
+       "name": "OpeningHours",
+       "type": "String"
+      }
+     ]
+    },
+    {
+     "name": "TenantAsset",
+     "suggested_module": "tenant_asset",
+     "responsibility": "Stores tenant-specific assets such as restaurant name, logo, contacts, and menu items.",
+     "attributes": [
+      {
+       "name": "AssetID",
+       "type": "String"
+      }
+     ]
+    }
+   ],
+   "interfaces": [
+    {
+     "name": "TenantAdminInterface",
+     "supplier": "Tenant Administration",
+     "consumer": "TenantAdministrator"
+    },
+    {
+     "name": "ReservationManagementInterface",
+     "supplier": "Tenant Administration",
+     "consumer": "TenantAdministrator"
+    }
+   ],
+   "functions": [
+    {
+     "name": "ManageTenantConfiguration"
+    },
+    {
+     "name": "ManageTenantAssets"
+    },
+    {
+     "name": "ManageMenu"
+    },
+    {
+     "name": "ManageMenuItem"
+    },
+    {
+     "name": "ProcessReservation"
+    },
+    {
+     "name": "ProvideTenantDashboard"
+    }
+   ]
+  },
+  "REQ-0011": {
+   "aspect": "Menu & Item Catalog",
+   "tags": [
+    "data-management"
+   ],
+   "components": [
+    {
+     "name": "Menu",
+     "suggested_module": "menu",
+     "responsibility": "Manages the collection of food or drink offerings for a Tenant.",
+     "attributes": [
+      {
+       "name": "id",
+       "type": "String"
+      }
+     ]
+    },
+    {
+     "name": "Category",
+     "suggested_module": "category",
+     "responsibility": "Groups menu items and holds organizational data.",
+     "attributes": [
+      {
+       "name": "id",
+       "type": "String"
+      },
+      {
+       "name": "name",
+       "type": "String"
+      },
+      {
+       "name": "description",
+       "type": "String"
+      },
+      {
+       "name": "order",
+       "type": "Integer"
+      }
+     ]
+    },
+    {
+     "name": "Item",
+     "suggested_module": "item",
+     "responsibility": "Represents a specific product offered on the menu.",
+     "attributes": [
+      {
+       "name": "id",
+       "type": "String"
+      },
+      {
+       "name": "name",
+       "type": "String"
+      },
+      {
+       "name": "description",
+       "type": "String"
+      },
+      {
+       "name": "price",
+       "type": "Price"
+      },
+      {
+       "name": "availability",
+       "type": "Availability"
+      }
+     ]
+    },
+    {
+     "name": "FoodImage",
+     "suggested_module": "food_image",
+     "responsibility": "Stores metadata and references for uploaded visual media.",
+     "attributes": [
+      {
+       "name": "id",
+       "type": "String"
+      },
+      {
+       "name": "path_metadata",
+       "type": "String"
+      }
+     ]
+    }
+   ],
+   "interfaces": [
+    {
+     "name": "MenuDisplayInterface",
+     "supplier": "Menu & Item Catalog",
+     "consumer": "anonymous, display"
+    },
+    {
+     "name": "MenuManagementInterface",
+     "supplier": "Menu & Item Catalog",
+     "consumer": "management, data-management"
+    },
+    {
+     "name": "AssetUploadInterface",
+     "supplier": "Menu & Item Catalog",
+     "consumer": "file-upload, media"
+    }
+   ],
+   "functions": [
+    {
+     "name": "BrowseMenu"
+    },
+    {
+     "name": "ManageMenu"
+    },
+    {
+     "name": "ManageItem"
+    },
+    {
+     "name": "UploadMedia"
+    },
+    {
+     "name": "RetrieveMenuDisplayData"
+    }
+   ]
+  },
+  "REQ-0012": {
+   "aspect": "Menu & Item Catalog",
+   "tags": [
+    "file-upload"
+   ],
+   "components": [
+    {
+     "name": "Menu",
+     "suggested_module": "menu",
+     "responsibility": "Manages the collection of food or drink offerings for a Tenant.",
+     "attributes": [
+      {
+       "name": "id",
+       "type": "String"
+      }
+     ]
+    },
+    {
+     "name": "Category",
+     "suggested_module": "category",
+     "responsibility": "Groups menu items and holds organizational data.",
+     "attributes": [
+      {
+       "name": "id",
+       "type": "String"
+      },
+      {
+       "name": "name",
+       "type": "String"
+      },
+      {
+       "name": "description",
+       "type": "String"
+      },
+      {
+       "name": "order",
+       "type": "Integer"
+      }
+     ]
+    },
+    {
+     "name": "Item",
+     "suggested_module": "item",
+     "responsibility": "Represents a specific product offered on the menu.",
+     "attributes": [
+      {
+       "name": "id",
+       "type": "String"
+      },
+      {
+       "name": "name",
+       "type": "String"
+      },
+      {
+       "name": "description",
+       "type": "String"
+      },
+      {
+       "name": "price",
+       "type": "Price"
+      },
+      {
+       "name": "availability",
+       "type": "Availability"
+      }
+     ]
+    },
+    {
+     "name": "FoodImage",
+     "suggested_module": "food_image",
+     "responsibility": "Stores metadata and references for uploaded visual media.",
+     "attributes": [
+      {
+       "name": "id",
+       "type": "String"
+      },
+      {
+       "name": "path_metadata",
+       "type": "String"
+      }
+     ]
+    }
+   ],
+   "interfaces": [
+    {
+     "name": "MenuDisplayInterface",
+     "supplier": "Menu & Item Catalog",
+     "consumer": "anonymous, display"
+    },
+    {
+     "name": "MenuManagementInterface",
+     "supplier": "Menu & Item Catalog",
+     "consumer": "management, data-management"
+    },
+    {
+     "name": "AssetUploadInterface",
+     "supplier": "Menu & Item Catalog",
+     "consumer": "file-upload, media"
+    }
+   ],
+   "functions": [
+    {
+     "name": "BrowseMenu"
+    },
+    {
+     "name": "ManageMenu"
+    },
+    {
+     "name": "ManageItem"
+    },
+    {
+     "name": "UploadMedia"
+    },
+    {
+     "name": "RetrieveMenuDisplayData"
+    }
+   ]
+  },
+  "REQ-0013": {
+   "aspect": "AI Content Generation",
+   "tags": [
+    "localization"
+   ],
+   "components": [
+    {
+     "name": "AiDescription",
+     "suggested_module": "ai_description",
+     "responsibility": "Stores the generated textual description of a food item.",
+     "attributes": [
+      {
+       "name": "generated_text",
+       "type": "String"
+      },
+      {
+       "name": "language",
+       "type": "String"
+      },
+      {
+       "name": "approved_flag",
+       "type": "Boolean"
+      },
+      {
+       "name": "timestamp",
+       "type": "Timestamp"
+      }
+     ]
+    }
+   ],
+   "interfaces": [
+    {
+     "name": "DescriptionGenerationInterface",
+     "supplier": "AI Content Generation",
+     "consumer": "Item"
+    },
+    {
+     "name": "DescriptionPersistenceInterface",
+     "supplier": "AI Content Generation",
+     "consumer": "Item"
+    }
+   ],
+   "functions": [
+    {
+     "name": "GenerateDescriptionFromImage"
+    },
+    {
+     "name": "StoreDescriptionRecord"
+    },
+    {
+     "name": "ProvideManualDescription"
+    }
+   ]
+  },
+  "REQ-0014": {
+   "aspect": "Reservations",
+   "tags": [
+    "management"
+   ],
+   "components": [
+    {
+     "name": "Reservation",
+     "suggested_module": "reservation",
+     "responsibility": "Stores the details of a booking request.",
+     "attributes": [
+      {
+       "name": "id",
+       "type": "String"
+      },
+      {
+       "name": "user_google_id",
+       "type": "String"
+      },
+      {
+       "name": "tenant_id",
+       "type": "String"
+      },
+      {
+       "name": "date_time",
+       "type": "String"
+      },
+      {
+       "name": "number_of_people",
+       "type": "Integer"
+      },
+      {
+       "name": "status",
+       "type": "ReservationStatus"
+      },
+      {
+       "name": "timestamp",
+       "type": "Timestamp"
+      },
+      {
+       "name": "notes",
+       "type": "String"
+      }
+     ]
+    }
+   ],
+   "interfaces": [
+    {
+     "name": "ReservationSubmissionInterface",
+     "supplier": "Reservations",
+     "consumer": "User"
+    },
+    {
+     "name": "ReservationManagementInterface",
+     "supplier": "Reservations",
+     "consumer": "Admin, TenantAdministrator"
+    }
+   ],
+   "functions": [
+    {
+     "name": "SubmitReservation"
+    },
+    {
+     "name": "ConfirmReservation"
+    },
+    {
+     "name": "GenerateReservationAddress"
+    }
+   ]
+  },
+  "REQ-0015": {
+   "aspect": "System Infrastructure",
+   "tags": [
+    "multi-tenancy"
+   ],
+   "components": [
+    {
+     "name": "SQLiteInstance",
+     "suggested_module": "sq_lite_instance",
+     "responsibility": "Manages the isolated database for a single Tenant.",
+     "attributes": [
+      {
+       "name": "InstanceID",
+       "type": "String"
+      }
+     ]
+    }
+   ],
+   "interfaces": [
+    {
+     "name": "TenantRoutingInterface",
+     "supplier": "System Infrastructure",
+     "consumer": "Endpoint"
+    },
+    {
+     "name": "LocalizationInterface",
+     "supplier": "System Infrastructure",
+     "consumer": "User"
+    },
+    {
+     "name": "AssetStorageInterface",
+     "supplier": "System Infrastructure",
+     "consumer": "Tenant"
+    },
+    {
+     "name": "MapDisplayInterface",
+     "supplier": "System Infrastructure",
+     "consumer": "User"
+    }
+   ],
+   "functions": [
+    {
+     "name": "ResolveTenantIdentity"
+    },
+    {
+     "name": "RouteRequest"
+    },
+    {
+     "name": "ManageTenantData"
+    },
+    {
+     "name": "ServeLocalizedContent"
+    },
+    {
+     "name": "RenderResponsiveUI"
+    },
+    {
+     "name": "HandleContactSubmission"
+    },
+    {
+     "name": "DisplayMapInterface"
+    }
+   ]
+  },
+  "REQ-0016": {
+   "aspect": "System Infrastructure",
+   "tags": [
+    "multi-tenancy"
+   ],
+   "components": [
+    {
+     "name": "SQLiteInstance",
+     "suggested_module": "sq_lite_instance",
+     "responsibility": "Manages the isolated database for a single Tenant.",
+     "attributes": [
+      {
+       "name": "InstanceID",
+       "type": "String"
+      }
+     ]
+    }
+   ],
+   "interfaces": [
+    {
+     "name": "TenantRoutingInterface",
+     "supplier": "System Infrastructure",
+     "consumer": "Endpoint"
+    },
+    {
+     "name": "LocalizationInterface",
+     "supplier": "System Infrastructure",
+     "consumer": "User"
+    },
+    {
+     "name": "AssetStorageInterface",
+     "supplier": "System Infrastructure",
+     "consumer": "Tenant"
+    },
+    {
+     "name": "MapDisplayInterface",
+     "supplier": "System Infrastructure",
+     "consumer": "User"
+    }
+   ],
+   "functions": [
+    {
+     "name": "ResolveTenantIdentity"
+    },
+    {
+     "name": "RouteRequest"
+    },
+    {
+     "name": "ManageTenantData"
+    },
+    {
+     "name": "ServeLocalizedContent"
+    },
+    {
+     "name": "RenderResponsiveUI"
+    },
+    {
+     "name": "HandleContactSubmission"
+    },
+    {
+     "name": "DisplayMapInterface"
+    }
+   ]
+  },
+  "REQ-0017": {
+   "aspect": "System Infrastructure",
+   "tags": [
+    "multi-tenancy",
+    "storage"
+   ],
+   "components": [
+    {
+     "name": "SQLiteInstance",
+     "suggested_module": "sq_lite_instance",
+     "responsibility": "Manages the isolated database for a single Tenant.",
+     "attributes": [
+      {
+       "name": "InstanceID",
+       "type": "String"
+      }
+     ]
+    }
+   ],
+   "interfaces": [
+    {
+     "name": "TenantRoutingInterface",
+     "supplier": "System Infrastructure",
+     "consumer": "Endpoint"
+    },
+    {
+     "name": "LocalizationInterface",
+     "supplier": "System Infrastructure",
+     "consumer": "User"
+    },
+    {
+     "name": "AssetStorageInterface",
+     "supplier": "System Infrastructure",
+     "consumer": "Tenant"
+    },
+    {
+     "name": "MapDisplayInterface",
+     "supplier": "System Infrastructure",
+     "consumer": "User"
+    }
+   ],
+   "functions": [
+    {
+     "name": "ResolveTenantIdentity"
+    },
+    {
+     "name": "RouteRequest"
+    },
+    {
+     "name": "ManageTenantData"
+    },
+    {
+     "name": "ServeLocalizedContent"
+    },
+    {
+     "name": "RenderResponsiveUI"
+    },
+    {
+     "name": "HandleContactSubmission"
+    },
+    {
+     "name": "DisplayMapInterface"
+    }
+   ]
+  },
+  "REQ-0018": {
+   "aspect": "User & Access Control",
+   "tags": [
+    "authentication"
+   ],
+   "components": [
+    {
+     "name": "User",
+     "suggested_module": "user",
+     "responsibility": "Represents an individual interacting with the system.",
+     "attributes": [
+      {
+       "name": "UserGoogleId",
+       "type": "String"
+      }
+     ]
+    },
+    {
+     "name": "UserGoogleId",
+     "suggested_module": "user_google_id",
+     "responsibility": "Stores the unique identifier provided by Google for user authentication.",
+     "attributes": [
+      {
+       "name": "Id",
+       "type": "String"
+      }
+     ]
+    }
+   ],
+   "interfaces": [
+    {
+     "name": "AuthenticationInterface",
+     "supplier": "User & Access Control",
+     "consumer": "User"
+    },
+    {
+     "name": "AccessControlInterface",
+     "supplier": "User & Access Control",
+     "consumer": "User"
+    }
+   ],
+   "functions": [
+    {
+     "name": "AuthenticateUser"
+    },
+    {
+     "name": "CheckUserAccess"
+    }
+   ]
+  },
+  "REQ-0019": {
+   "aspect": "Reservations",
+   "tags": [
+    "management"
+   ],
+   "components": [
+    {
+     "name": "Reservation",
+     "suggested_module": "reservation",
+     "responsibility": "Stores the details of a booking request.",
+     "attributes": [
+      {
+       "name": "id",
+       "type": "String"
+      },
+      {
+       "name": "user_google_id",
+       "type": "String"
+      },
+      {
+       "name": "tenant_id",
+       "type": "String"
+      },
+      {
+       "name": "date_time",
+       "type": "String"
+      },
+      {
+       "name": "number_of_people",
+       "type": "Integer"
+      },
+      {
+       "name": "status",
+       "type": "ReservationStatus"
+      },
+      {
+       "name": "timestamp",
+       "type": "Timestamp"
+      },
+      {
+       "name": "notes",
+       "type": "String"
+      }
+     ]
+    }
+   ],
+   "interfaces": [
+    {
+     "name": "ReservationSubmissionInterface",
+     "supplier": "Reservations",
+     "consumer": "User"
+    },
+    {
+     "name": "ReservationManagementInterface",
+     "supplier": "Reservations",
+     "consumer": "Admin, TenantAdministrator"
+    }
+   ],
+   "functions": [
+    {
+     "name": "SubmitReservation"
+    },
+    {
+     "name": "ConfirmReservation"
+    },
+    {
+     "name": "GenerateReservationAddress"
+    }
+   ]
+  },
+  "REQ-0020": {
+   "aspect": "AI Content Generation",
+   "tags": [
+    "ai"
+   ],
+   "components": [
+    {
+     "name": "AiDescription",
+     "suggested_module": "ai_description",
+     "responsibility": "Stores the generated textual description of a food item.",
+     "attributes": [
+      {
+       "name": "generated_text",
+       "type": "String"
+      },
+      {
+       "name": "language",
+       "type": "String"
+      },
+      {
+       "name": "approved_flag",
+       "type": "Boolean"
+      },
+      {
+       "name": "timestamp",
+       "type": "Timestamp"
+      }
+     ]
+    }
+   ],
+   "interfaces": [
+    {
+     "name": "DescriptionGenerationInterface",
+     "supplier": "AI Content Generation",
+     "consumer": "Item"
+    },
+    {
+     "name": "DescriptionPersistenceInterface",
+     "supplier": "AI Content Generation",
+     "consumer": "Item"
+    }
+   ],
+   "functions": [
+    {
+     "name": "GenerateDescriptionFromImage"
+    },
+    {
+     "name": "StoreDescriptionRecord"
+    },
+    {
+     "name": "ProvideManualDescription"
+    }
+   ]
+  },
+  "REQ-0022": {
+   "aspect": "AI Content Generation",
+   "tags": [
+    "localization"
+   ],
+   "components": [
+    {
+     "name": "AiDescription",
+     "suggested_module": "ai_description",
+     "responsibility": "Stores the generated textual description of a food item.",
+     "attributes": [
+      {
+       "name": "generated_text",
+       "type": "String"
+      },
+      {
+       "name": "language",
+       "type": "String"
+      },
+      {
+       "name": "approved_flag",
+       "type": "Boolean"
+      },
+      {
+       "name": "timestamp",
+       "type": "Timestamp"
+      }
+     ]
+    }
+   ],
+   "interfaces": [
+    {
+     "name": "DescriptionGenerationInterface",
+     "supplier": "AI Content Generation",
+     "consumer": "Item"
+    },
+    {
+     "name": "DescriptionPersistenceInterface",
+     "supplier": "AI Content Generation",
+     "consumer": "Item"
+    }
+   ],
+   "functions": [
+    {
+     "name": "GenerateDescriptionFromImage"
+    },
+    {
+     "name": "StoreDescriptionRecord"
+    },
+    {
+     "name": "ProvideManualDescription"
+    }
+   ]
+  },
+  "REQ-0023": {
+   "aspect": "System Infrastructure",
+   "tags": [
+    "security"
+   ],
+   "components": [
+    {
+     "name": "SQLiteInstance",
+     "suggested_module": "sq_lite_instance",
+     "responsibility": "Manages the isolated database for a single Tenant.",
+     "attributes": [
+      {
+       "name": "InstanceID",
+       "type": "String"
+      }
+     ]
+    }
+   ],
+   "interfaces": [
+    {
+     "name": "TenantRoutingInterface",
+     "supplier": "System Infrastructure",
+     "consumer": "Endpoint"
+    },
+    {
+     "name": "LocalizationInterface",
+     "supplier": "System Infrastructure",
+     "consumer": "User"
+    },
+    {
+     "name": "AssetStorageInterface",
+     "supplier": "System Infrastructure",
+     "consumer": "Tenant"
+    },
+    {
+     "name": "MapDisplayInterface",
+     "supplier": "System Infrastructure",
+     "consumer": "User"
+    }
+   ],
+   "functions": [
+    {
+     "name": "ResolveTenantIdentity"
+    },
+    {
+     "name": "RouteRequest"
+    },
+    {
+     "name": "ManageTenantData"
+    },
+    {
+     "name": "ServeLocalizedContent"
+    },
+    {
+     "name": "RenderResponsiveUI"
+    },
+    {
+     "name": "HandleContactSubmission"
+    },
+    {
+     "name": "DisplayMapInterface"
+    }
+   ]
+  },
+  "REQ-0024": {
+   "aspect": "Menu & Item Catalog",
+   "tags": [
+    "anonymous"
+   ],
+   "components": [
+    {
+     "name": "Menu",
+     "suggested_module": "menu",
+     "responsibility": "Manages the collection of food or drink offerings for a Tenant.",
+     "attributes": [
+      {
+       "name": "id",
+       "type": "String"
+      }
+     ]
+    },
+    {
+     "name": "Category",
+     "suggested_module": "category",
+     "responsibility": "Groups menu items and holds organizational data.",
+     "attributes": [
+      {
+       "name": "id",
+       "type": "String"
+      },
+      {
+       "name": "name",
+       "type": "String"
+      },
+      {
+       "name": "description",
+       "type": "String"
+      },
+      {
+       "name": "order",
+       "type": "Integer"
+      }
+     ]
+    },
+    {
+     "name": "Item",
+     "suggested_module": "item",
+     "responsibility": "Represents a specific product offered on the menu.",
+     "attributes": [
+      {
+       "name": "id",
+       "type": "String"
+      },
+      {
+       "name": "name",
+       "type": "String"
+      },
+      {
+       "name": "description",
+       "type": "String"
+      },
+      {
+       "name": "price",
+       "type": "Price"
+      },
+      {
+       "name": "availability",
+       "type": "Availability"
+      }
+     ]
+    },
+    {
+     "name": "FoodImage",
+     "suggested_module": "food_image",
+     "responsibility": "Stores metadata and references for uploaded visual media.",
+     "attributes": [
+      {
+       "name": "id",
+       "type": "String"
+      },
+      {
+       "name": "path_metadata",
+       "type": "String"
+      }
+     ]
+    }
+   ],
+   "interfaces": [
+    {
+     "name": "MenuDisplayInterface",
+     "supplier": "Menu & Item Catalog",
+     "consumer": "anonymous, display"
+    },
+    {
+     "name": "MenuManagementInterface",
+     "supplier": "Menu & Item Catalog",
+     "consumer": "management, data-management"
+    },
+    {
+     "name": "AssetUploadInterface",
+     "supplier": "Menu & Item Catalog",
+     "consumer": "file-upload, media"
+    }
+   ],
+   "functions": [
+    {
+     "name": "BrowseMenu"
+    },
+    {
+     "name": "ManageMenu"
+    },
+    {
+     "name": "ManageItem"
+    },
+    {
+     "name": "UploadMedia"
+    },
+    {
+     "name": "RetrieveMenuDisplayData"
+    }
+   ]
+  },
+  "REQ-0025": {
+   "aspect": "User & Access Control",
+   "tags": [
+    "authentication"
+   ],
+   "components": [
+    {
+     "name": "User",
+     "suggested_module": "user",
+     "responsibility": "Represents an individual interacting with the system.",
+     "attributes": [
+      {
+       "name": "UserGoogleId",
+       "type": "String"
+      }
+     ]
+    },
+    {
+     "name": "UserGoogleId",
+     "suggested_module": "user_google_id",
+     "responsibility": "Stores the unique identifier provided by Google for user authentication.",
+     "attributes": [
+      {
+       "name": "Id",
+       "type": "String"
+      }
+     ]
+    }
+   ],
+   "interfaces": [
+    {
+     "name": "AuthenticationInterface",
+     "supplier": "User & Access Control",
+     "consumer": "User"
+    },
+    {
+     "name": "AccessControlInterface",
+     "supplier": "User & Access Control",
+     "consumer": "User"
+    }
+   ],
+   "functions": [
+    {
+     "name": "AuthenticateUser"
+    },
+    {
+     "name": "CheckUserAccess"
+    }
+   ]
+  },
+  "REQ-0026": {
+   "aspect": "Reservations",
+   "tags": [
+    "authentication"
+   ],
+   "components": [
+    {
+     "name": "Reservation",
+     "suggested_module": "reservation",
+     "responsibility": "Stores the details of a booking request.",
+     "attributes": [
+      {
+       "name": "id",
+       "type": "String"
+      },
+      {
+       "name": "user_google_id",
+       "type": "String"
+      },
+      {
+       "name": "tenant_id",
+       "type": "String"
+      },
+      {
+       "name": "date_time",
+       "type": "String"
+      },
+      {
+       "name": "number_of_people",
+       "type": "Integer"
+      },
+      {
+       "name": "status",
+       "type": "ReservationStatus"
+      },
+      {
+       "name": "timestamp",
+       "type": "Timestamp"
+      },
+      {
+       "name": "notes",
+       "type": "String"
+      }
+     ]
+    }
+   ],
+   "interfaces": [
+    {
+     "name": "ReservationSubmissionInterface",
+     "supplier": "Reservations",
+     "consumer": "User"
+    },
+    {
+     "name": "ReservationManagementInterface",
+     "supplier": "Reservations",
+     "consumer": "Admin, TenantAdministrator"
+    }
+   ],
+   "functions": [
+    {
+     "name": "SubmitReservation"
+    },
+    {
+     "name": "ConfirmReservation"
+    },
+    {
+     "name": "GenerateReservationAddress"
+    }
+   ]
+  },
+  "REQ-0027": {
+   "aspect": "Tenant Administration",
+   "tags": [
+    "authentication",
+    "multi-tenancy"
+   ],
+   "components": [
+    {
+     "name": "Tenant",
+     "suggested_module": "tenant",
+     "responsibility": "Represents a distinct organizational unit whose data and resources are isolated within the system.",
+     "attributes": [
+      {
+       "name": "TenantID",
+       "type": "String"
+      }
+     ]
+    },
+    {
+     "name": "TenantConfiguration",
+     "suggested_module": "tenant_configuration",
+     "responsibility": "Stores the specific settings and parameters that define how a Tenant operates within the system, including working hours.",
+     "attributes": [
+      {
+       "name": "ConfigurationID",
+       "type": "String"
+      },
+      {
+       "name": "OpeningHours",
+       "type": "String"
+      }
+     ]
+    },
+    {
+     "name": "TenantAsset",
+     "suggested_module": "tenant_asset",
+     "responsibility": "Stores tenant-specific assets such as restaurant name, logo, contacts, and menu items.",
+     "attributes": [
+      {
+       "name": "AssetID",
+       "type": "String"
+      }
+     ]
+    }
+   ],
+   "interfaces": [
+    {
+     "name": "TenantAdminInterface",
+     "supplier": "Tenant Administration",
+     "consumer": "TenantAdministrator"
+    },
+    {
+     "name": "ReservationManagementInterface",
+     "supplier": "Tenant Administration",
+     "consumer": "TenantAdministrator"
+    }
+   ],
+   "functions": [
+    {
+     "name": "ManageTenantConfiguration"
+    },
+    {
+     "name": "ManageTenantAssets"
+    },
+    {
+     "name": "ManageMenu"
+    },
+    {
+     "name": "ManageMenuItem"
+    },
+    {
+     "name": "ProcessReservation"
+    },
+    {
+     "name": "ProvideTenantDashboard"
+    }
+   ]
+  },
+  "REQ-0028": {
+   "aspect": "Tenant Administration",
+   "tags": [
+    "multi-tenancy"
+   ],
+   "components": [
+    {
+     "name": "Tenant",
+     "suggested_module": "tenant",
+     "responsibility": "Represents a distinct organizational unit whose data and resources are isolated within the system.",
+     "attributes": [
+      {
+       "name": "TenantID",
+       "type": "String"
+      }
+     ]
+    },
+    {
+     "name": "TenantConfiguration",
+     "suggested_module": "tenant_configuration",
+     "responsibility": "Stores the specific settings and parameters that define how a Tenant operates within the system, including working hours.",
+     "attributes": [
+      {
+       "name": "ConfigurationID",
+       "type": "String"
+      },
+      {
+       "name": "OpeningHours",
+       "type": "String"
+      }
+     ]
+    },
+    {
+     "name": "TenantAsset",
+     "suggested_module": "tenant_asset",
+     "responsibility": "Stores tenant-specific assets such as restaurant name, logo, contacts, and menu items.",
+     "attributes": [
+      {
+       "name": "AssetID",
+       "type": "String"
+      }
+     ]
+    }
+   ],
+   "interfaces": [
+    {
+     "name": "TenantAdminInterface",
+     "supplier": "Tenant Administration",
+     "consumer": "TenantAdministrator"
+    },
+    {
+     "name": "ReservationManagementInterface",
+     "supplier": "Tenant Administration",
+     "consumer": "TenantAdministrator"
+    }
+   ],
+   "functions": [
+    {
+     "name": "ManageTenantConfiguration"
+    },
+    {
+     "name": "ManageTenantAssets"
+    },
+    {
+     "name": "ManageMenu"
+    },
+    {
+     "name": "ManageMenuItem"
+    },
+    {
+     "name": "ProcessReservation"
+    },
+    {
+     "name": "ProvideTenantDashboard"
+    }
+   ]
+  },
+  "REQ-0029": {
+   "aspect": "Tenant Administration",
+   "tags": [
+    "multi-tenancy"
+   ],
+   "components": [
+    {
+     "name": "Tenant",
+     "suggested_module": "tenant",
+     "responsibility": "Represents a distinct organizational unit whose data and resources are isolated within the system.",
+     "attributes": [
+      {
+       "name": "TenantID",
+       "type": "String"
+      }
+     ]
+    },
+    {
+     "name": "TenantConfiguration",
+     "suggested_module": "tenant_configuration",
+     "responsibility": "Stores the specific settings and parameters that define how a Tenant operates within the system, including working hours.",
+     "attributes": [
+      {
+       "name": "ConfigurationID",
+       "type": "String"
+      },
+      {
+       "name": "OpeningHours",
+       "type": "String"
+      }
+     ]
+    },
+    {
+     "name": "TenantAsset",
+     "suggested_module": "tenant_asset",
+     "responsibility": "Stores tenant-specific assets such as restaurant name, logo, contacts, and menu items.",
+     "attributes": [
+      {
+       "name": "AssetID",
+       "type": "String"
+      }
+     ]
+    }
+   ],
+   "interfaces": [
+    {
+     "name": "TenantAdminInterface",
+     "supplier": "Tenant Administration",
+     "consumer": "TenantAdministrator"
+    },
+    {
+     "name": "ReservationManagementInterface",
+     "supplier": "Tenant Administration",
+     "consumer": "TenantAdministrator"
+    }
+   ],
+   "functions": [
+    {
+     "name": "ManageTenantConfiguration"
+    },
+    {
+     "name": "ManageTenantAssets"
+    },
+    {
+     "name": "ManageMenu"
+    },
+    {
+     "name": "ManageMenuItem"
+    },
+    {
+     "name": "ProcessReservation"
+    },
+    {
+     "name": "ProvideTenantDashboard"
+    }
+   ]
+  },
+  "REQ-0030": {
+   "aspect": "Tenant Administration",
+   "tags": [
+    "multi-tenancy"
+   ],
+   "components": [
+    {
+     "name": "Tenant",
+     "suggested_module": "tenant",
+     "responsibility": "Represents a distinct organizational unit whose data and resources are isolated within the system.",
+     "attributes": [
+      {
+       "name": "TenantID",
+       "type": "String"
+      }
+     ]
+    },
+    {
+     "name": "TenantConfiguration",
+     "suggested_module": "tenant_configuration",
+     "responsibility": "Stores the specific settings and parameters that define how a Tenant operates within the system, including working hours.",
+     "attributes": [
+      {
+       "name": "ConfigurationID",
+       "type": "String"
+      },
+      {
+       "name": "OpeningHours",
+       "type": "String"
+      }
+     ]
+    },
+    {
+     "name": "TenantAsset",
+     "suggested_module": "tenant_asset",
+     "responsibility": "Stores tenant-specific assets such as restaurant name, logo, contacts, and menu items.",
+     "attributes": [
+      {
+       "name": "AssetID",
+       "type": "String"
+      }
+     ]
+    }
+   ],
+   "interfaces": [
+    {
+     "name": "TenantAdminInterface",
+     "supplier": "Tenant Administration",
+     "consumer": "TenantAdministrator"
+    },
+    {
+     "name": "ReservationManagementInterface",
+     "supplier": "Tenant Administration",
+     "consumer": "TenantAdministrator"
+    }
+   ],
+   "functions": [
+    {
+     "name": "ManageTenantConfiguration"
+    },
+    {
+     "name": "ManageTenantAssets"
+    },
+    {
+     "name": "ManageMenu"
+    },
+    {
+     "name": "ManageMenuItem"
+    },
+    {
+     "name": "ProcessReservation"
+    },
+    {
+     "name": "ProvideTenantDashboard"
+    }
+   ]
+  },
+  "REQ-0031": {
+   "aspect": "Tenant Administration",
+   "tags": [
+    "multi-tenancy"
+   ],
+   "components": [
+    {
+     "name": "Tenant",
+     "suggested_module": "tenant",
+     "responsibility": "Represents a distinct organizational unit whose data and resources are isolated within the system.",
+     "attributes": [
+      {
+       "name": "TenantID",
+       "type": "String"
+      }
+     ]
+    },
+    {
+     "name": "TenantConfiguration",
+     "suggested_module": "tenant_configuration",
+     "responsibility": "Stores the specific settings and parameters that define how a Tenant operates within the system, including working hours.",
+     "attributes": [
+      {
+       "name": "ConfigurationID",
+       "type": "String"
+      },
+      {
+       "name": "OpeningHours",
+       "type": "String"
+      }
+     ]
+    },
+    {
+     "name": "TenantAsset",
+     "suggested_module": "tenant_asset",
+     "responsibility": "Stores tenant-specific assets such as restaurant name, logo, contacts, and menu items.",
+     "attributes": [
+      {
+       "name": "AssetID",
+       "type": "String"
+      }
+     ]
+    }
+   ],
+   "interfaces": [
+    {
+     "name": "TenantAdminInterface",
+     "supplier": "Tenant Administration",
+     "consumer": "TenantAdministrator"
+    },
+    {
+     "name": "ReservationManagementInterface",
+     "supplier": "Tenant Administration",
+     "consumer": "TenantAdministrator"
+    }
+   ],
+   "functions": [
+    {
+     "name": "ManageTenantConfiguration"
+    },
+    {
+     "name": "ManageTenantAssets"
+    },
+    {
+     "name": "ManageMenu"
+    },
+    {
+     "name": "ManageMenuItem"
+    },
+    {
+     "name": "ProcessReservation"
+    },
+    {
+     "name": "ProvideTenantDashboard"
+    }
+   ]
+  },
+  "REQ-0032": {
+   "aspect": "Tenant Administration",
+   "tags": [
+    "multi-tenancy"
+   ],
+   "components": [
+    {
+     "name": "Tenant",
+     "suggested_module": "tenant",
+     "responsibility": "Represents a distinct organizational unit whose data and resources are isolated within the system.",
+     "attributes": [
+      {
+       "name": "TenantID",
+       "type": "String"
+      }
+     ]
+    },
+    {
+     "name": "TenantConfiguration",
+     "suggested_module": "tenant_configuration",
+     "responsibility": "Stores the specific settings and parameters that define how a Tenant operates within the system, including working hours.",
+     "attributes": [
+      {
+       "name": "ConfigurationID",
+       "type": "String"
+      },
+      {
+       "name": "OpeningHours",
+       "type": "String"
+      }
+     ]
+    },
+    {
+     "name": "TenantAsset",
+     "suggested_module": "tenant_asset",
+     "responsibility": "Stores tenant-specific assets such as restaurant name, logo, contacts, and menu items.",
+     "attributes": [
+      {
+       "name": "AssetID",
+       "type": "String"
+      }
+     ]
+    }
+   ],
+   "interfaces": [
+    {
+     "name": "TenantAdminInterface",
+     "supplier": "Tenant Administration",
+     "consumer": "TenantAdministrator"
+    },
+    {
+     "name": "ReservationManagementInterface",
+     "supplier": "Tenant Administration",
+     "consumer": "TenantAdministrator"
+    }
+   ],
+   "functions": [
+    {
+     "name": "ManageTenantConfiguration"
+    },
+    {
+     "name": "ManageTenantAssets"
+    },
+    {
+     "name": "ManageMenu"
+    },
+    {
+     "name": "ManageMenuItem"
+    },
+    {
+     "name": "ProcessReservation"
+    },
+    {
+     "name": "ProvideTenantDashboard"
+    }
+   ]
+  },
+  "REQ-0033": {
+   "aspect": "Menu & Item Catalog",
+   "tags": [
+    "data-model"
+   ],
+   "components": [
+    {
+     "name": "Menu",
+     "suggested_module": "menu",
+     "responsibility": "Manages the collection of food or drink offerings for a Tenant.",
+     "attributes": [
+      {
+       "name": "id",
+       "type": "String"
+      }
+     ]
+    },
+    {
+     "name": "Category",
+     "suggested_module": "category",
+     "responsibility": "Groups menu items and holds organizational data.",
+     "attributes": [
+      {
+       "name": "id",
+       "type": "String"
+      },
+      {
+       "name": "name",
+       "type": "String"
+      },
+      {
+       "name": "description",
+       "type": "String"
+      },
+      {
+       "name": "order",
+       "type": "Integer"
+      }
+     ]
+    },
+    {
+     "name": "Item",
+     "suggested_module": "item",
+     "responsibility": "Represents a specific product offered on the menu.",
+     "attributes": [
+      {
+       "name": "id",
+       "type": "String"
+      },
+      {
+       "name": "name",
+       "type": "String"
+      },
+      {
+       "name": "description",
+       "type": "String"
+      },
+      {
+       "name": "price",
+       "type": "Price"
+      },
+      {
+       "name": "availability",
+       "type": "Availability"
+      }
+     ]
+    },
+    {
+     "name": "FoodImage",
+     "suggested_module": "food_image",
+     "responsibility": "Stores metadata and references for uploaded visual media.",
+     "attributes": [
+      {
+       "name": "id",
+       "type": "String"
+      },
+      {
+       "name": "path_metadata",
+       "type": "String"
+      }
+     ]
+    }
+   ],
+   "interfaces": [
+    {
+     "name": "MenuDisplayInterface",
+     "supplier": "Menu & Item Catalog",
+     "consumer": "anonymous, display"
+    },
+    {
+     "name": "MenuManagementInterface",
+     "supplier": "Menu & Item Catalog",
+     "consumer": "management, data-management"
+    },
+    {
+     "name": "AssetUploadInterface",
+     "supplier": "Menu & Item Catalog",
+     "consumer": "file-upload, media"
+    }
+   ],
+   "functions": [
+    {
+     "name": "BrowseMenu"
+    },
+    {
+     "name": "ManageMenu"
+    },
+    {
+     "name": "ManageItem"
+    },
+    {
+     "name": "UploadMedia"
+    },
+    {
+     "name": "RetrieveMenuDisplayData"
+    }
+   ]
+  },
+  "REQ-0034": {
+   "aspect": "Menu & Item Catalog",
+   "tags": [
+    "data-model"
+   ],
+   "components": [
+    {
+     "name": "Menu",
+     "suggested_module": "menu",
+     "responsibility": "Manages the collection of food or drink offerings for a Tenant.",
+     "attributes": [
+      {
+       "name": "id",
+       "type": "String"
+      }
+     ]
+    },
+    {
+     "name": "Category",
+     "suggested_module": "category",
+     "responsibility": "Groups menu items and holds organizational data.",
+     "attributes": [
+      {
+       "name": "id",
+       "type": "String"
+      },
+      {
+       "name": "name",
+       "type": "String"
+      },
+      {
+       "name": "description",
+       "type": "String"
+      },
+      {
+       "name": "order",
+       "type": "Integer"
+      }
+     ]
+    },
+    {
+     "name": "Item",
+     "suggested_module": "item",
+     "responsibility": "Represents a specific product offered on the menu.",
+     "attributes": [
+      {
+       "name": "id",
+       "type": "String"
+      },
+      {
+       "name": "name",
+       "type": "String"
+      },
+      {
+       "name": "description",
+       "type": "String"
+      },
+      {
+       "name": "price",
+       "type": "Price"
+      },
+      {
+       "name": "availability",
+       "type": "Availability"
+      }
+     ]
+    },
+    {
+     "name": "FoodImage",
+     "suggested_module": "food_image",
+     "responsibility": "Stores metadata and references for uploaded visual media.",
+     "attributes": [
+      {
+       "name": "id",
+       "type": "String"
+      },
+      {
+       "name": "path_metadata",
+       "type": "String"
+      }
+     ]
+    }
+   ],
+   "interfaces": [
+    {
+     "name": "MenuDisplayInterface",
+     "supplier": "Menu & Item Catalog",
+     "consumer": "anonymous, display"
+    },
+    {
+     "name": "MenuManagementInterface",
+     "supplier": "Menu & Item Catalog",
+     "consumer": "management, data-management"
+    },
+    {
+     "name": "AssetUploadInterface",
+     "supplier": "Menu & Item Catalog",
+     "consumer": "file-upload, media"
+    }
+   ],
+   "functions": [
+    {
+     "name": "BrowseMenu"
+    },
+    {
+     "name": "ManageMenu"
+    },
+    {
+     "name": "ManageItem"
+    },
+    {
+     "name": "UploadMedia"
+    },
+    {
+     "name": "RetrieveMenuDisplayData"
+    }
+   ]
+  },
+  "REQ-0035": {
+   "aspect": "Menu & Item Catalog",
+   "tags": [
+    "dietary-restrictions",
+    "localization"
+   ],
+   "components": [
+    {
+     "name": "Menu",
+     "suggested_module": "menu",
+     "responsibility": "Manages the collection of food or drink offerings for a Tenant.",
+     "attributes": [
+      {
+       "name": "id",
+       "type": "String"
+      }
+     ]
+    },
+    {
+     "name": "Category",
+     "suggested_module": "category",
+     "responsibility": "Groups menu items and holds organizational data.",
+     "attributes": [
+      {
+       "name": "id",
+       "type": "String"
+      },
+      {
+       "name": "name",
+       "type": "String"
+      },
+      {
+       "name": "description",
+       "type": "String"
+      },
+      {
+       "name": "order",
+       "type": "Integer"
+      }
+     ]
+    },
+    {
+     "name": "Item",
+     "suggested_module": "item",
+     "responsibility": "Represents a specific product offered on the menu.",
+     "attributes": [
+      {
+       "name": "id",
+       "type": "String"
+      },
+      {
+       "name": "name",
+       "type": "String"
+      },
+      {
+       "name": "description",
+       "type": "String"
+      },
+      {
+       "name": "price",
+       "type": "Price"
+      },
+      {
+       "name": "availability",
+       "type": "Availability"
+      }
+     ]
+    },
+    {
+     "name": "FoodImage",
+     "suggested_module": "food_image",
+     "responsibility": "Stores metadata and references for uploaded visual media.",
+     "attributes": [
+      {
+       "name": "id",
+       "type": "String"
+      },
+      {
+       "name": "path_metadata",
+       "type": "String"
+      }
+     ]
+    }
+   ],
+   "interfaces": [
+    {
+     "name": "MenuDisplayInterface",
+     "supplier": "Menu & Item Catalog",
+     "consumer": "anonymous, display"
+    },
+    {
+     "name": "MenuManagementInterface",
+     "supplier": "Menu & Item Catalog",
+     "consumer": "management, data-management"
+    },
+    {
+     "name": "AssetUploadInterface",
+     "supplier": "Menu & Item Catalog",
+     "consumer": "file-upload, media"
+    }
+   ],
+   "functions": [
+    {
+     "name": "BrowseMenu"
+    },
+    {
+     "name": "ManageMenu"
+    },
+    {
+     "name": "ManageItem"
+    },
+    {
+     "name": "UploadMedia"
+    },
+    {
+     "name": "RetrieveMenuDisplayData"
+    }
+   ]
+  },
+  "REQ-0036": {
+   "aspect": "Menu & Item Catalog",
+   "tags": [
+    "storage"
+   ],
+   "components": [
+    {
+     "name": "Menu",
+     "suggested_module": "menu",
+     "responsibility": "Manages the collection of food or drink offerings for a Tenant.",
+     "attributes": [
+      {
+       "name": "id",
+       "type": "String"
+      }
+     ]
+    },
+    {
+     "name": "Category",
+     "suggested_module": "category",
+     "responsibility": "Groups menu items and holds organizational data.",
+     "attributes": [
+      {
+       "name": "id",
+       "type": "String"
+      },
+      {
+       "name": "name",
+       "type": "String"
+      },
+      {
+       "name": "description",
+       "type": "String"
+      },
+      {
+       "name": "order",
+       "type": "Integer"
+      }
+     ]
+    },
+    {
+     "name": "Item",
+     "suggested_module": "item",
+     "responsibility": "Represents a specific product offered on the menu.",
+     "attributes": [
+      {
+       "name": "id",
+       "type": "String"
+      },
+      {
+       "name": "name",
+       "type": "String"
+      },
+      {
+       "name": "description",
+       "type": "String"
+      },
+      {
+       "name": "price",
+       "type": "Price"
+      },
+      {
+       "name": "availability",
+       "type": "Availability"
+      }
+     ]
+    },
+    {
+     "name": "FoodImage",
+     "suggested_module": "food_image",
+     "responsibility": "Stores metadata and references for uploaded visual media.",
+     "attributes": [
+      {
+       "name": "id",
+       "type": "String"
+      },
+      {
+       "name": "path_metadata",
+       "type": "String"
+      }
+     ]
+    }
+   ],
+   "interfaces": [
+    {
+     "name": "MenuDisplayInterface",
+     "supplier": "Menu & Item Catalog",
+     "consumer": "anonymous, display"
+    },
+    {
+     "name": "MenuManagementInterface",
+     "supplier": "Menu & Item Catalog",
+     "consumer": "management, data-management"
+    },
+    {
+     "name": "AssetUploadInterface",
+     "supplier": "Menu & Item Catalog",
+     "consumer": "file-upload, media"
+    }
+   ],
+   "functions": [
+    {
+     "name": "BrowseMenu"
+    },
+    {
+     "name": "ManageMenu"
+    },
+    {
+     "name": "ManageItem"
+    },
+    {
+     "name": "UploadMedia"
+    },
+    {
+     "name": "RetrieveMenuDisplayData"
+    }
+   ]
+  },
+  "REQ-0037": {
+   "aspect": "AI Content Generation",
+   "tags": [
+    "ai",
+    "localization"
+   ],
+   "components": [
+    {
+     "name": "AiDescription",
+     "suggested_module": "ai_description",
+     "responsibility": "Stores the generated textual description of a food item.",
+     "attributes": [
+      {
+       "name": "generated_text",
+       "type": "String"
+      },
+      {
+       "name": "language",
+       "type": "String"
+      },
+      {
+       "name": "approved_flag",
+       "type": "Boolean"
+      },
+      {
+       "name": "timestamp",
+       "type": "Timestamp"
+      }
+     ]
+    }
+   ],
+   "interfaces": [
+    {
+     "name": "DescriptionGenerationInterface",
+     "supplier": "AI Content Generation",
+     "consumer": "Item"
+    },
+    {
+     "name": "DescriptionPersistenceInterface",
+     "supplier": "AI Content Generation",
+     "consumer": "Item"
+    }
+   ],
+   "functions": [
+    {
+     "name": "GenerateDescriptionFromImage"
+    },
+    {
+     "name": "StoreDescriptionRecord"
+    },
+    {
+     "name": "ProvideManualDescription"
+    }
+   ]
+  },
+  "REQ-0038": {
+   "aspect": "Reservations",
+   "tags": [
+    "multi-tenancy"
+   ],
+   "components": [
+    {
+     "name": "Reservation",
+     "suggested_module": "reservation",
+     "responsibility": "Stores the details of a booking request.",
+     "attributes": [
+      {
+       "name": "id",
+       "type": "String"
+      },
+      {
+       "name": "user_google_id",
+       "type": "String"
+      },
+      {
+       "name": "tenant_id",
+       "type": "String"
+      },
+      {
+       "name": "date_time",
+       "type": "String"
+      },
+      {
+       "name": "number_of_people",
+       "type": "Integer"
+      },
+      {
+       "name": "status",
+       "type": "ReservationStatus"
+      },
+      {
+       "name": "timestamp",
+       "type": "Timestamp"
+      },
+      {
+       "name": "notes",
+       "type": "String"
+      }
+     ]
+    }
+   ],
+   "interfaces": [
+    {
+     "name": "ReservationSubmissionInterface",
+     "supplier": "Reservations",
+     "consumer": "User"
+    },
+    {
+     "name": "ReservationManagementInterface",
+     "supplier": "Reservations",
+     "consumer": "Admin, TenantAdministrator"
+    }
+   ],
+   "functions": [
+    {
+     "name": "SubmitReservation"
+    },
+    {
+     "name": "ConfirmReservation"
+    },
+    {
+     "name": "GenerateReservationAddress"
+    }
+   ]
+  },
+  "REQ-0039": {
+   "aspect": "Reservations",
+   "tags": [
+    "manual-process"
+   ],
+   "components": [
+    {
+     "name": "Reservation",
+     "suggested_module": "reservation",
+     "responsibility": "Stores the details of a booking request.",
+     "attributes": [
+      {
+       "name": "id",
+       "type": "String"
+      },
+      {
+       "name": "user_google_id",
+       "type": "String"
+      },
+      {
+       "name": "tenant_id",
+       "type": "String"
+      },
+      {
+       "name": "date_time",
+       "type": "String"
+      },
+      {
+       "name": "number_of_people",
+       "type": "Integer"
+      },
+      {
+       "name": "status",
+       "type": "ReservationStatus"
+      },
+      {
+       "name": "timestamp",
+       "type": "Timestamp"
+      },
+      {
+       "name": "notes",
+       "type": "String"
+      }
+     ]
+    }
+   ],
+   "interfaces": [
+    {
+     "name": "ReservationSubmissionInterface",
+     "supplier": "Reservations",
+     "consumer": "User"
+    },
+    {
+     "name": "ReservationManagementInterface",
+     "supplier": "Reservations",
+     "consumer": "Admin, TenantAdministrator"
+    }
+   ],
+   "functions": [
+    {
+     "name": "SubmitReservation"
+    },
+    {
+     "name": "ConfirmReservation"
+    },
+    {
+     "name": "GenerateReservationAddress"
+    }
+   ]
+  },
+  "REQ-0042": {
+   "aspect": "Menu & Item Catalog",
+   "tags": [
+    "display"
+   ],
+   "components": [
+    {
+     "name": "Menu",
+     "suggested_module": "menu",
+     "responsibility": "Manages the collection of food or drink offerings for a Tenant.",
+     "attributes": [
+      {
+       "name": "id",
+       "type": "String"
+      }
+     ]
+    },
+    {
+     "name": "Category",
+     "suggested_module": "category",
+     "responsibility": "Groups menu items and holds organizational data.",
+     "attributes": [
+      {
+       "name": "id",
+       "type": "String"
+      },
+      {
+       "name": "name",
+       "type": "String"
+      },
+      {
+       "name": "description",
+       "type": "String"
+      },
+      {
+       "name": "order",
+       "type": "Integer"
+      }
+     ]
+    },
+    {
+     "name": "Item",
+     "suggested_module": "item",
+     "responsibility": "Represents a specific product offered on the menu.",
+     "attributes": [
+      {
+       "name": "id",
+       "type": "String"
+      },
+      {
+       "name": "name",
+       "type": "String"
+      },
+      {
+       "name": "description",
+       "type": "String"
+      },
+      {
+       "name": "price",
+       "type": "Price"
+      },
+      {
+       "name": "availability",
+       "type": "Availability"
+      }
+     ]
+    },
+    {
+     "name": "FoodImage",
+     "suggested_module": "food_image",
+     "responsibility": "Stores metadata and references for uploaded visual media.",
+     "attributes": [
+      {
+       "name": "id",
+       "type": "String"
+      },
+      {
+       "name": "path_metadata",
+       "type": "String"
+      }
+     ]
+    }
+   ],
+   "interfaces": [
+    {
+     "name": "MenuDisplayInterface",
+     "supplier": "Menu & Item Catalog",
+     "consumer": "anonymous, display"
+    },
+    {
+     "name": "MenuManagementInterface",
+     "supplier": "Menu & Item Catalog",
+     "consumer": "management, data-management"
+    },
+    {
+     "name": "AssetUploadInterface",
+     "supplier": "Menu & Item Catalog",
+     "consumer": "file-upload, media"
+    }
+   ],
+   "functions": [
+    {
+     "name": "BrowseMenu"
+    },
+    {
+     "name": "ManageMenu"
+    },
+    {
+     "name": "ManageItem"
+    },
+    {
+     "name": "UploadMedia"
+    },
+    {
+     "name": "RetrieveMenuDisplayData"
+    }
+   ]
+  },
+  "REQ-0043": {
+   "aspect": "Menu & Item Catalog",
+   "tags": [
+    "display"
+   ],
+   "components": [
+    {
+     "name": "Menu",
+     "suggested_module": "menu",
+     "responsibility": "Manages the collection of food or drink offerings for a Tenant.",
+     "attributes": [
+      {
+       "name": "id",
+       "type": "String"
+      }
+     ]
+    },
+    {
+     "name": "Category",
+     "suggested_module": "category",
+     "responsibility": "Groups menu items and holds organizational data.",
+     "attributes": [
+      {
+       "name": "id",
+       "type": "String"
+      },
+      {
+       "name": "name",
+       "type": "String"
+      },
+      {
+       "name": "description",
+       "type": "String"
+      },
+      {
+       "name": "order",
+       "type": "Integer"
+      }
+     ]
+    },
+    {
+     "name": "Item",
+     "suggested_module": "item",
+     "responsibility": "Represents a specific product offered on the menu.",
+     "attributes": [
+      {
+       "name": "id",
+       "type": "String"
+      },
+      {
+       "name": "name",
+       "type": "String"
+      },
+      {
+       "name": "description",
+       "type": "String"
+      },
+      {
+       "name": "price",
+       "type": "Price"
+      },
+      {
+       "name": "availability",
+       "type": "Availability"
+      }
+     ]
+    },
+    {
+     "name": "FoodImage",
+     "suggested_module": "food_image",
+     "responsibility": "Stores metadata and references for uploaded visual media.",
+     "attributes": [
+      {
+       "name": "id",
+       "type": "String"
+      },
+      {
+       "name": "path_metadata",
+       "type": "String"
+      }
+     ]
+    }
+   ],
+   "interfaces": [
+    {
+     "name": "MenuDisplayInterface",
+     "supplier": "Menu & Item Catalog",
+     "consumer": "anonymous, display"
+    },
+    {
+     "name": "MenuManagementInterface",
+     "supplier": "Menu & Item Catalog",
+     "consumer": "management, data-management"
+    },
+    {
+     "name": "AssetUploadInterface",
+     "supplier": "Menu & Item Catalog",
+     "consumer": "file-upload, media"
+    }
+   ],
+   "functions": [
+    {
+     "name": "BrowseMenu"
+    },
+    {
+     "name": "ManageMenu"
+    },
+    {
+     "name": "ManageItem"
+    },
+    {
+     "name": "UploadMedia"
+    },
+    {
+     "name": "RetrieveMenuDisplayData"
+    }
+   ]
+  },
+  "REQ-0044": {
+   "aspect": "System Infrastructure",
+   "tags": [
+    "localization"
+   ],
+   "components": [
+    {
+     "name": "SQLiteInstance",
+     "suggested_module": "sq_lite_instance",
+     "responsibility": "Manages the isolated database for a single Tenant.",
+     "attributes": [
+      {
+       "name": "InstanceID",
+       "type": "String"
+      }
+     ]
+    }
+   ],
+   "interfaces": [
+    {
+     "name": "TenantRoutingInterface",
+     "supplier": "System Infrastructure",
+     "consumer": "Endpoint"
+    },
+    {
+     "name": "LocalizationInterface",
+     "supplier": "System Infrastructure",
+     "consumer": "User"
+    },
+    {
+     "name": "AssetStorageInterface",
+     "supplier": "System Infrastructure",
+     "consumer": "Tenant"
+    },
+    {
+     "name": "MapDisplayInterface",
+     "supplier": "System Infrastructure",
+     "consumer": "User"
+    }
+   ],
+   "functions": [
+    {
+     "name": "ResolveTenantIdentity"
+    },
+    {
+     "name": "RouteRequest"
+    },
+    {
+     "name": "ManageTenantData"
+    },
+    {
+     "name": "ServeLocalizedContent"
+    },
+    {
+     "name": "RenderResponsiveUI"
+    },
+    {
+     "name": "HandleContactSubmission"
+    },
+    {
+     "name": "DisplayMapInterface"
+    }
+   ]
+  },
+  "REQ-0045": {
+   "aspect": "Tenant Administration",
+   "tags": [
+    "user-input"
+   ],
+   "components": [
+    {
+     "name": "Tenant",
+     "suggested_module": "tenant",
+     "responsibility": "Represents a distinct organizational unit whose data and resources are isolated within the system.",
+     "attributes": [
+      {
+       "name": "TenantID",
+       "type": "String"
+      }
+     ]
+    },
+    {
+     "name": "TenantConfiguration",
+     "suggested_module": "tenant_configuration",
+     "responsibility": "Stores the specific settings and parameters that define how a Tenant operates within the system, including working hours.",
+     "attributes": [
+      {
+       "name": "ConfigurationID",
+       "type": "String"
+      },
+      {
+       "name": "OpeningHours",
+       "type": "String"
+      }
+     ]
+    },
+    {
+     "name": "TenantAsset",
+     "suggested_module": "tenant_asset",
+     "responsibility": "Stores tenant-specific assets such as restaurant name, logo, contacts, and menu items.",
+     "attributes": [
+      {
+       "name": "AssetID",
+       "type": "String"
+      }
+     ]
+    }
+   ],
+   "interfaces": [
+    {
+     "name": "TenantAdminInterface",
+     "supplier": "Tenant Administration",
+     "consumer": "TenantAdministrator"
+    },
+    {
+     "name": "ReservationManagementInterface",
+     "supplier": "Tenant Administration",
+     "consumer": "TenantAdministrator"
+    }
+   ],
+   "functions": [
+    {
+     "name": "ManageTenantConfiguration"
+    },
+    {
+     "name": "ManageTenantAssets"
+    },
+    {
+     "name": "ManageMenu"
+    },
+    {
+     "name": "ManageMenuItem"
+    },
+    {
+     "name": "ProcessReservation"
+    },
+    {
+     "name": "ProvideTenantDashboard"
+    }
+   ]
+  },
+  "REQ-0046": {
+   "aspect": "Tenant Administration",
+   "tags": [
+    "scheduling"
+   ],
+   "components": [
+    {
+     "name": "Tenant",
+     "suggested_module": "tenant",
+     "responsibility": "Represents a distinct organizational unit whose data and resources are isolated within the system.",
+     "attributes": [
+      {
+       "name": "TenantID",
+       "type": "String"
+      }
+     ]
+    },
+    {
+     "name": "TenantConfiguration",
+     "suggested_module": "tenant_configuration",
+     "responsibility": "Stores the specific settings and parameters that define how a Tenant operates within the system, including working hours.",
+     "attributes": [
+      {
+       "name": "ConfigurationID",
+       "type": "String"
+      },
+      {
+       "name": "OpeningHours",
+       "type": "String"
+      }
+     ]
+    },
+    {
+     "name": "TenantAsset",
+     "suggested_module": "tenant_asset",
+     "responsibility": "Stores tenant-specific assets such as restaurant name, logo, contacts, and menu items.",
+     "attributes": [
+      {
+       "name": "AssetID",
+       "type": "String"
+      }
+     ]
+    }
+   ],
+   "interfaces": [
+    {
+     "name": "TenantAdminInterface",
+     "supplier": "Tenant Administration",
+     "consumer": "TenantAdministrator"
+    },
+    {
+     "name": "ReservationManagementInterface",
+     "supplier": "Tenant Administration",
+     "consumer": "TenantAdministrator"
+    }
+   ],
+   "functions": [
+    {
+     "name": "ManageTenantConfiguration"
+    },
+    {
+     "name": "ManageTenantAssets"
+    },
+    {
+     "name": "ManageMenu"
+    },
+    {
+     "name": "ManageMenuItem"
+    },
+    {
+     "name": "ProcessReservation"
+    },
+    {
+     "name": "ProvideTenantDashboard"
+    }
+   ]
+  },
+  "REQ-0047": {
+   "aspect": "System Infrastructure",
+   "tags": [
+    "localization"
+   ],
+   "components": [
+    {
+     "name": "SQLiteInstance",
+     "suggested_module": "sq_lite_instance",
+     "responsibility": "Manages the isolated database for a single Tenant.",
+     "attributes": [
+      {
+       "name": "InstanceID",
+       "type": "String"
+      }
+     ]
+    }
+   ],
+   "interfaces": [
+    {
+     "name": "TenantRoutingInterface",
+     "supplier": "System Infrastructure",
+     "consumer": "Endpoint"
+    },
+    {
+     "name": "LocalizationInterface",
+     "supplier": "System Infrastructure",
+     "consumer": "User"
+    },
+    {
+     "name": "AssetStorageInterface",
+     "supplier": "System Infrastructure",
+     "consumer": "Tenant"
+    },
+    {
+     "name": "MapDisplayInterface",
+     "supplier": "System Infrastructure",
+     "consumer": "User"
+    }
+   ],
+   "functions": [
+    {
+     "name": "ResolveTenantIdentity"
+    },
+    {
+     "name": "RouteRequest"
+    },
+    {
+     "name": "ManageTenantData"
+    },
+    {
+     "name": "ServeLocalizedContent"
+    },
+    {
+     "name": "RenderResponsiveUI"
+    },
+    {
+     "name": "HandleContactSubmission"
+    },
+    {
+     "name": "DisplayMapInterface"
+    }
+   ]
+  },
+  "REQ-0048": {
+   "aspect": "Reservations",
+   "tags": [
+    "authentication"
+   ],
+   "components": [
+    {
+     "name": "Reservation",
+     "suggested_module": "reservation",
+     "responsibility": "Stores the details of a booking request.",
+     "attributes": [
+      {
+       "name": "id",
+       "type": "String"
+      },
+      {
+       "name": "user_google_id",
+       "type": "String"
+      },
+      {
+       "name": "tenant_id",
+       "type": "String"
+      },
+      {
+       "name": "date_time",
+       "type": "String"
+      },
+      {
+       "name": "number_of_people",
+       "type": "Integer"
+      },
+      {
+       "name": "status",
+       "type": "ReservationStatus"
+      },
+      {
+       "name": "timestamp",
+       "type": "Timestamp"
+      },
+      {
+       "name": "notes",
+       "type": "String"
+      }
+     ]
+    }
+   ],
+   "interfaces": [
+    {
+     "name": "ReservationSubmissionInterface",
+     "supplier": "Reservations",
+     "consumer": "User"
+    },
+    {
+     "name": "ReservationManagementInterface",
+     "supplier": "Reservations",
+     "consumer": "Admin, TenantAdministrator"
+    }
+   ],
+   "functions": [
+    {
+     "name": "SubmitReservation"
+    },
+    {
+     "name": "ConfirmReservation"
+    },
+    {
+     "name": "GenerateReservationAddress"
+    }
+   ]
+  },
+  "REQ-0049": {
+   "aspect": "User & Access Control",
+   "tags": [
+    "authentication"
+   ],
+   "components": [
+    {
+     "name": "User",
+     "suggested_module": "user",
+     "responsibility": "Represents an individual interacting with the system.",
+     "attributes": [
+      {
+       "name": "UserGoogleId",
+       "type": "String"
+      }
+     ]
+    },
+    {
+     "name": "UserGoogleId",
+     "suggested_module": "user_google_id",
+     "responsibility": "Stores the unique identifier provided by Google for user authentication.",
+     "attributes": [
+      {
+       "name": "Id",
+       "type": "String"
+      }
+     ]
+    }
+   ],
+   "interfaces": [
+    {
+     "name": "AuthenticationInterface",
+     "supplier": "User & Access Control",
+     "consumer": "User"
+    },
+    {
+     "name": "AccessControlInterface",
+     "supplier": "User & Access Control",
+     "consumer": "User"
+    }
+   ],
+   "functions": [
+    {
+     "name": "AuthenticateUser"
+    },
+    {
+     "name": "CheckUserAccess"
+    }
+   ]
+  },
+  "REQ-0050": {
+   "aspect": "Tenant Administration",
+   "tags": [
+    "multi-tenancy"
+   ],
+   "components": [
+    {
+     "name": "Tenant",
+     "suggested_module": "tenant",
+     "responsibility": "Represents a distinct organizational unit whose data and resources are isolated within the system.",
+     "attributes": [
+      {
+       "name": "TenantID",
+       "type": "String"
+      }
+     ]
+    },
+    {
+     "name": "TenantConfiguration",
+     "suggested_module": "tenant_configuration",
+     "responsibility": "Stores the specific settings and parameters that define how a Tenant operates within the system, including working hours.",
+     "attributes": [
+      {
+       "name": "ConfigurationID",
+       "type": "String"
+      },
+      {
+       "name": "OpeningHours",
+       "type": "String"
+      }
+     ]
+    },
+    {
+     "name": "TenantAsset",
+     "suggested_module": "tenant_asset",
+     "responsibility": "Stores tenant-specific assets such as restaurant name, logo, contacts, and menu items.",
+     "attributes": [
+      {
+       "name": "AssetID",
+       "type": "String"
+      }
+     ]
+    }
+   ],
+   "interfaces": [
+    {
+     "name": "TenantAdminInterface",
+     "supplier": "Tenant Administration",
+     "consumer": "TenantAdministrator"
+    },
+    {
+     "name": "ReservationManagementInterface",
+     "supplier": "Tenant Administration",
+     "consumer": "TenantAdministrator"
+    }
+   ],
+   "functions": [
+    {
+     "name": "ManageTenantConfiguration"
+    },
+    {
+     "name": "ManageTenantAssets"
+    },
+    {
+     "name": "ManageMenu"
+    },
+    {
+     "name": "ManageMenuItem"
+    },
+    {
+     "name": "ProcessReservation"
+    },
+    {
+     "name": "ProvideTenantDashboard"
+    }
+   ]
+  },
+  "REQ-0051": {
+   "aspect": "Menu & Item Catalog",
+   "tags": [
+    "data-management"
+   ],
+   "components": [
+    {
+     "name": "Menu",
+     "suggested_module": "menu",
+     "responsibility": "Manages the collection of food or drink offerings for a Tenant.",
+     "attributes": [
+      {
+       "name": "id",
+       "type": "String"
+      }
+     ]
+    },
+    {
+     "name": "Category",
+     "suggested_module": "category",
+     "responsibility": "Groups menu items and holds organizational data.",
+     "attributes": [
+      {
+       "name": "id",
+       "type": "String"
+      },
+      {
+       "name": "name",
+       "type": "String"
+      },
+      {
+       "name": "description",
+       "type": "String"
+      },
+      {
+       "name": "order",
+       "type": "Integer"
+      }
+     ]
+    },
+    {
+     "name": "Item",
+     "suggested_module": "item",
+     "responsibility": "Represents a specific product offered on the menu.",
+     "attributes": [
+      {
+       "name": "id",
+       "type": "String"
+      },
+      {
+       "name": "name",
+       "type": "String"
+      },
+      {
+       "name": "description",
+       "type": "String"
+      },
+      {
+       "name": "price",
+       "type": "Price"
+      },
+      {
+       "name": "availability",
+       "type": "Availability"
+      }
+     ]
+    },
+    {
+     "name": "FoodImage",
+     "suggested_module": "food_image",
+     "responsibility": "Stores metadata and references for uploaded visual media.",
+     "attributes": [
+      {
+       "name": "id",
+       "type": "String"
+      },
+      {
+       "name": "path_metadata",
+       "type": "String"
+      }
+     ]
+    }
+   ],
+   "interfaces": [
+    {
+     "name": "MenuDisplayInterface",
+     "supplier": "Menu & Item Catalog",
+     "consumer": "anonymous, display"
+    },
+    {
+     "name": "MenuManagementInterface",
+     "supplier": "Menu & Item Catalog",
+     "consumer": "management, data-management"
+    },
+    {
+     "name": "AssetUploadInterface",
+     "supplier": "Menu & Item Catalog",
+     "consumer": "file-upload, media"
+    }
+   ],
+   "functions": [
+    {
+     "name": "BrowseMenu"
+    },
+    {
+     "name": "ManageMenu"
+    },
+    {
+     "name": "ManageItem"
+    },
+    {
+     "name": "UploadMedia"
+    },
+    {
+     "name": "RetrieveMenuDisplayData"
+    }
+   ]
+  },
+  "REQ-0052": {
+   "aspect": "Menu & Item Catalog",
+   "tags": [
+    "media"
+   ],
+   "components": [
+    {
+     "name": "Menu",
+     "suggested_module": "menu",
+     "responsibility": "Manages the collection of food or drink offerings for a Tenant.",
+     "attributes": [
+      {
+       "name": "id",
+       "type": "String"
+      }
+     ]
+    },
+    {
+     "name": "Category",
+     "suggested_module": "category",
+     "responsibility": "Groups menu items and holds organizational data.",
+     "attributes": [
+      {
+       "name": "id",
+       "type": "String"
+      },
+      {
+       "name": "name",
+       "type": "String"
+      },
+      {
+       "name": "description",
+       "type": "String"
+      },
+      {
+       "name": "order",
+       "type": "Integer"
+      }
+     ]
+    },
+    {
+     "name": "Item",
+     "suggested_module": "item",
+     "responsibility": "Represents a specific product offered on the menu.",
+     "attributes": [
+      {
+       "name": "id",
+       "type": "String"
+      },
+      {
+       "name": "name",
+       "type": "String"
+      },
+      {
+       "name": "description",
+       "type": "String"
+      },
+      {
+       "name": "price",
+       "type": "Price"
+      },
+      {
+       "name": "availability",
+       "type": "Availability"
+      }
+     ]
+    },
+    {
+     "name": "FoodImage",
+     "suggested_module": "food_image",
+     "responsibility": "Stores metadata and references for uploaded visual media.",
+     "attributes": [
+      {
+       "name": "id",
+       "type": "String"
+      },
+      {
+       "name": "path_metadata",
+       "type": "String"
+      }
+     ]
+    }
+   ],
+   "interfaces": [
+    {
+     "name": "MenuDisplayInterface",
+     "supplier": "Menu & Item Catalog",
+     "consumer": "anonymous, display"
+    },
+    {
+     "name": "MenuManagementInterface",
+     "supplier": "Menu & Item Catalog",
+     "consumer": "management, data-management"
+    },
+    {
+     "name": "AssetUploadInterface",
+     "supplier": "Menu & Item Catalog",
+     "consumer": "file-upload, media"
+    }
+   ],
+   "functions": [
+    {
+     "name": "BrowseMenu"
+    },
+    {
+     "name": "ManageMenu"
+    },
+    {
+     "name": "ManageItem"
+    },
+    {
+     "name": "UploadMedia"
+    },
+    {
+     "name": "RetrieveMenuDisplayData"
+    }
+   ]
+  },
+  "REQ-0053": {
+   "aspect": "AI Content Generation",
+   "tags": [
+    "ai"
+   ],
+   "components": [
+    {
+     "name": "AiDescription",
+     "suggested_module": "ai_description",
+     "responsibility": "Stores the generated textual description of a food item.",
+     "attributes": [
+      {
+       "name": "generated_text",
+       "type": "String"
+      },
+      {
+       "name": "language",
+       "type": "String"
+      },
+      {
+       "name": "approved_flag",
+       "type": "Boolean"
+      },
+      {
+       "name": "timestamp",
+       "type": "Timestamp"
+      }
+     ]
+    }
+   ],
+   "interfaces": [
+    {
+     "name": "DescriptionGenerationInterface",
+     "supplier": "AI Content Generation",
+     "consumer": "Item"
+    },
+    {
+     "name": "DescriptionPersistenceInterface",
+     "supplier": "AI Content Generation",
+     "consumer": "Item"
+    }
+   ],
+   "functions": [
+    {
+     "name": "GenerateDescriptionFromImage"
+    },
+    {
+     "name": "StoreDescriptionRecord"
+    },
+    {
+     "name": "ProvideManualDescription"
+    }
+   ]
+  },
+  "REQ-0054": {
+   "aspect": "Reservations",
+   "tags": [
+    "management"
+   ],
+   "components": [
+    {
+     "name": "Reservation",
+     "suggested_module": "reservation",
+     "responsibility": "Stores the details of a booking request.",
+     "attributes": [
+      {
+       "name": "id",
+       "type": "String"
+      },
+      {
+       "name": "user_google_id",
+       "type": "String"
+      },
+      {
+       "name": "tenant_id",
+       "type": "String"
+      },
+      {
+       "name": "date_time",
+       "type": "String"
+      },
+      {
+       "name": "number_of_people",
+       "type": "Integer"
+      },
+      {
+       "name": "status",
+       "type": "ReservationStatus"
+      },
+      {
+       "name": "timestamp",
+       "type": "Timestamp"
+      },
+      {
+       "name": "notes",
+       "type": "String"
+      }
+     ]
+    }
+   ],
+   "interfaces": [
+    {
+     "name": "ReservationSubmissionInterface",
+     "supplier": "Reservations",
+     "consumer": "User"
+    },
+    {
+     "name": "ReservationManagementInterface",
+     "supplier": "Reservations",
+     "consumer": "Admin, TenantAdministrator"
+    }
+   ],
+   "functions": [
+    {
+     "name": "SubmitReservation"
+    },
+    {
+     "name": "ConfirmReservation"
+    },
+    {
+     "name": "GenerateReservationAddress"
+    }
+   ]
+  },
+  "REQ-0055": {
+   "aspect": "Tenant Administration",
+   "tags": [
+    "multi-tenancy"
+   ],
+   "components": [
+    {
+     "name": "Tenant",
+     "suggested_module": "tenant",
+     "responsibility": "Represents a distinct organizational unit whose data and resources are isolated within the system.",
+     "attributes": [
+      {
+       "name": "TenantID",
+       "type": "String"
+      }
+     ]
+    },
+    {
+     "name": "TenantConfiguration",
+     "suggested_module": "tenant_configuration",
+     "responsibility": "Stores the specific settings and parameters that define how a Tenant operates within the system, including working hours.",
+     "attributes": [
+      {
+       "name": "ConfigurationID",
+       "type": "String"
+      },
+      {
+       "name": "OpeningHours",
+       "type": "String"
+      }
+     ]
+    },
+    {
+     "name": "TenantAsset",
+     "suggested_module": "tenant_asset",
+     "responsibility": "Stores tenant-specific assets such as restaurant name, logo, contacts, and menu items.",
+     "attributes": [
+      {
+       "name": "AssetID",
+       "type": "String"
+      }
+     ]
+    }
+   ],
+   "interfaces": [
+    {
+     "name": "TenantAdminInterface",
+     "supplier": "Tenant Administration",
+     "consumer": "TenantAdministrator"
+    },
+    {
+     "name": "ReservationManagementInterface",
+     "supplier": "Tenant Administration",
+     "consumer": "TenantAdministrator"
+    }
+   ],
+   "functions": [
+    {
+     "name": "ManageTenantConfiguration"
+    },
+    {
+     "name": "ManageTenantAssets"
+    },
+    {
+     "name": "ManageMenu"
+    },
+    {
+     "name": "ManageMenuItem"
+    },
+    {
+     "name": "ProcessReservation"
+    },
+    {
+     "name": "ProvideTenantDashboard"
+    }
+   ]
+  },
+  "REQ-0056": {
+   "aspect": "System Infrastructure",
+   "tags": [
+    "multi-tenancy"
+   ],
+   "components": [
+    {
+     "name": "SQLiteInstance",
+     "suggested_module": "sq_lite_instance",
+     "responsibility": "Manages the isolated database for a single Tenant.",
+     "attributes": [
+      {
+       "name": "InstanceID",
+       "type": "String"
+      }
+     ]
+    }
+   ],
+   "interfaces": [
+    {
+     "name": "TenantRoutingInterface",
+     "supplier": "System Infrastructure",
+     "consumer": "Endpoint"
+    },
+    {
+     "name": "LocalizationInterface",
+     "supplier": "System Infrastructure",
+     "consumer": "User"
+    },
+    {
+     "name": "AssetStorageInterface",
+     "supplier": "System Infrastructure",
+     "consumer": "Tenant"
+    },
+    {
+     "name": "MapDisplayInterface",
+     "supplier": "System Infrastructure",
+     "consumer": "User"
+    }
+   ],
+   "functions": [
+    {
+     "name": "ResolveTenantIdentity"
+    },
+    {
+     "name": "RouteRequest"
+    },
+    {
+     "name": "ManageTenantData"
+    },
+    {
+     "name": "ServeLocalizedContent"
+    },
+    {
+     "name": "RenderResponsiveUI"
+    },
+    {
+     "name": "HandleContactSubmission"
+    },
+    {
+     "name": "DisplayMapInterface"
+    }
+   ]
+  },
+  "REQ-0057": {
+   "aspect": "System Infrastructure",
+   "tags": [
+    "storage"
+   ],
+   "components": [
+    {
+     "name": "SQLiteInstance",
+     "suggested_module": "sq_lite_instance",
+     "responsibility": "Manages the isolated database for a single Tenant.",
+     "attributes": [
+      {
+       "name": "InstanceID",
+       "type": "String"
+      }
+     ]
+    }
+   ],
+   "interfaces": [
+    {
+     "name": "TenantRoutingInterface",
+     "supplier": "System Infrastructure",
+     "consumer": "Endpoint"
+    },
+    {
+     "name": "LocalizationInterface",
+     "supplier": "System Infrastructure",
+     "consumer": "User"
+    },
+    {
+     "name": "AssetStorageInterface",
+     "supplier": "System Infrastructure",
+     "consumer": "Tenant"
+    },
+    {
+     "name": "MapDisplayInterface",
+     "supplier": "System Infrastructure",
+     "consumer": "User"
+    }
+   ],
+   "functions": [
+    {
+     "name": "ResolveTenantIdentity"
+    },
+    {
+     "name": "RouteRequest"
+    },
+    {
+     "name": "ManageTenantData"
+    },
+    {
+     "name": "ServeLocalizedContent"
+    },
+    {
+     "name": "RenderResponsiveUI"
+    },
+    {
+     "name": "HandleContactSubmission"
+    },
+    {
+     "name": "DisplayMapInterface"
+    }
+   ]
+  },
+  "REQ-0058": {
+   "aspect": "AI Content Generation",
+   "tags": [
+    "ai"
+   ],
+   "components": [
+    {
+     "name": "AiDescription",
+     "suggested_module": "ai_description",
+     "responsibility": "Stores the generated textual description of a food item.",
+     "attributes": [
+      {
+       "name": "generated_text",
+       "type": "String"
+      },
+      {
+       "name": "language",
+       "type": "String"
+      },
+      {
+       "name": "approved_flag",
+       "type": "Boolean"
+      },
+      {
+       "name": "timestamp",
+       "type": "Timestamp"
+      }
+     ]
+    }
+   ],
+   "interfaces": [
+    {
+     "name": "DescriptionGenerationInterface",
+     "supplier": "AI Content Generation",
+     "consumer": "Item"
+    },
+    {
+     "name": "DescriptionPersistenceInterface",
+     "supplier": "AI Content Generation",
+     "consumer": "Item"
+    }
+   ],
+   "functions": [
+    {
+     "name": "GenerateDescriptionFromImage"
+    },
+    {
+     "name": "StoreDescriptionRecord"
+    },
+    {
+     "name": "ProvideManualDescription"
+    }
+   ]
+  },
+  "REQ-0059": {
+   "aspect": "Reservations",
+   "tags": [
+    "api"
+   ],
+   "components": [
+    {
+     "name": "Reservation",
+     "suggested_module": "reservation",
+     "responsibility": "Stores the details of a booking request.",
+     "attributes": [
+      {
+       "name": "id",
+       "type": "String"
+      },
+      {
+       "name": "user_google_id",
+       "type": "String"
+      },
+      {
+       "name": "tenant_id",
+       "type": "String"
+      },
+      {
+       "name": "date_time",
+       "type": "String"
+      },
+      {
+       "name": "number_of_people",
+       "type": "Integer"
+      },
+      {
+       "name": "status",
+       "type": "ReservationStatus"
+      },
+      {
+       "name": "timestamp",
+       "type": "Timestamp"
+      },
+      {
+       "name": "notes",
+       "type": "String"
+      }
+     ]
+    }
+   ],
+   "interfaces": [
+    {
+     "name": "ReservationSubmissionInterface",
+     "supplier": "Reservations",
+     "consumer": "User"
+    },
+    {
+     "name": "ReservationManagementInterface",
+     "supplier": "Reservations",
+     "consumer": "Admin, TenantAdministrator"
+    }
+   ],
+   "functions": [
+    {
+     "name": "SubmitReservation"
+    },
+    {
+     "name": "ConfirmReservation"
+    },
+    {
+     "name": "GenerateReservationAddress"
+    }
+   ]
+  },
+  "REQ-0060": {
+   "aspect": "System Infrastructure",
+   "tags": [
+    "concurrency"
+   ],
+   "components": [
+    {
+     "name": "SQLiteInstance",
+     "suggested_module": "sq_lite_instance",
+     "responsibility": "Manages the isolated database for a single Tenant.",
+     "attributes": [
+      {
+       "name": "InstanceID",
+       "type": "String"
+      }
+     ]
+    }
+   ],
+   "interfaces": [
+    {
+     "name": "TenantRoutingInterface",
+     "supplier": "System Infrastructure",
+     "consumer": "Endpoint"
+    },
+    {
+     "name": "LocalizationInterface",
+     "supplier": "System Infrastructure",
+     "consumer": "User"
+    },
+    {
+     "name": "AssetStorageInterface",
+     "supplier": "System Infrastructure",
+     "consumer": "Tenant"
+    },
+    {
+     "name": "MapDisplayInterface",
+     "supplier": "System Infrastructure",
+     "consumer": "User"
+    }
+   ],
+   "functions": [
+    {
+     "name": "ResolveTenantIdentity"
+    },
+    {
+     "name": "RouteRequest"
+    },
+    {
+     "name": "ManageTenantData"
+    },
+    {
+     "name": "ServeLocalizedContent"
+    },
+    {
+     "name": "RenderResponsiveUI"
+    },
+    {
+     "name": "HandleContactSubmission"
+    },
+    {
+     "name": "DisplayMapInterface"
+    }
+   ]
+  },
+  "REQ-0062": {
+   "aspect": "User & Access Control",
+   "tags": [
+    "authentication",
+    "multi-tenancy"
+   ],
+   "components": [
+    {
+     "name": "User",
+     "suggested_module": "user",
+     "responsibility": "Represents an individual interacting with the system.",
+     "attributes": [
+      {
+       "name": "UserGoogleId",
+       "type": "String"
+      }
+     ]
+    },
+    {
+     "name": "UserGoogleId",
+     "suggested_module": "user_google_id",
+     "responsibility": "Stores the unique identifier provided by Google for user authentication.",
+     "attributes": [
+      {
+       "name": "Id",
+       "type": "String"
+      }
+     ]
+    }
+   ],
+   "interfaces": [
+    {
+     "name": "AuthenticationInterface",
+     "supplier": "User & Access Control",
+     "consumer": "User"
+    },
+    {
+     "name": "AccessControlInterface",
+     "supplier": "User & Access Control",
+     "consumer": "User"
+    }
+   ],
+   "functions": [
+    {
+     "name": "AuthenticateUser"
+    },
+    {
+     "name": "CheckUserAccess"
+    }
+   ]
+  },
+  "REQ-0063": {
+   "aspect": "AI Content Generation",
+   "tags": [
+    "error-handling"
+   ],
+   "components": [
+    {
+     "name": "AiDescription",
+     "suggested_module": "ai_description",
+     "responsibility": "Stores the generated textual description of a food item.",
+     "attributes": [
+      {
+       "name": "generated_text",
+       "type": "String"
+      },
+      {
+       "name": "language",
+       "type": "String"
+      },
+      {
+       "name": "approved_flag",
+       "type": "Boolean"
+      },
+      {
+       "name": "timestamp",
+       "type": "Timestamp"
+      }
+     ]
+    }
+   ],
+   "interfaces": [
+    {
+     "name": "DescriptionGenerationInterface",
+     "supplier": "AI Content Generation",
+     "consumer": "Item"
+    },
+    {
+     "name": "DescriptionPersistenceInterface",
+     "supplier": "AI Content Generation",
+     "consumer": "Item"
+    }
+   ],
+   "functions": [
+    {
+     "name": "GenerateDescriptionFromImage"
+    },
+    {
+     "name": "StoreDescriptionRecord"
+    },
+    {
+     "name": "ProvideManualDescription"
+    }
+   ]
+  },
+  "REQ-0065": {
+   "aspect": "System Infrastructure",
+   "tags": [
+    "localization"
+   ],
+   "components": [
+    {
+     "name": "SQLiteInstance",
+     "suggested_module": "sq_lite_instance",
+     "responsibility": "Manages the isolated database for a single Tenant.",
+     "attributes": [
+      {
+       "name": "InstanceID",
+       "type": "String"
+      }
+     ]
+    }
+   ],
+   "interfaces": [
+    {
+     "name": "TenantRoutingInterface",
+     "supplier": "System Infrastructure",
+     "consumer": "Endpoint"
+    },
+    {
+     "name": "LocalizationInterface",
+     "supplier": "System Infrastructure",
+     "consumer": "User"
+    },
+    {
+     "name": "AssetStorageInterface",
+     "supplier": "System Infrastructure",
+     "consumer": "Tenant"
+    },
+    {
+     "name": "MapDisplayInterface",
+     "supplier": "System Infrastructure",
+     "consumer": "User"
+    }
+   ],
+   "functions": [
+    {
+     "name": "ResolveTenantIdentity"
+    },
+    {
+     "name": "RouteRequest"
+    },
+    {
+     "name": "ManageTenantData"
+    },
+    {
+     "name": "ServeLocalizedContent"
+    },
+    {
+     "name": "RenderResponsiveUI"
+    },
+    {
+     "name": "HandleContactSubmission"
+    },
+    {
+     "name": "DisplayMapInterface"
+    }
+   ]
+  }
+ },
+ "components": [
+  {
+   "name": "Tenant",
+   "owner_aspect": "Tenant Administration",
+   "suggested_module": "tenant",
+   "attributes": [
+    {
+     "name": "TenantID",
+     "type": "String"
+    }
+   ]
+  },
+  {
+   "name": "TenantConfiguration",
+   "owner_aspect": "Tenant Administration",
+   "suggested_module": "tenant_configuration",
+   "attributes": [
+    {
+     "name": "ConfigurationID",
+     "type": "String"
+    },
+    {
+     "name": "OpeningHours",
+     "type": "String"
+    }
+   ]
+  },
+  {
+   "name": "TenantAsset",
+   "owner_aspect": "Tenant Administration",
+   "suggested_module": "tenant_asset",
+   "attributes": [
+    {
+     "name": "AssetID",
+     "type": "String"
+    }
+   ]
+  },
+  {
+   "name": "Menu",
+   "owner_aspect": "Menu & Item Catalog",
+   "suggested_module": "menu",
+   "attributes": [
+    {
+     "name": "id",
+     "type": "String"
+    }
+   ]
+  },
+  {
+   "name": "Category",
+   "owner_aspect": "Menu & Item Catalog",
+   "suggested_module": "category",
+   "attributes": [
+    {
+     "name": "id",
+     "type": "String"
+    },
+    {
+     "name": "name",
+     "type": "String"
+    },
+    {
+     "name": "description",
+     "type": "String"
+    },
+    {
+     "name": "order",
+     "type": "Integer"
+    }
+   ]
+  },
+  {
+   "name": "Item",
+   "owner_aspect": "Menu & Item Catalog",
+   "suggested_module": "item",
+   "attributes": [
+    {
+     "name": "id",
+     "type": "String"
+    },
+    {
+     "name": "name",
+     "type": "String"
+    },
+    {
+     "name": "description",
+     "type": "String"
+    },
+    {
+     "name": "price",
+     "type": "Price"
+    },
+    {
+     "name": "availability",
+     "type": "Availability"
+    }
+   ]
+  },
+  {
+   "name": "FoodImage",
+   "owner_aspect": "Menu & Item Catalog",
+   "suggested_module": "food_image",
+   "attributes": [
+    {
+     "name": "id",
+     "type": "String"
+    },
+    {
+     "name": "path_metadata",
+     "type": "String"
+    }
+   ]
+  },
+  {
+   "name": "Reservation",
+   "owner_aspect": "Reservations",
+   "suggested_module": "reservation",
+   "attributes": [
+    {
+     "name": "id",
+     "type": "String"
+    },
+    {
+     "name": "user_google_id",
+     "type": "String"
+    },
+    {
+     "name": "tenant_id",
+     "type": "String"
+    },
+    {
+     "name": "date_time",
+     "type": "String"
+    },
+    {
+     "name": "number_of_people",
+     "type": "Integer"
+    },
+    {
+     "name": "status",
+     "type": "ReservationStatus"
+    },
+    {
+     "name": "timestamp",
+     "type": "Timestamp"
+    },
+    {
+     "name": "notes",
+     "type": "String"
+    }
+   ]
+  },
+  {
+   "name": "User",
+   "owner_aspect": "User & Access Control",
+   "suggested_module": "user",
+   "attributes": [
+    {
+     "name": "UserGoogleId",
+     "type": "String"
+    }
+   ]
+  },
+  {
+   "name": "UserGoogleId",
+   "owner_aspect": "User & Access Control",
+   "suggested_module": "user_google_id",
+   "attributes": [
+    {
+     "name": "Id",
+     "type": "String"
+    }
+   ]
+  },
+  {
+   "name": "AiDescription",
+   "owner_aspect": "AI Content Generation",
+   "suggested_module": "ai_description",
+   "attributes": [
+    {
+     "name": "generated_text",
+     "type": "String"
+    },
+    {
+     "name": "language",
+     "type": "String"
+    },
+    {
+     "name": "approved_flag",
+     "type": "Boolean"
+    },
+    {
+     "name": "timestamp",
+     "type": "Timestamp"
+    }
+   ]
+  },
+  {
+   "name": "SQLiteInstance",
+   "owner_aspect": "System Infrastructure",
+   "suggested_module": "sq_lite_instance",
+   "attributes": [
+    {
+     "name": "InstanceID",
+     "type": "String"
+    }
+   ]
+  }
+ ],
+ "open_issues": []
 }

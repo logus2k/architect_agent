@@ -62,12 +62,21 @@ def build(designs: list[AspectDesign], *, package: dict,
         d = design_by_branch.get(branch)
         if not d:
             continue
+        # Per the handover contract (sdk/how_to.md §3), by_requirement elements are OBJECTS,
+        # not bare names — the Planner's reader joins on `.name` / `.suggested_module` /
+        # `.responsibility` / `.supplier` / `.consumer`. Emitting strings crashes it.
         by_requirement[req_id] = {
             "aspect": branch,
             "tags": tags_by_req.get(req_id, []),
-            "components": [c["name"] for c in d.components],
-            "interfaces": [i["name"] for i in d.interfaces],
-            "functions": [f["name"] for f in d.functions],
+            "components": [{"name": c["name"],
+                            "suggested_module": _module(c["name"]),
+                            "responsibility": c.get("responsibility", ""),
+                            "attributes": c.get("attributes", [])} for c in d.components],
+            "functions": [{"name": f["name"]} for f in d.functions],
+            "interfaces": [{"name": i["name"],
+                            "supplier": branch,
+                            "consumer": ", ".join(i.get("consumers", []) or [])}
+                           for i in d.interfaces],
         }
 
     manifest = package.get("manifest", {})
