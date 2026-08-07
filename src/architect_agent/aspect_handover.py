@@ -55,6 +55,18 @@ def build(designs: list[AspectDesign], *, package: dict,
                                       "suggested_module": _module(c["name"]),
                                       "attributes": c.get("attributes", [])})
 
+    # Cross-aspect resolution: a requirement in one aspect often USES an entity OWNED by
+    # another (a public menu display consumes Menu). The owning aspect defines that entity's
+    # fields; we surface them here so the Planner sees the schema even when the requirement's
+    # own branch doesn't own it — otherwise the Planner asks for fields the Architect already
+    # modelled elsewhere. `consumes[].concern` names the entity (or a cross-cutting tag).
+    comp_by_name = {c["name"]: c for c in components_global}         # name -> {name, attributes, ...}
+    resp_by_name: dict[str, str] = {}
+    for d in designs:
+        for c in d.components:
+            if c.get("name"):
+                resp_by_name.setdefault(c["name"], c.get("responsibility", ""))
+
     # req_id -> its aspect's elements, so the Planner joins on req_id as before.
     by_requirement = {}
     design_by_branch = {d.branch: d for d in designs}
@@ -62,6 +74,19 @@ def build(designs: list[AspectDesign], *, package: dict,
         d = design_by_branch.get(branch)
         if not d:
             continue
+        own_names = {c["name"] for c in d.components if c.get("name")}
+        # Entities this aspect CONSUMES from other aspects — resolve each to its owning
+        # component (with the real attributes) so the requirement carries that schema too.
+        consumed = []
+        for con in (d.consumes or []):
+            name = con.get("concern")
+            gc = comp_by_name.get(name)
+            if gc and name not in own_names:
+                consumed.append({"name": gc["name"],
+                                 "suggested_module": gc["suggested_module"],
+                                 "responsibility": resp_by_name.get(name, ""),
+                                 "attributes": gc.get("attributes", []),
+                                 "consumed": True})
         # Per the handover contract (sdk/how_to.md §3), by_requirement elements are OBJECTS,
         # not bare names — the Planner's reader joins on `.name` / `.suggested_module` /
         # `.responsibility` / `.supplier` / `.consumer`. Emitting strings crashes it.
@@ -71,7 +96,8 @@ def build(designs: list[AspectDesign], *, package: dict,
             "components": [{"name": c["name"],
                             "suggested_module": _module(c["name"]),
                             "responsibility": c.get("responsibility", ""),
-                            "attributes": c.get("attributes", [])} for c in d.components],
+                            "attributes": c.get("attributes", [])} for c in d.components]
+                          + consumed,
             "functions": [{"name": f["name"]} for f in d.functions],
             "interfaces": [{"name": i["name"],
                             "supplier": branch,

@@ -94,6 +94,18 @@ def run(package: dict | str | Path, out_dir: str | Path | None = None,
 
     handover = aspect_handover.build(designs, package=package, open_issues=ref.open_issues)
 
+    # Advisory design-plausibility self-assessment: does each aspect's design REALIZE its
+    # requirements (no omission / drift / out-of-domain element)? Attached to the handover,
+    # never a gate — the Planner/human reads `design_review`. Never fails the run.
+    try:
+        from . import design_judge
+        req_text = {r.get("req_id"): (r.get("text") or "")
+                    for r in package.get("requirements", []) if r.get("req_id")}
+        handover["design_review"] = design_judge.run(handover, req_text, client)
+    except Exception as e:  # noqa: BLE001 — advisory only
+        handover["design_review"] = {"results": {}, "incoherent": [],
+                                     "error": f"{type(e).__name__}: {e}"}
+
     pid = package.get("manifest", {}).get("project_id") or "unknown"
     if out_dir:
         out_dir = Path(out_dir)

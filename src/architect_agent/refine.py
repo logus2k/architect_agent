@@ -156,6 +156,13 @@ def refine(package: dict, client: AgentClient | None = None,
     # like Authentication/Authorization never dead-ends as an open issue).
     distinct = reconcile_interfaces(designs, package, client)
     crit = _run_critique(designs, package)
+    # Self-assessment: did the Architect finish its job? Flag owned entities with no attributes
+    # (undefined data model), empty interfaces, and dangling attribute types. The ERROR-level
+    # ones (entities with no fields) become handover open issues, so the Planner/human sees the
+    # Architect's own unfinished work instead of it leaking downstream as a fabricated requirement.
+    glossary_terms = [t.get("name") for t in package.get("glossary", [])
+                      if isinstance(t, dict) and t.get("name")]
+    crit.findings.extend(critique_mod.completeness_findings(designs, glossary_terms))
     open_issues = [f.reason for f in crit.findings
                    if f.severity == "error"
                    and not (f.kind == "near_duplicate_interface"

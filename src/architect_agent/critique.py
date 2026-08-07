@@ -168,6 +168,62 @@ def misassignment(nodes: list[dict], branch_owner_tag: dict[str, str] | None = N
     return findings
 
 
+_COMPLETENESS_PRIMS = {"String", "Integer", "Real", "Boolean", "DateTime", "UUID",
+                       "Decimal", "Void"}
+
+
+def _base_type(t: str) -> str:
+    """Strip List<…>/Optional<…> wrappers to the inner type name."""
+    t = (t or "").strip()
+    for w in ("List<", "Optional<"):
+        if t.startswith(w) and t.endswith(">"):
+            return _base_type(t[len(w):-1])
+    return t
+
+
+def completeness_findings(designs, glossary_terms) -> list[Finding]:
+    """Did the Architect finish its job? A self-assessment over the FULL per-aspect design:
+      - an owned entity (component) with NO attributes — its data model was never specified
+        (this is the "the Architect shall define X's fields" leak that becomes junk downstream);
+      - an interface that exposes NO operations;
+      - an attribute whose type is not a primitive, a glossary term, or a defined component.
+    Only the first is an ERROR (surfaces as a handover open issue); the rest are warnings. This
+    is what stops the Architect from shipping an incomplete handover that the Planner then
+    questions and the resolver turns into a fabricated requirement."""
+    glossary = {t for t in (glossary_terms or [])}
+    comp_names = {c.get("name") for d in designs for c in (getattr(d, "components", None) or [])
+                  if isinstance(c, dict) and c.get("name")}
+    defined = glossary | comp_names | _COMPLETENESS_PRIMS
+    findings: list[Finding] = []
+    for d in designs:
+        branch = getattr(d, "branch", None)
+        for c in (getattr(d, "components", None) or []):
+            if not isinstance(c, dict) or not c.get("name"):
+                continue
+            name = c["name"]
+            attrs = [a for a in (c.get("attributes") or []) if isinstance(a, dict) and a.get("name")]
+            if not attrs:
+                findings.append(Finding(
+                    kind="incomplete_entity", severity="error", subjects=[name], aspect=branch,
+                    reason=(f"Component '{name}' (aspect '{branch}') has NO attributes defined — "
+                            "the Architect owns this entity but never specified its data model.")))
+                continue
+            for a in attrs:
+                bt = _base_type(a.get("type") or "")
+                if bt and bt not in defined:
+                    findings.append(Finding(
+                        kind="undefined_type", severity="warning", subjects=[name, bt], aspect=branch,
+                        reason=(f"Attribute '{name}.{a['name']}' has type '{bt}', which is not a "
+                                "primitive, a glossary term, or a defined component.")))
+        for i in (getattr(d, "interfaces", None) or []):
+            if isinstance(i, dict) and i.get("name") and not (i.get("operations") or []):
+                findings.append(Finding(
+                    kind="empty_interface", severity="warning", subjects=[i["name"]], aspect=branch,
+                    reason=(f"Interface '{i['name']}' (aspect '{branch}') exposes no operations — "
+                            "the Architect did not specify how it is called.")))
+    return findings
+
+
 def critique_design(*, interfaces_by_aspect: dict[str, list[str]],
                     components_by_aspect: dict[str, list[str]],
                     glossary_terms: list[str],
