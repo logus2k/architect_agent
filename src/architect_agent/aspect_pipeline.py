@@ -97,14 +97,24 @@ def run(package: dict | str | Path, out_dir: str | Path | None = None,
     # Advisory design-plausibility self-assessment: does each aspect's design REALIZE its
     # requirements (no omission / drift / out-of-domain element)? Attached to the handover,
     # never a gate — the Planner/human reads `design_review`. Never fails the run.
+    req_text = {r.get("req_id"): (r.get("text") or "")
+                for r in package.get("requirements", []) if r.get("req_id")}
     try:
         from . import design_judge
-        req_text = {r.get("req_id"): (r.get("text") or "")
-                    for r in package.get("requirements", []) if r.get("req_id")}
         handover["design_review"] = design_judge.run(handover, req_text, client)
     except Exception as e:  # noqa: BLE001 — advisory only
         handover["design_review"] = {"results": {}, "incoherent": [],
                                      "error": f"{type(e).__name__}: {e}"}
+
+    # PROPORTIONALITY / STACK POLICY: decide the SIMPLEST persistence the requirements justify
+    # (no unrequested ORM) and the third-party dependency allow-list the Builder must conform to.
+    # Written into the handover as `stack_policy` — the top-down sanction the Builder enforces.
+    try:
+        from . import proportionality
+        handover["stack_policy"] = proportionality.run(handover, req_text, client=client)
+    except Exception as e:  # noqa: BLE001 — advisory; Builder falls back to bottom-up if absent
+        handover["stack_policy"] = {"error": f"{type(e).__name__}: {e}",
+                                    "sanctioned_dependencies": [], "recommended_persistence": ""}
 
     pid = package.get("manifest", {}).get("project_id") or "unknown"
     if out_dir:
