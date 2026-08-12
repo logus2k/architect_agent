@@ -60,6 +60,11 @@ class AgentClient:
     def _parse_json(content: str, agent: str) -> dict:
         """Tolerate fenced or prose-wrapped JSON. Three attempts, then give up —
         we do not re-prompt, because a retry hides a prompt that needs fixing."""
+        # Thinking-enabled models emit a <think>...</think> reasoning block BEFORE the JSON (and it
+        # usually contains braces), so strip it first — otherwise json.loads and the brace-slice below
+        # both choke on the reasoning. Keep only the answer after the last </think>.
+        if "</think>" in content:
+            content = content.rsplit("</think>", 1)[1]
         for candidate in (content, _FENCE.sub("", content.strip()),
                           content[content.find("{"): content.rfind("}") + 1]):
             try:

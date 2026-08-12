@@ -22,6 +22,114 @@ def _module(name: str) -> str:
     return re.sub(r"_+", "_", s).lower().strip("_")
 
 
+# Backend-obligation stems: if an uncovered requirement's text contains a word starting with one of
+# these, it DEMANDS server-side work and may NOT be treated as a non-backend deferral (fail-closed).
+# Pure UI/display/infra requirements (no such verb) are legitimately deferrable. Deterministic and
+# lexical — a keyword list, not a semantic judgement — so the deferral decision never drifts.
+_BACKEND_STEMS = (
+    "process", "stor", "validat", "persist", "email", "sav", "delet", "updat", "creat",
+    "authent", "authoriz", "generat", "comput", "calculat", "send", "sent", "record", "retriev",
+    "fetch", "confirm", "cancel", "submit", "regist", "upload", "download", "encrypt", "schedul",
+    "notif", "payment", "charg", "invoic", "export", "aggregat", "assign", "approv", "reject",
+    "publish", "archiv", "return", "quer", "verif", "hash", "token", "log",
+)
+
+
+def _demands_backend(text: str) -> bool:
+    """True if the requirement text contains a backend-obligation verb (word-prefix match, no regex)."""
+    words = "".join(c if c.isalnum() else " " for c in (text or "").lower()).split()
+    return any(w.startswith(stem) for w in words for stem in _BACKEND_STEMS)
+
+
+def _norm_type(t: str) -> str:
+    """Normalize a declared type to Python-native syntax so opencode/pydantic accept it. Converts
+    C#/Java generics (`List<Category>`) and typing forms (`Optional[Item]`, `List[X]`, `Dict[K,V]`)
+    to `list[Category]`, `Item | None`, `list[X]`, `dict[K, V]`. Deterministic string ops, no regex."""
+    if not isinstance(t, str) or not t.strip():
+        return t
+    t = t.strip().replace("<", "[").replace(">", "]")
+    for a, b in (("List[", "list["), ("Dict[", "dict["), ("Set[", "set["),
+                 ("Tuple[", "tuple["), ("FrozenSet[", "frozenset[")):
+        t = t.replace(a, b)
+    for opt in ("Optional[", "optional["):
+        if t.startswith(opt) and t.endswith("]"):
+            t = t[len(opt):-1].strip() + " | None"
+            break
+    return t
+
+
+def _derive_code_contract(by_aspect: dict) -> dict:
+    """The Architect's STABLE CODE CONTRACT — one canonical concept per name, its kind, and its
+    public exports (symbols + signatures) — derived deterministically from the components (entities)
+    and interfaces (services) already designed. This is the Architect's responsibility: the Builder
+    IMPLEMENTS against this contract (maps each concept to ONE module, generates exactly these
+    exports, imports by these names) instead of a per-task model INVENTING structure and names —
+    which is what produced the module/package collisions and the import/export name drift.
+
+    Stack-agnostic on purpose: it names concepts, kinds and symbols, not file paths. The Builder's
+    frame maps (kind, concept) -> a concrete module path deterministically, so structure is decided
+    once and the same concept never lands in two places."""
+    # All component names are the "types" that count as concepts — a signature/attribute referencing
+    # one of them is a cross-module DEPENDENCY the Builder must import.
+    comp_names = {c["name"] for a in by_aspect.values() for c in (a.get("components") or [])
+                  if c.get("name")}
+    contract: dict[str, dict] = {}
+
+    def _attach_reqs(key: str, req_ids: list) -> None:
+        # A concept realizes the requirements of the aspect(s) that produced it. This is what makes
+        # traceability MEASURABLE: an aspect the model silently dropped (produced no component/
+        # interface) contributes no concept, so its req_ids appear in NO concept -> uncovered. This
+        # is aspect-granular and derived deterministically (no model self-tagging to drift).
+        if req_ids:
+            cur = contract[key].setdefault("req_ids", [])
+            for r in req_ids:
+                if r not in cur:
+                    cur.append(r)
+
+    for a in by_aspect.values():
+        areqs = a.get("req_ids") or []
+        for c in (a.get("components") or []):
+            name = c.get("name")
+            if not name:
+                continue
+            key = _module(name)
+            fields = [{"name": at.get("name"), "type": _norm_type(at.get("type"))}
+                      for at in (c.get("attributes") or []) if at.get("name")]
+            deps = {_module(f["type"]) for f in fields if f["type"] in comp_names} - {key}
+            contract.setdefault(key, {
+                "concept": name, "kind": "entity",
+                "exports": [{"symbol": name, "kind": "class", "fields": fields}],
+                "depends_on": sorted(deps)})
+            _attach_reqs(key, areqs)
+        for i in (a.get("interfaces") or []):
+            iname = i.get("name") or ""
+            svc = iname[:-len("Interface")] if iname.endswith("Interface") else iname
+            if not svc:
+                continue
+            key = _module(svc)
+            ops, deps = [], set()
+            for o in (i.get("operations") or []):
+                if not o.get("name"):
+                    continue
+                inputs = [{"name": p.get("name"), "type": _norm_type(p.get("type"))}
+                          for p in (o.get("inputs") or []) if p.get("name")]
+                ret = _norm_type(o.get("returns"))
+                deps |= {_module(p["type"]) for p in inputs if p["type"] in comp_names}
+                if ret in comp_names:
+                    deps.add(_module(ret))
+                ops.append({"symbol": _module(o["name"]), "kind": "function",
+                            "inputs": inputs, "returns": ret})
+            deps.discard(key)
+            if key in contract:                     # concept already an entity — attach service ops
+                contract[key].setdefault("exports", []).extend(ops)
+                contract[key]["depends_on"] = sorted(set(contract[key].get("depends_on", [])) | deps)
+            else:
+                contract[key] = {"concept": svc, "kind": "service", "exports": ops,
+                                 "depends_on": sorted(deps)}
+            _attach_reqs(key, areqs)
+    return contract
+
+
 def build(designs: list[AspectDesign], *, package: dict,
           tree_nodes: list[dict] | None = None,
           open_issues: list[str] | None = None) -> dict:
@@ -105,20 +213,65 @@ def build(designs: list[AspectDesign], *, package: dict,
                            for i in d.interfaces],
         }
 
+    code_contract = _derive_code_contract(by_aspect)
+
+    # APPLIED CONSTRAINTS: carry the Analyst's per-requirement non-functional constraints onto the
+    # concept that realizes them, so the Builder sees them verbatim (they were previously dropped).
+    constr_by_req = {r["req_id"]: (r.get("constraints") or [])
+                     for r in package.get("requirements", []) if r.get("req_id")}
+    for v in code_contract.values():
+        ac = []
+        for rid in (v.get("req_ids") or []):
+            for c in constr_by_req.get(rid, []):
+                if c not in ac:
+                    ac.append(c)
+        if ac:
+            v["applied_constraints"] = ac
+
+    # COMPLETENESS GATE (traceability): every requirement must be realized by some contract concept
+    # OR verifiably deferred. `req_ids` are attached to concepts deterministically from the aspect
+    # that produced them, so a requirement is UNCOVERED exactly when its aspect produced no concept
+    # (the "silently dropped design" failure). Uncovered requirements are error-level and make the
+    # handover NOT architect_ready — an incomplete design never ships to the Builder as if complete.
+    texts = {r["req_id"]: r.get("text", "") for r in package.get("requirements", []) if r.get("req_id")}
+    all_reqs = list(texts)
+    covered = set()
+    for v in code_contract.values():
+        covered |= set(v.get("req_ids") or [])
+    # Split the not-realized requirements: a legitimate DEFERRAL (pure UI/display/infra — no backend
+    # verb) is acceptable and counts as handled; a real GAP (uncovered AND demands backend work) is an
+    # error that blocks the handover. Fail-closed: anything ambiguous demands backend -> a real gap.
+    uncovered = [r for r in all_reqs if r not in covered]
+    deferred = [{"req_id": r, "target": "frontend_or_infra", "text": texts[r]}
+                for r in uncovered if not _demands_backend(texts[r])]
+    real_gaps = [r for r in uncovered if _demands_backend(texts[r])]
+    issues = list(open_issues or [])
+    if real_gaps:
+        issues.append(f"unmodeled_requirement: {len(real_gaps)} backend requirement(s) not realized by "
+                      f"any contract concept: {real_gaps[:12]}")
     manifest = package.get("manifest", {})
+    architect_ready = bool(manifest.get("architect_ready", False)) and not real_gaps
+    traceability = {"total": len(all_reqs), "covered_by_concept": len(covered),
+                    "deferred": len(deferred), "real_gaps": real_gaps,
+                    "traceable": not real_gaps}
     return {
         "contract_version": CONTRACT_VERSION,
         "source_package": {
             "project_id": manifest.get("project_id"),
             "project_name": manifest.get("project_name"),
-            "architect_ready": manifest.get("architect_ready", False),
+            "architect_ready": architect_ready,
             "requirements_received": len(package.get("requirements", [])),
             "aspects": len(designs),
         },
         "by_aspect": by_aspect,
         "by_requirement": by_requirement,
         "components": components_global,
-        "open_issues": open_issues or [],
+        # STABLE CODE CONTRACT (concept -> kind + public exports). The Builder implements against
+        # this instead of inventing structure/names — preventing collisions and import/export drift.
+        "code_contract": code_contract,
+        "deferred_concerns": deferred,
+        "traceability": traceability,
+        "open_issues": issues,
     }
 
 
