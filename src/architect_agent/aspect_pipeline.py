@@ -116,6 +116,16 @@ def run(package: dict | str | Path, out_dir: str | Path | None = None,
         handover["stack_policy"] = {"error": f"{type(e).__name__}: {e}",
                                     "sanctioned_dependencies": [], "recommended_persistence": ""}
 
+    # ENDPOINT-REACHABILITY: can every behavioural requirement be acted on — is there a callable
+    # operation for it, and will it be routed? Deterministic over the code_contract (no model): flags
+    # operations that sit on a non-service concept (the Reservation mis-typing) and aspects that design
+    # no operation at all. Advisory — the Builder routes by function-export, so this is defense-in-depth.
+    try:
+        from . import reachability
+        handover["reachability_review"] = reachability.run(handover)
+    except Exception as e:  # noqa: BLE001 — advisory only
+        handover["reachability_review"] = {"error": f"{type(e).__name__}: {e}", "reachable": True}
+
     pid = package.get("manifest", {}).get("project_id") or "unknown"
     if out_dir:
         out_dir = Path(out_dir)

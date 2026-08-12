@@ -46,8 +46,22 @@ class Job:
                 "elapsed_s": round(time.time() - self.started_at) if self.started_at else None}
 
 
+def _factory_emit(pid, lane, stage, status="progress", message=None, progress=None):
+    """Best-effort: push a stage event to the FACTORY socket.io hub (the Analyst relay) so the pipeline
+    Overview's ARCHITECTURE lane updates LIVE instead of by polling. Never breaks a run on telemetry."""
+    import json as _j, os as _o, urllib.request as _u
+    try:
+        url = _o.environ.get("FACTORY_RELAY_URL", "http://localhost:7803").rstrip("/")
+        data = _j.dumps({"lane": lane, "stage": stage, "status": status,
+                         "message": message, "progress": progress}).encode()
+        _u.urlopen(_u.Request(f"{url}/relay/{pid}", data=data,
+                   headers={"Content-Type": "application/json"}, method="POST"), timeout=2)
+    except Exception:
+        pass
+
+
 class JobManager:
-    """Owns architect jobs; runs each in a worker thread. Polling-only (no socket.io)."""
+    """Owns architect jobs; live lane updates over socket.io via the Analyst relay (_factory_emit)."""
 
     def __init__(self) -> None:
         self.jobs: dict[str, Job] = {}
@@ -55,6 +69,7 @@ class JobManager:
     def _run_architect(self, job: Job) -> None:
         job.status = "running"
         job.started_at = time.time()
+        _factory_emit(job.project_id, "architecture", "design", "running", "Architecture design started")
         try:
             job.stage = "fetch"
             job.progress = {"stage": "fetch", "status": "progress"}
@@ -62,6 +77,7 @@ class JobManager:
 
             job.stage = "design"
             job.progress = {"stage": "design", "status": "progress"}
+            _factory_emit(job.project_id, "architecture", "design", "progress", "Designing aspects…")
             result = aspect_pipeline.run(package, to_repo=True)
 
             job.status = "done"
@@ -73,9 +89,12 @@ class JobManager:
                 "package_dir": str(result.package_dir),
             }
             job.progress = {"stage": "done", "status": "done", **job.result}
+            _factory_emit(job.project_id, "architecture", "done", "done",
+                          f"{len(result.designs)} aspects", job.progress)
         except Exception as e:  # noqa: BLE001 — surface any pipeline failure to the client
             job.status = "error"
             job.error = f"{type(e).__name__}: {e}"
+            _factory_emit(job.project_id, "architecture", "error", "error", job.error)
 
     def create_architect_run(self, pid: str) -> Job:
         job = Job(job_id=uuid.uuid4().hex, project_id=pid)

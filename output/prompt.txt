@@ -1,0 +1,31 @@
+You are a senior frontend engineer building the "Public Interface & Display" page of a web application
+named "Restaurant Menu Manager". Infer the application's domain and appropriate styling ONLY from the requirements
+below — do not assume any particular kind of business. Produce ONE complete, self-contained HTML
+document (inline CSS + vanilla JS, no external libraries or frameworks).
+
+Implement these product requirements:
+- The system shall render the user interface using a responsive design that can be rendered on web and mobile standard layout sizes.
+- The system shall provide a map interface utilizing an open-source mapping solution.
+- The system shall discard the contact form submission after processing.
+- The system shall enforce HTTPS for all public endpoints.
+- The system shall allow the user to switch the interface language between Portuguese (PT) and English (EN).
+- The system shall provide a contact form for each tenant.
+
+The backend already exists and SERVES THIS PAGE. Call these REAL endpoints with fetch() using
+RELATIVE, same-origin paths — e.g. fetch("/public_display/get_localized_menu?...") —
+and NEVER prefix a domain, host, or API base URL (no "https://api.example.com", no
+"http://localhost"). HTTP POST, parameters in the query string, no request body; render whatever JSON
+they return, degrading gracefully when fields are absent:
+- POST /public_display/get_localized_menu?language=<v>   (returns list[ItemTranslation])
+- POST /public_display/get_public_location   (returns Location)
+- POST /public_display/submit_contact_form?userName=<v>&userEmail=<v>&message=<v>   (returns Void)
+
+Rules: a clean, professional, responsive layout appropriate to the domain (works on mobile); include
+a link back to "/" (Home); if the requirements call for switching languages, add a working toggle. Do
+NOT load any external script, stylesheet, CDN, or use `integrity`/`crossorigin` attributes —
+everything must be self-contained. If (and only if) the requirements call for a map, embed it with a
+plain `<iframe src="https://www.openstreetmap.org/export/embed.html?...">` (no JavaScript map
+library). Output the COMPLETE, FULLY-WRITTEN HTML document — every element, all CSS, and all
+JavaScript written out in full. Do NOT use "...", ellipses, placeholder comments ("<!-- ... -->",
+"// rest of code", "your code here"), or abbreviations of any kind; a reader must be able to run the
+file as-is. Output ONLY the HTML document — no explanation, no markdown fences.

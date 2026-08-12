@@ -41,7 +41,7 @@ class AgentClient:
         payload = {
             "model": agent,
             "messages": [{"role": "user", "content": user_content}],
-            "response_format": {"type": "json_object"},
+            "response_format": {"type": "json_object"},   # suppresses <think>; model emits JSON directly
         }
         try:
             r = httpx.post(f"{self.base_url}/v1/chat/completions",

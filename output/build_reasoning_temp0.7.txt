@@ -1,0 +1,139 @@
+*   Module path: `app/services/item_translation.py`
+    *   Framework: FastAPI (implies use of type hints, Pydantic models, and potentially exceptions).
+    *   Functions to define:
+        *   `create_translation(itemId, language, text)`
+        *   `get_translation(id)`
+        *   `update_translation(translation)`
+        *   `list_translations(itemId)`
+        *   `delete_translation(id)`
+    *   Repository pattern: Delegate to `repo(name)` imported from `app.repositories.store`.
+    *   Requirements: Input validation, graceful handling (error handling).
+    *   Output: ONLY the code.
+
+    *   Need to import `repo` from `app.repositories.store`.
+    *   Need types (e.g., `Optional`, `List`, `Dict`, `Any`).
+    *   Need error handling (custom exceptions or standard ones like `ValueError`).
+    *   Need to define the logic for each function.
+
+    *   *Imports:*
+        ```python
+        from typing import List, Optional, Dict, Any
+        from app.repositories.store import repo
+        from fastapi import HTTPException
+        ```
+
+    *   *create_translation:*
+        ```python
+        def create_translation(itemId: str, language: str, text: str) -> Dict[str, Any]:
+            if not itemId or not language or not text:
+                raise ValueError("All fields are required")
+            try:
+                # Assuming repo.save or repo.create exists.
+                # The prompt says "delegates to a repository repo(name)".
+                # This implies repo is a function/factory that returns a repository object.
+                # Or repo is a class/object.
+                # "delegates to a repository repo(name)" usually means repo("translations").
+                repository = repo("translations")
+                result = repository.create(itemId, language, text)
+                return result
+            except Exception as e:
+                raise HTTPException(status_code=500, detail=str(e))
+        ```
+
+    *   *get_translation:*
+        ```python
+        def get_translation(id: str) -> Dict[str, Any]:
+            repository = repo("translations")
+            data = repository.get(id)
+            if not data:
+                raise HTTPException(status_code=404, detail="Translation not found")
+            return data
+        ```
+
+    *   *update_translation:*
+        ```python
+        def update_translation(translation: Dict[str, Any]) -> Dict[str, Any]:
+            # translation likely contains 'id' or 'translation_id'
+            t_id = translation.get("id")
+            if not t_id:
+                raise ValueError("Translation ID is required for update")
+            repository = repo("translations")
+            result = repository.update(t_id, translation)
+            return result
+        ```
+
+    *   *list_translations:*
+        ```python
+        def list_translations(itemId: str) -> List[Dict[str, Any]]:
+            repository = repo("translations")
+            return repository.list_by_item(itemId)
+        ```
+
+    *   *delete_translation:*
+        ```python
+        def delete_translation(id: str) -> bool:
+            repository = repo("translations")
+            return repository.delete(id)
+        ```
+
+    *   The prompt says "delegates to a repository `repo(name)`". This implies `repo` is a function that takes a name (like "translations") and returns a repository instance.
+    *   Let's refine the repository methods based on standard naming conventions (create, get, update, list, delete).
+
+    *   *Refining Error Handling:* Use standard `HTTPException` for FastAPI compatibility.
+
+    ```python
+    from typing import List, Optional, Dict, Any
+    from fastapi import HTTPException
+    from app.repositories.store import repo
+
+    def create_translation(itemId: str, language: str, text: str) -> Dict[str, Any]:
+        if not itemId or not language or not text:
+            raise ValueError("itemId, language, and text are required.")
+        try:
+            repository = repo("translations")
+            return repository.create(itemId=itemId, language=language, text=text)
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Error creating translation: {str(e)}")
+
+    def get_translation(id: str) -> Dict[str, Any]:
+        try:
+            repository = repo("translations")
+            translation = repository.get(id)
+            if not translation:
+                raise HTTPException(status_code=404, detail="Translation not found")
+            return translation
+        except Exception as e:
+            if isinstance(e, HTTPException): raise e
+            raise HTTPException(status_code=500, detail=str(e))
+
+    def update_translation(translation: Dict[str, Any]) -> Dict[str, Any]:
+        t_id = translation.get("id")
+        if not t_id:
+            raise ValueError("Translation ID is required for update.")
+        try:
+            repository = repo("translations")
+            return repository.update(t_id, translation)
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Error updating translation: {str(e)}")
+
+    def list_translations(itemId: str) -> List[Dict[str, Any]]:
+        try:
+            repository = repo("translations")
+            return repository.list_by_item(itemId)
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Error listing translations: {str(e)}")
+
+    def delete_translation(id: str) -> bool:
+        try:
+            repository = repo("translations")
+            return repository.delete(id)
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Error deleting translation: {str(e)}")
+    ```
+
+    *   Module path: `app/services/item_translation.py`? Yes.
+    *   Functions: `create_translation`, `get_translation`, `update_translation`, `list_translations`, `delete_translation`? Yes.
+    *   Delegate to `repo(name)`? Yes.
+    *   Input validation? Yes.
+    *   Graceful handling? Yes.
+    *   Output ONLY the code? Yes.

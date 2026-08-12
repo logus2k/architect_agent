@@ -1,0 +1,273 @@
+Senior Frontend Engineer.
+"Restaurant Menu Manager" - Public Interface & Display page.
+
+        *   Responsive design (Web/Mobile).
+        *   Map interface (Open-source, using `<iframe>` for OSM).
+        *   Contact form (discard after submission).
+        *   HTTPS enforcement (implied by logic, though browser/server handles this, I should ensure the UI feels secure/professional).
+        *   Language switch (Portuguese/English).
+        *   Contact form per tenant (implied by the context of the page).
+
+        *   `POST /public_display/get_localized_menu?language=<v>` (Returns list of `ItemTranslation`).
+        *   `POST /public_display/get_public_location` (Returns `Location`).
+        *   `POST /public_display/submit_contact_form?userName=<v>&userEmail=<v>&message=<v>` (Returns Void).
+        *   *Constraint:* Use RELATIVE paths, no base URL, query params only (no body), fetch POST.
+
+        *   Single self-contained HTML (inline CSS + vanilla JS).
+        *   No external libraries/frameworks/CDNs.
+        *   Map: Use `<iframe>` for OSM.
+        *   Language toggle must work.
+        *   No placeholders.
+        *   Output ONLY HTML.
+
+    *   *Domain:* Restaurant/Dining (Menus, locations, contact).
+    *   *Styling:* Clean, appetizing, professional. Use a modern color palette (e.g., deep greens, warm tones, or clean white/gold).
+    *   *Layout:*
+        *   Header: Logo, Language Toggle, Home Link.
+        *   Main: Menu Display (Dynamic), Map (Location), Contact Form.
+        *   Footer: Standard info.
+
+    *   *State Management:* Store current language (`en` or `pt`).
+    *   *Data Fetching:*
+        *   `fetchMenu(lang)`: Calls `/public_display/get_localized_menu?language=...`.
+        *   `fetchLocation()`: Calls `/public_display/get_public_location`.
+        *   `submitContact(name, email, msg)`: Calls `/public_display/submit_contact_form?...`.
+    *   *UI Updates:*
+        *   Map: Update `iframe` source if location changes (though location is likely static for a specific tenant).
+        *   Menu: Map through the array of `ItemTranslation` and build HTML.
+        *   Language Toggle: Update text content of buttons/labels.
+
+    *   *HTML Structure:*
+        ```html
+        <nav>...</nav>
+        <main>
+          <section id="menu-section">...</section>
+          <section id="map-section">...</section>
+          <section id="contact-section">...</section>
+        </main>
+        ```
+
+    *   *CSS:*
+        *   Flexbox/Grid for responsiveness.
+        *   Media queries for mobile.
+        *   Styling for "Menu items" (Name, Description, Price).
+
+    *   *JS Details:*
+        *   `const translations = { en: { ... }, pt: { ... } }` for UI elements.
+        *   Fetch logic with `.then()` or `async/await`.
+        *   Handle "degrading gracefully" (e.g., if `item.price` is missing, don't crash).
+
+    *   *Constraint Check:* No external scripts? Yes. No placeholders? Yes. Relative paths? Yes. POST with query params? Yes.
+
+    *   *Menu Item Structure:* Usually contains `name`, `description`, `price`.
+    *   *Location Structure:* `lat`, `lon`, `address`.
+    *   *Language Switching:* Need to re-fetch menu data when language changes.
+
+    *   *Refining the Map:* OSM embed URL: `https://www.openstreetmap.org/export/embed.html?bbox=...&layer=mapnik`. I'll use a generic bbox or just the standard embed if the location is fetched. Wait, the prompt says "provide a map interface". I will fetch the location first, then update the iframe src.
+
+    *   *Refining the Form:* Need to handle the "discard after processing" requirement. Just show a "Success" message after the fetch.
+
+    *   *Refining the Language Toggle:*
+        *   Current Lang: `en`.
+        *   Switch to `pt` -> Fetch `get_localized_menu?language=pt`.
+        *   Update UI text.
+
+    *   *CSS Styling:*
+        *   Font: System fonts (sans-serif).
+        *   Colors: #2c3e50 (Dark Blue/Grey), #e67e22 (Orange accent).
+        *   Responsive: `max-width: 1200px`, `margin: auto`.
+
+    *   *JavaScript Implementation:*
+        *   `init()` function to load initial data.
+        *   `renderMenu(data)` function.
+        *   `submitForm(e)` function.
+        *   `switchLanguage(lang)` function.
+
+    *   *Wait, the prompt says:* "POST /public_display/get_localized_menu?language=<v> ... render whatever JSON they return".
+    *   *Wait, the prompt says:* "POST /public_display/get_public_location ... returns Location".
+    *   *Wait, the prompt says:* "POST /public_display/submit_contact_form?userName=<v>&userEmail=<v>&message=<v> ... returns Void".
+
+    *   *Mapping the Location to Iframe:*
+        If `Location` returns `{ lat: 1.23, lon: 4.56 }`, the OSM bbox is roughly `[lon-0.01, lat-0.01, lon+0.01, lat+0.01]`.
+        Wait, if the location is fetched via POST, I'll just update the `src` of the iframe.
+
+    *   *Language Toggle UI:*
+        A button or select.
+
+    *   *Menu Rendering:*
+        Loop through the array. Each item has `name`, `description`, `price`.
+
+    *   *Form:*
+        Inputs: Name, Email, Message.
+
+    *   *Security/HTTPS:*
+        Since the backend serves the page, and I'm told to "enforce HTTPS for all public endpoints", I don't need to do anything special in the HTML except ensure the relative URLs are used. The browser handles the protocol of the host.
+
+    *   *Self-Correction on Iframe:*
+        The prompt says: "embed it with a plain `<iframe src="https://www.openstreetmap.org/export/embed.html?...">`". I will ensure the `src` is dynamically updated if the location fetch provides coordinates.
+
+    *   *Final Polish:*
+        Ensure the "Home" link `<a>` goes to `/`.
+        Ensure the "Discard" logic: Just a success message, no persistent state.
+
+    *   *Code Structure:*
+        1. Style block.
+        2. Body content.
+        3. Script block.
+
+    *   *Language Translation Object:*
+        Need translations for "Menu", "Contact Us", "Location", "Submit", "Name", "Email", "Message", "Home".
+
+    *   *Responsive Design:*
+        Use `flex-wrap` and `grid-template-columns: repeat(auto-fit, minmax(300px, 1fr))`.
+
+    *   *Error Handling:*
+        Wrap fetches in try/catch. Show a message if fetch fails.
+
+    *   *Check:* "no request body".
+    *   *Check:* "POST ... parameters in the query string".
+    *   *Check:* "render whatever JSON they return".
+
+    *   *Wait:* If the backend returns `Void` for the contact form, I just need to show a success message.
+
+    *   *Menu Item Translation:*
+        Assuming JSON structure: `[{"name": "...", "description": "...", "price": 10.00}, ...]`
+
+    *   *Location structure:*
+        `{"lat": 48.85, "lon": 2.35, "address": "..."}`
+
+    *   *Iframe URL Construction:*
+        `https://www.openstreetmap.org/export/embed.html?bbox=${lon-0.01},{lat-0.01},{lon+0.01},{lat+0.01}&layer=mapnik`
+
+    *   *One last check:* "Output ONLY the HTML document — no explanation, no markdown fences."
+
+    *   *Wait!* The prompt says: "If (and only if) the requirements call for a map, embed it with a plain `<iframe src="https://www.openstreetmap.org/export/embed.html?...">` (no JavaScript map library)."
+    *   *Self-Correction:* I should make sure I don't use a JS library to *draw* the map, only to update the `src` of the `iframe`.
+
+    *   *Refining the Menu UI:*
+        A list of cards is standard for a restaurant menu.
+
+    *   *Refining the Language Switching:*
+        I'll use a `data-key` approach or a simple object mapping for UI text.
+
+    *   *Refining the Contact Form:*
+        Standard `form` tag, prevent default, fetch, then clear/show success.
+
+    *   *Handling the "Discard" requirement:*
+        The requirement says "The system shall discard the contact form submission after processing." This implies that after the fetch is successful, the UI should reset or show a success message, and the data shouldn't be persisted in the UI state or sent to a local storage.
+
+    *   *Pathing:*
+        `fetch("/public_display/get_localized_menu?language=" + currentLang, { method: "POST" })`
+
+    *   *Wait:* The prompt says "POST /public_display/get_localized_menu?language=<v>". This is a bit unusual (POST with query params), but I must follow it exactly.
+
+    *   *Final HTML Structure:*
+        - Header (Logo, Lang Switch, Home)
+        - Hero/Menu Section
+        - Map Section
+        - Contact Section
+        - Footer
+
+    *   *Styling:*
+        - Use a nice serif or sans-serif font stack.
+        - Use a nice "Restaurant" vibe (e.g., #3e2723 - brown, #f5f5f5 - off-white).
+
+    *   *Code Implementation Details:*
+        - `const uiTranslations = { ... }`
+        - `let currentLang = 'en'`
+        - `async function loadMenu()`
+        - `async function loadLocation()`
+        - `async function submitContact(e)`
+
+    *   *Rendering the Menu:*
+        ```javascript
+        const menuContainer = document.getElementById('menu-container');
+        menuContainer.innerHTML = data.map(item => `
+            <div class="menu-item">
+                <h3>${item.name || 'N/A'}</h3>
+                <p>${item.description || ''}</p>
+                <span class="price">${item.price ? '$' + item.price : ''}</span>
+            </div>
+        `).join('');
+        ```
+
+    *   *Handling the "Void" return:*
+        Just `fetch(...).then(() => { alert('Success'); form.reset(); })`.
+
+    *   *Let's double check the map URL:*
+        `https://www.openstreetmap.org/export/embed.html?bbox=${lon-0.01},{lat-0.01},{lon+0.01},{lat+0.01}&layer=mapnik`
+        Since I don't have coordinates until the fetch completes, I'll have a placeholder iframe or a loading state.
+
+    *   *Mobile responsiveness:*
+        Use `meta name="viewport" content="width=device-width, initial-scale=1"`.
+
+    *   *Language Switch:*
+        The requirement says "switch the interface language between Portuguese (PT) and English (EN)".
+        I'll provide a dropdown or a toggle button.
+
+    *   *Final Check on "No external script/style":*
+        Everything inside `<style>` and `<script>`.
+
+    *   *One detail:* "The system shall provide a contact form for each tenant."
+        This implies the page is tenant-specific. I will assume the "tenant" context is provided by the URL/Backend and the form is simply the one on the page.
+
+    *   *Pathing check:* `fetch("/public_display/get_localized_menu?language=" + lang, { method: "POST" })`.
+
+    *   *Wait, the prompt says:* "POST /public_display/get_localized_menu?language=<v> ... render whatever JSON they return".
+    *   If the JSON is `[{name: "Pizza", price: 10}]`, I should render it.
+
+    *   *Wait, the prompt says:* "The system shall enforce HTTPS for all public endpoints."
+    *   This is a backend requirement, but as a frontend engineer, I should ensure I don't use `http://`. Using relative paths automatically respects the protocol of the current page.
+
+    *   *Let's start coding.*
+
+    *   *Styling Plan:*
+        - Body: `font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #fafafa; color: #333;`
+        - Container: `max-width: 1000px; margin: 0 auto; padding: 20px;`
+        - Menu Card: `border: 1px solid #ddd; padding: 15px; border-radius: 8px; margin-bottom: 10px;`
+        - Button: `padding: 10px 20px; background: #d35400; color: white; border: none; border-radius: 4px; cursor: pointer;`
+
+    *   *JS Logic:*
+        - `const state = { lang: 'en' }`
+        - `async function fetchData()`
+        - `function renderUI()`
+        - `function switchLang(newLang)`
+
+    *   *Map logic:*
+        - `const mapIframe = document.getElementById('map-iframe')`
+        - `mapIframe.src = ...`
+
+    *   *Menu rendering:*
+        - Need to handle missing fields "degrading gracefully".
+        - `item.name || 'Unnamed Item'`
+        - `item.description || ''`
+        - `item.price ? `$${item.price}` : ''`
+
+    *   *Form submission:*
+        - `fetch("/public_display/submit_contact_form?userName=" + name + "&userEmail=" + email + "&message=" + message, { method: "POST" })`
+
+    *   *Language Switcher:*
+        - Need to translate "Menu", "Contact", "Location", "Submit", "Home", "Language", "Name", "Email", "Message".
+
+    *   *Refining the Map Bounding Box:*
+        If `lat` and `lon` are provided, I'll calculate a small bounding box.
+
+    *   *Final verification of requirements:*
+        - Responsive: Yes (Media queries).
+        - Map: Yes (OSM iframe).
+        - Discard contact form: Yes (Reset form after fetch).
+        - HTTPS: Yes (Relative paths).
+        - Lang Switch: Yes (EN/PT).
+        - Contact form per tenant: Yes (Included on page).
+        - Relative paths: Yes.
+        - POST with Query Params: Yes.
+        - No external libs: Yes.
+        - No placeholders: Yes.
+
+    *   *Wait, "The system shall provide a map interface utilizing an open-source mapping solution."*
+        I'll use OpenStreetMap.
+
+    *   *Wait, "The system shall provide a contact form for each tenant."*
+        Since this is a "Public Interface & Display" page, I'll just ensure there is a clear contact section.
+
+    *   *Let's write the code.*

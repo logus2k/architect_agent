@@ -1,0 +1,279 @@
+*   Module path: `app/services/item_translation.py`.
+    *   Framework: FastAPI (implies using Pydantic for validation, though the prompt asks for service functions).
+    *   Required functions:
+        *   `create_translation(itemId, language, text)`
+        *   `get_translation(id)`
+        *   `update_translation(translation)`
+        *   `list_translations(itemId)`
+        *   `delete_translation(id)`
+    *   Dependency: Repository `repo(name)` from `app.repositories.store`.
+    *   Requirements: Input validation, graceful handling (error handling), and output *only* the code.
+
+    *   `app.repositories.store` provides a `repo(name)` function.
+    *   I need to decide what "name" to pass to `repo()`. Usually, it's the table/collection name, e.g., "translations".
+
+    *   `create_translation`: Needs `itemId`, `language`, `text`.
+    *   `get_translation`: Needs `id`.
+    *   `update_translation`: Needs a `translation` object (dictionary or Pydantic model).
+    *   `list_translations`: Needs `itemId`.
+    *   `delete_translation`: Needs `id`.
+
+    *   Use `typing` for hints.
+    *   Use `ValueError` or custom exceptions for validation.
+    *   Use `try-except` blocks for repository calls.
+    *   Since it's a service layer, it should return data or raise exceptions that the controller/router can catch.
+
+    *   *Imports:*
+        ```python
+        from typing import List, Optional, Dict, Any
+        from app.repositories.store import repo
+        from fastapi import HTTPException
+        ```
+
+    *   *Helper for repo:*
+        `translation_repo = repo("translations")`
+
+    *   *Function: create_translation*
+        ```python
+        def create_translation(itemId: str, language: str, text: str) -> Dict[str, Any]:
+            if not itemId or not language or not text:
+                raise ValueError("All fields are required")
+            return translation_repo.create({"itemId": itemId, "language": language, "text": text})
+        ```
+
+    *   *Function: get_translation*
+        ```python
+        def get_translation(id: str) -> Dict[str, Any]:
+            result = translation_repo.get(id)
+            if not result:
+                raise ValueError(f"Translation with id {id} not found")
+            return result
+        ```
+
+    *   *Function: update_translation*
+        ```python
+        def update_translation(translation: Dict[str, Any]) -> Dict[str, Any]:
+            if "id" not in translation:
+                raise ValueError("ID is required for update")
+            return translation_repo.update(translation["id"], translation)
+        ```
+
+    *   *Function: list_translations*
+        ```python
+        def list_translations(itemId: str) -> List[Dict[str, Any]]:
+            return translation_repo.list_by_item_id(itemId)
+        ```
+
+    *   *Function: delete_translation*
+        ```python
+        def delete_translation(id: str) -> bool:
+            return translation_repo.delete(id)
+        ```
+
+    *   The prompt asks for "graceful handling". This means catching potential DB errors and raising meaningful exceptions.
+    *   The prompt asks for "input validation".
+
+    *   *Refining the code structure:*
+        I'll use a standard service pattern.
+
+    ```python
+    from typing import List, Dict, Any, Optional
+    from app.repositories.store import repo
+
+    # Initialize the repository for translations
+    translation_repo = repo("translations")
+
+    def create_translation(itemId: str, language: str, text: str) -> Dict[str, Any]:
+        if not itemId or not language or not text:
+            raise ValueError("itemId, language, and text are required.")
+        try:
+            data = {"itemId": itemId, "language": language, "text": text}
+            return translation_repo.create(data)
+        except Exception as e:
+            # Log error here if needed
+            raise RuntimeError(f"Failed to create translation: {str(e)}")
+
+    def get_translation(id: str) -> Dict[str, Any]:
+        try:
+            result = translation_repo.get(id)
+            if not result:
+                raise ValueError(f"Translation with id {id} not found.")
+            return result
+        except Exception as e:
+            raise RuntimeError(f"Error fetching translation: {str(e)}")
+
+    def update_translation(translation: Dict[str, Any]) -> Dict[str, Any]:
+        if "id" not in translation:
+            raise ValueError("Translation ID is required for update.")
+        try:
+            return translation_repo.update(translation["id"], translation)
+        except Exception as e:
+            raise RuntimeError(f"Error updating translation: {str(e)}")
+
+    def list_translations(itemId: str) -> List[Dict[str, Any]]:
+        if not itemId:
+            raise ValueError("itemId is required to list translations.")
+        try:
+            return translation_repo.list_by_item_id(itemId)
+        except Exception as e:
+            raise RuntimeError(f"Error listing translations: {str(e)}")
+
+    def delete_translation(id: str) -> bool:
+        if not id:
+            raise ValueError("ID is required to delete a translation.")
+        try:
+            return translation_repo.delete(id)
+        except Exception as e:
+            raise RuntimeError(f"Error deleting translation: {str(e)}")
+    ```
+
+    *   Module path: `app/services/item_translation.py`? Yes.
+    *   Functions: `create_translation`, `get_translation`, `update_translation`, `list_translations`, `delete_translation`? Yes.
+    *   Delegate to `repo(name)`? Yes.
+    *   Input validation? Yes.
+    *   Graceful handling? Yes.
+    *   Output ONLY code? Yes.
+
+    *Self-Correction during drafting:* The prompt says `repo(name)` is imported from `app.repositories.store`. I should ensure the import statement is correct.
+
+    Wait, the prompt says `repo(name)` is imported. This usually means `from app.repositories.store import repo`.
+
+    Let's refine the error handling to be more "FastAPI-friendly" (though usually, services raise custom exceptions or standard ones, and the router handles the HTTP response).
+
+    One detail: `update_translation(translation)` - the input is a dictionary/object.
+
+    Final check on function signatures:
+    `create_translation(itemId, language, text)`
+    `get_translation(id)`
+    `update_translation(translation)`
+    `list_translations(itemId)`
+    `delete_translation(id)`
+
+    I will use `Dict[str, Any]` for the `translation` object to be flexible.
+
+    ```python
+    from typing import List, Dict, Any
+    from app.repositories.store import repo
+
+    # Initialize the repository instance
+    translation_repo = repo("translations")
+
+    def create_translation(itemId: str, language: str, text: str) -> Dict[str, Any]:
+        if not all([itemId, language, text]):
+            raise ValueError("itemId, language, and text must not be empty.")
+        try:
+            return translation_repo.create({
+                "itemId": itemId,
+                "language": language,
+                "text": text
+            })
+        except Exception as e:
+            raise RuntimeError(f"Database error during creation: {e}")
+
+    def get_translation(id: str) -> Dict[str, Any]:
+        try:
+            result = translation_repo.get(id)
+            if not result:
+                raise ValueError(f"Translation with id {id} not found.")
+            return result
+        except Exception as e:
+            if isinstance(e, ValueError):
+                raise e
+            raise RuntimeError(f"Database error during retrieval: {e}")
+
+    def update_translation(translation: Dict[str, Any]) -> Dict[str, Any]:
+        if "id" not in translation:
+            raise ValueError("The translation object must contain an 'id'.")
+        try:
+            return translation_repo.update(translation["id"], translation)
+        except Exception as e:
+            raise RuntimeError(f"Database error during update: {e}")
+
+    def list_translations(itemId: str) -> List[Dict[str, Any]]:
+        if not itemId:
+            raise ValueError("itemId is required to list translations.")
+        try:
+            return translation_repo.list_by_item_id(itemId)
+        except Exception as e:
+            raise RuntimeError(f"Database error during listing: {e}")
+
+    def delete_translation(id: str) -> bool:
+        if not id:
+            raise ValueError("ID is required to delete a translation.")
+        try:
+            return translation_repo.delete(id)
+        except Exception as e:
+            raise RuntimeError(f"Database error during deletion: {e}")
+    ```
+
+    Wait, the prompt says "Output ONLY the code". I should remove any extra text.
+
+    One small detail: `repo(name)` is a function that returns a repository object. So `translation_repo = repo("translations")` is correct.
+
+    Let's make sure the imports are clean.
+
+    ```python
+    from typing import List, Dict, Any
+    from app.repositories.store import repo
+
+    # Initialize the repository for translations
+    translation_repo = repo("translations")
+
+    def create_translation(itemId: str, language: str, text: str) -> Dict[str, Any]:
+        if not itemId or not language or not text:
+            raise ValueError("itemId, language, and text are required fields.")
+        try:
+            return translation_repo.create({
+                "itemId": itemId,
+                "language": language,
+                "text": text
+            })
+        except Exception as e:
+            raise RuntimeError(f"Failed to create translation: {str(e)}")
+
+    def get_translation(id: str) -> Dict[str, Any]:
+        try:
+            result = translation_repo.get(id)
+            if not result:
+                raise ValueError(f"Translation with id {id} not found.")
+            return result
+        except ValueError as ve:
+            raise ve
+        except Exception as e:
+            raise RuntimeError(f"Failed to retrieve translation: {str(e)}")
+
+    def update_translation(translation: Dict[str, Any]) -> Dict[str, Any]:
+        if "id" not in translation:
+            raise ValueError("The translation object must include an 'id'.")
+        try:
+            return translation_repo.update(translation["id"], translation)
+        except Exception as e:
+            raise RuntimeError(f"Failed to update translation: {str(e)}")
+
+    def list_translations(itemId: str) -> List[Dict[str, Any]]:
+        if not itemId:
+            raise ValueError("itemId is required to list translations.")
+        try:
+            return translation_repo.list_by_item_id(itemId)
+        except Exception as e:
+            raise RuntimeError(f"Failed to list translations: {str(e)}")
+
+    def delete_translation(id: str) -> bool:
+        if not id:
+            raise ValueError("ID is required to delete a translation.")
+        try:
+            return translation_repo.delete(id)
+        except Exception as e:
+            raise RuntimeError(f"Failed to delete translation: {str(e)}")
+    ```
+
+    Final check on requirements:
+    - `create_translation(itemId, language, text)` - Yes.
+    - `get_translation(id)` - Yes.
+    - `update_translation(translation)` - Yes.
+    - `list_translations(itemId)` - Yes.
+    - `delete_translation(id)` - Yes.
+    - Delegate to `repo(name)` - Yes.
+    - Input validation - Yes.
+    - Graceful handling - Yes.
+    - Output ONLY code - Yes.
