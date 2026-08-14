@@ -61,6 +61,72 @@ close the loop (Phase 3), pay down debt (Phase 4), then the deeper initiative (P
   live `requirements-reqoach-1` from the new image to adopt it (deferred — no compose found; the running
   container still serves the docker-cp'd copy, which matches on-disk, so it works until recreated).
 
+- **FINAL measurement (fix_rounds=1) — DONE: 40 pass / 9 FAIL (was 41/8).** The auto-fix loop worked
+  mechanically (regenerated 3 flagged pages, login.html's dead button fixed) but REVEALED a real skill bug:
+  the first google-auth skill hardcoded `/auth/google_auth_url` + `/auth/login_with_google`, which don't
+  exist (contract uses `/authentication/...`) -> new 405s. Two fixes applied: (a) skill now says "use the
+  page's REAL endpoints, never invent /auth/..."; (b) BIGGER — user insight: real Google auth here is NOT
+  app-implemented OAuth (registering a new Google client needs manual Console steps) — it is the shared
+  **oauth2-proxy** already fronting the domain. REWROTE the google-auth skill to encode THIS environment:
+  gate the app's protected routes in `proxy_server/nginx.conf` behind `auth_request /oauth2/auth`
+  (`/oauth2/auth-admin` for owner-only), read the user from the `X-Auth-Request-Email` header, and the
+  "Sign in with Google" button navigates to `/oauth2/sign_in?rd=...`. Skill now spans frontend+backend+
+  DEPLOY. VALID + discovered by Claude+opencode. KEY LESSON: a skill must encode ENVIRONMENT-SPECIFIC
+  mechanism (oauth2-proxy/nginx), and skills that need infra (nginx registration) require a DEPLOY-time
+  step not yet wired. NOT done: re-verify a regen using the rewritten skill; wire the nginx-registration
+  into the deploy stage; the stray guardrail miss (one /auth/ path survived retries under thinking-on).
+
+- **AUTH / proxy-registration design (2026-08-14, user-confirmed).** The generated app must run BEHIND the
+  domain oauth2-proxy — that is the dedicated skill's job: register the app's route in
+  `proxy_server/conf/nginx.conf` (a `location /<app>/` block, `proxy_pass` to its deploy port) AND gate the
+  protected routes with `auth_request /oauth2/auth` (`/oauth2/auth-admin` for owner-only), forwarding
+  `X-Auth-Request-Email`. The `google-auth` skill's Deploy/infra section already carries this block.
+  TWO ADMINS enabled + verified live: nginx `/oauth2/auth-admin` `allowed_emails` now =
+  `logus2k@gmail.com,logus2k.tester.agent@gmail.com` (comma-list; nginx -t + reload OK; live config shows
+  both). Test Gmail creds in `~/env/labs/requirements/.env` (key `logus2k.tester.agent`).
+  REALITY CHECKS: (1) automating a real Google login (email+password) headless is blocked by Google's bot
+  detection — not scriptable; (2) so authenticated APP testing should SIMULATE oauth2-proxy by setting the
+  `X-Auth-Request-Email` header in the tester (user vs admin), not drive Google; (3) oauth2-proxy
+  cookie-domain=logus2k.com, provider=google, email-domain=* (any user for /oauth2/auth).
+  NOT done: wire the DEPLOY stage (deploy_agent) to apply the nginx register+gate block + reload for each
+  app; add header-simulated authenticated passes to the tester; re-verify a regen through the rewritten skill.
+
+- **ROOT FIX: Architect auth-design skill — DONE + VERIFIED (2026-08-14).** The auth churn's ROOT was the
+  Architect modelling auth as app-implemented OAuth (`login_with_google(authCode)`, `validate_session`).
+  Authored `~/.claude/skills/auth-design/SKILL.md` (surface `architecture`): in THIS env auth is
+  infrastructure (oauth2-proxy), so DON'T design app-OAuth endpoints — mark protected surfaces
+  `auth: required|admin`, read the user from `X-Auth-Request-Email`, deploy registers the nginx gate.
+  Wired the Architect to consume skills: new `architect_agent/skills.py` (loader + `retrieval.rerank`
+  selection over `metadata.triggers`, threshold 0.005, surface-filtered), injected into
+  `aspect_design.design_branch` payload as `MUST_FOLLOW_design_guidance`; mounted `~/.claude/skills ->
+  /app/skills` + `SKILLS_DIR` in the architect compose; image rebuilt. VERIFIED: re-designed the auth
+  branch -> `login_with_google/validate_session/authCode/session/token` ALL ABSENT (were the root cause);
+  now `getAuthenticatedUser`. Skills are now consumed by BOTH Architect (design) and Builder (impl).
+  Residual: a `GoogleOAuthLogin` component name lingers (partial adoption); skill could name the header
+  explicitly. Confirms the user's insight: fixing the Architect removes auth as an app feature -> Planner
+  has no OAuth tasks, Builder no login endpoints/page, backend just reads the header -> whole pipeline eases.
+
+- **DETERMINISTIC env-capability enforcement (2026-08-14) — the change of approach.** After the user's
+  critique ("stochastic prompt-adherence for invariants = a ball of mud"), auth is no longer enforced by a
+  skill prompt. MEASURED FIRST: the reranker-router we'd agreed on does NOT generalize — it scores auth
+  high ONLY when the concept lexically resembles the Restaurant's "authentication" (0.66); a job-board
+  "identity/sign_in" (0.008) or clinic "practitioner login" (0.001) scores as low as non-auth — no
+  threshold separates them, so it would couple to the Restaurant. Abandoned it. INSTEAD built
+  `architect_agent/capabilities.py` — a DETERMINISTIC invariant: strip any operation whose name is a
+  CLOSED, UNIVERSAL auth-implementation verb (login/logout/sign_in/authenticate/oauth/validate_session/
+  refresh_token/...), drop a service left empty, record the wiring obligation. MEASURED clean (flags
+  login_with_google/validate_session, NOT domain nouns schedule_session/consultation_session/
+  get_recent_sessions). VERIFIED GENERALIZATION on 2 domains with the SAME code, no project branches:
+  Restaurant (real contract: login_with_google+validate_session stripped, authentication service dropped,
+  catalog/reservation/tenant_management kept) AND a synthetic job board (sign_in+logout stripped, domain
+  kept, get_recent_sessions kept). Wired into `aspect_handover.build` after `_derive_code_contract`; adds
+  `environment_capabilities` (the obligation) to the handover; architect image REBUILT (durable). The
+  auth-design skill stays as DOCUMENTATION only — no longer load-bearing (a model leak can't propagate).
+  HONEST BOUND: ambiguous "register/signup account" — I strip signup/sign_up but not bare "register"
+  (avoids register_device/event false positives), so an account-registration op can survive (tester
+  catches it). NOT done: downstream consumers of the obligation — Builder backend scaffold
+  (get_authenticated_user reads X-Auth-Request-Email) + deploy nginx gate — not built; full-pipeline demo.
+
 ## Phase 1 — Skills → real integrations (root cause)
 1. **Author `google-auth` skill** (sign-in that actually sets a session and advances the UI; real OAuth
    redirect/callback pattern + a clearly-labelled dev fallback that still authenticates).

@@ -27,6 +27,8 @@ services:
       # Reranker (critique near-dup) — embeddings-server is on noted-network, not reachable by
       # name from here; it publishes to host :8601, so reach it via the host gateway.
       EMBEDDINGS_URL: http://host.docker.internal:8601
+      # Vetted DESIGN skills (e.g. auth-design) injected into aspect design; reranker selects them.
+      SKILLS_DIR: /app/skills
     extra_hosts:
       - "host.docker.internal:host-gateway"
     volumes:
@@ -34,6 +36,8 @@ services:
       - ./data:/app/data
       # Per-project git repositories (shared with reqoach + the other agents).
       - ${HOME}/env/project-repos:/app/project-repos
+      # Vetted capability/design skills (opencode/Claude-compatible SKILL.md), read-only.
+      - ${HOME}/.claude/skills:/app/skills:ro
     networks:
       - logus2k_network
 

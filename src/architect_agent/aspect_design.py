@@ -17,6 +17,7 @@ import json
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
 
+from . import skills
 from .client import AgentClient, LLMError
 
 DESIGNER_AGENT = "architect_aspect_designer"
@@ -41,7 +42,7 @@ def _branch_requirements(package: dict, req_ids: list[str]) -> list[str]:
 def design_branch(branch: dict, package: dict, client: AgentClient) -> AspectDesign:
     """Design one aspect. The designer sees the whole branch at once."""
     reqs = _branch_requirements(package, branch.get("req_ids", []))
-    payload = json.dumps({
+    payload_obj = {
         "branch": branch["name"],
         "scope": branch.get("scope", ""),
         "requirements": reqs,
@@ -49,7 +50,17 @@ def design_branch(branch: dict, package: dict, client: AgentClient) -> AspectDes
                       "kind": t.get("kind", "entity")}
                      for t in package.get("glossary", [])],
         "tags": [t["name"] for t in package.get("tags", [])],
-    })
+    }
+    # Inject any vetted DESIGN skill (e.g. auth-design) whose triggers match THIS branch — so the
+    # Architect designs the contract the way this environment works (auth = oauth2-proxy, not app OAuth).
+    try:
+        guidance = skills.skills_guidance(
+            skills.select_skills(" ".join(reqs) + " " + branch.get("scope", "")))
+        if guidance:
+            payload_obj["MUST_FOLLOW_design_guidance"] = guidance
+    except Exception:  # noqa: BLE001 — skills are best-effort; never break design
+        pass
+    payload = json.dumps(payload_obj)
     d = AspectDesign(branch=branch["name"], scope=branch.get("scope", ""))
     try:
         out = client.complete_json(DESIGNER_AGENT, payload)

@@ -12,6 +12,7 @@ import json
 import re
 from pathlib import Path
 
+from . import capabilities
 from .aspect_design import AspectDesign
 
 CONTRACT_VERSION = "2.0"   # aspect-structured; SysML dropped
@@ -132,11 +133,15 @@ def _derive_code_contract(by_aspect: dict) -> dict:
 
 def build(designs: list[AspectDesign], *, package: dict,
           tree_nodes: list[dict] | None = None,
-          open_issues: list[str] | None = None) -> dict:
+          open_issues: list[str] | None = None,
+          product_spec: dict | None = None) -> dict:
     """Assemble the aspect-structured handover.
 
     `tree_nodes`: the Analyst tree's [{req_id, branch, tags}] — used to key elements back to
     requirements. Falls back to the package's own tree.
+    `product_spec`: the Product agent's spec (surfaces/screens) — the AUTHORITATIVE signal for whether
+    the app needs environment-provided authentication (a surface requiring a signed-in user), independent
+    of whether the design emitted an auth verb.
     """
     nodes = tree_nodes or package.get("tree", {}).get("nodes", [])
     reqs_by_branch: dict[str, list[str]] = {}
@@ -215,6 +220,13 @@ def build(designs: list[AspectDesign], *, package: dict,
 
     code_contract = _derive_code_contract(by_aspect)
 
+    # ENVIRONMENT-PROVIDED CAPABILITIES (deterministic invariant): authentication is provided by the
+    # shared oauth2-proxy, so the app builds NONE of it — strip any app-implemented auth operations the
+    # designer emitted (login/sign_in/validate_session/...), regardless of naming. Generic + measured to
+    # not touch domain nouns. The wiring obligation is recorded for the deploy/backend stages.
+    code_contract, _removed_auth = capabilities.strip_app_auth(code_contract)
+    _auth_obligation = capabilities.auth_obligation(_removed_auth, product_spec=product_spec)
+
     # APPLIED CONSTRAINTS: carry the Analyst's per-requirement non-functional constraints onto the
     # concept that realizes them, so the Builder sees them verbatim (they were previously dropped).
     constr_by_req = {r["req_id"]: (r.get("constraints") or [])
@@ -269,6 +281,8 @@ def build(designs: list[AspectDesign], *, package: dict,
         # STABLE CODE CONTRACT (concept -> kind + public exports). The Builder implements against
         # this instead of inventing structure/names — preventing collisions and import/export drift.
         "code_contract": code_contract,
+        # Capabilities the ENVIRONMENT provides (app builds nothing; the pipeline wires them).
+        "environment_capabilities": [_auth_obligation] if _auth_obligation else [],
         "deferred_concerns": deferred,
         "traceability": traceability,
         "open_issues": issues,

@@ -80,6 +80,18 @@ def publish_to_repo(pid: str, out_dir: str | Path, *, repos_root: str | None = N
     return r.json()
 
 
+def _load_product_spec(pid: str | None) -> dict:
+    """Read the Product agent's spec from the project repo (surfaces/screens). Missing ⇒ {} (no auth
+    signal), so the obligation falls back to the stripped-operation evidence."""
+    if not pid or not REPOS_ROOT:
+        return {}
+    p = Path(REPOS_ROOT) / pid / "product" / "product_spec.json"
+    try:
+        return json.loads(p.read_text())
+    except (OSError, ValueError):
+        return {}
+
+
 def run(package: dict | str | Path, out_dir: str | Path | None = None,
         client: AgentClient | None = None, to_repo: bool = False) -> Result:
     """Execute the per-aspect pipeline and publish the package. When `to_repo` is set (and
@@ -92,7 +104,12 @@ def run(package: dict | str | Path, out_dir: str | Path | None = None,
     ref = refine.refine(package, client)
     designs = ref.designs
 
-    handover = aspect_handover.build(designs, package=package, open_issues=ref.open_issues)
+    # The Product spec (surfaces/screens) is the AUTHORITATIVE signal for whether the app needs
+    # environment-provided authentication (a surface requiring a signed-in user). Load it from the repo
+    # so the handover records the auth obligation from a product decision, not from a stripped auth verb.
+    product_spec = _load_product_spec(package.get("manifest", {}).get("project_id"))
+    handover = aspect_handover.build(designs, package=package, open_issues=ref.open_issues,
+                                     product_spec=product_spec)
 
     # Advisory design-plausibility self-assessment: does each aspect's design REALIZE its
     # requirements (no omission / drift / out-of-domain element)? Attached to the handover,
