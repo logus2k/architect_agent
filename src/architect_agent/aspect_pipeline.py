@@ -116,6 +116,30 @@ def run(package: dict | str | Path, out_dir: str | Path | None = None,
     # never a gate — the Planner/human reads `design_review`. Never fails the run.
     req_text = {r.get("req_id"): (r.get("text") or "")
                 for r in package.get("requirements", []) if r.get("req_id")}
+
+    # RUNTIME-SCOPE GATE (runs FIRST, mutates the code_contract): strip runtime operations synthesised
+    # from requirements that belong to a NON-runtime surface — the CI/CD build ("license-compliance scan
+    # during the build"), the build artifact ("the image shall not include TensorFlow"), or a dependency
+    # policy ("components licensed under MIT/Apache"). Such an op becomes a HOLLOW endpoint no store ever
+    # feeds (only ever "unknown"/"not found"); it must never be synthesised. The stripped requirements are
+    # recorded under `non_runtime_concerns` so a later build/CI/deploy stage owns them — never lost.
+    # Fail-OPEN: any classification error keeps everything (a real feature is never dropped).
+    try:
+        from . import scope
+        handover["scope_review"] = scope.run(handover, req_text, client=client)
+    except Exception as e:  # noqa: BLE001 — fail open
+        handover["scope_review"] = {"error": f"{type(e).__name__}: {e}"}
+
+    # INTERACTION BINDING: bind the Product agent's UX actions to the contract operations that realize them
+    # (the endpoints the Builder must wire controls to), and flag any action/journey-create with no operation
+    # as a GAP. Runs AFTER the scope gate so it binds against the final operation set. Advisory to the run;
+    # the binding DATA is what turns "wire the buy button" from a guess into a checked contract.
+    try:
+        from . import interaction
+        handover["interaction_review"] = interaction.run(handover, product_spec)
+    except Exception as e:  # noqa: BLE001 — advisory only
+        handover["interaction_review"] = {"error": f"{type(e).__name__}: {e}"}
+
     try:
         from . import design_judge
         handover["design_review"] = design_judge.run(handover, req_text, client)

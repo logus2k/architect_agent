@@ -257,10 +257,22 @@ def build(designs: list[AspectDesign], *, package: dict,
     deferred = [{"req_id": r, "target": "frontend_or_infra", "text": texts[r]}
                 for r in uncovered if not _demands_backend(texts[r])]
     real_gaps = [r for r in uncovered if _demands_backend(texts[r])]
+    # Open issues are STRUCTURED — the Planner filters them by the requirement they
+    # touch, and a bare sentence carries no such handle. One unmodeled-requirement
+    # issue names MANY requirements, so it carries `req_ids` (all of them) alongside
+    # `req_id` (the first), rather than being flattened into prose the consumer has
+    # to parse back out.
     issues = list(open_issues or [])
     if real_gaps:
-        issues.append(f"unmodeled_requirement: {len(real_gaps)} backend requirement(s) not realized by "
-                      f"any contract concept: {real_gaps[:12]}")
+        issues.append({
+            "kind": "unmodeled_requirement",
+            "severity": "error",
+            "reason": (f"{len(real_gaps)} backend requirement(s) not realized by any "
+                       f"contract concept: {real_gaps[:12]}"),
+            "req_ids": list(real_gaps),
+            "req_id": real_gaps[0],
+            "subjects": list(real_gaps[:12]),
+        })
     manifest = package.get("manifest", {})
     architect_ready = bool(manifest.get("architect_ready", False)) and not real_gaps
     traceability = {"total": len(all_reqs), "covered_by_concept": len(covered),

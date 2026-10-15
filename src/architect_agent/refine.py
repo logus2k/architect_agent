@@ -163,7 +163,15 @@ def refine(package: dict, client: AgentClient | None = None,
     glossary_terms = [t.get("name") for t in package.get("glossary", [])
                       if isinstance(t, dict) and t.get("name")]
     crit.findings.extend(critique_mod.completeness_findings(designs, glossary_terms))
-    open_issues = [f.reason for f in crit.findings
+    # STRUCTURED, not bare strings. The Planner filters open issues by the requirement
+    # they touch (`req_id`); a plain reason string carries no such handle, so it had to
+    # guess — and crashed. Emit the finding's own fields and let the consumer choose.
+    # `subjects` holds the elements involved, which is where a requirement id appears.
+    open_issues = [{"kind": f.kind, "severity": f.severity, "reason": f.reason,
+                    "subjects": list(f.subjects or []), "aspect": f.aspect,
+                    "req_id": next((x for x in (f.subjects or [])
+                                    if isinstance(x, str) and x[:4] in ("REQ-", "GAP-")), None)}
+                   for f in crit.findings
                    if f.severity == "error"
                    and not (f.kind == "near_duplicate_interface"
                             and tuple(sorted(f.subjects)) in distinct)]
